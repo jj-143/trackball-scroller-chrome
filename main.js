@@ -15,6 +15,8 @@ function loadDocument() {
 }
 
 function displayConsole() {
+  if (!eConsole) return
+
   eConsole.querySelectorAll("p").forEach(p => p.remove());
 
   for (k in state) {
@@ -32,13 +34,12 @@ function displayConsole() {
 }
 
 function handleMouseMovement(e) {
-  var y = window.scrollY + e.movementY;
+  var y = window.scrollY - e.movementY;
   window.scroll(window.scrollX, y);
 }
 
 function activateScrollMode() {
   document.body.requestPointerLock();
-
   document.addEventListener("mousemove", handleMouseMovement, false);
 }
 
@@ -47,21 +48,29 @@ function deActivateScrollMode() {
   document.exitPointerLock();
 }
 
-document.addEventListener("mousedown", e => {
-  // 0: left, 1: middle, 2: right
 
-  if (state.scrolling) {
-    state.scrolling = false;
-    deActivateScrollMode();
-  } else {
-    if (e.button == 1) { // middle click
-      state.scrolling = true;
-      activateScrollMode();
+
+function attachFeature() {
+  document.addEventListener("mousedown", e => {
+    // 0: left, 1: middle, 2: right
+
+    if (state.scrolling) {
+      state.scrolling = false;
+      deActivateScrollMode();
+    } else {
+      if (e.button == 1) { // middle click
+        state.scrolling = true;
+        activateScrollMode();
+      }
     }
-  }
 
-  displayConsole();
-});
+    displayConsole();
+  });
+}
 
-loadDocument();
-displayConsole();
+attachFeature()
+
+
+
+// loadDocument();
+// displayConsole();
