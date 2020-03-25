@@ -1,7 +1,41 @@
 
-const state = {
-  scrolling: false
+var initSetting = {
+  init: true,
+
+  // default Settings
+  isNaturalScrolling: true,
+  buttonActivation: 1,
+  keyActivation: '',
+  keyNonActivation: '',
 };
+
+var setting
+var state = {
+  scrolling: false
+}
+
+function loadSetting() {
+  chrome.storage.sync.get('setting', ({ setting: storageSetting }) => {
+    // if not set, sync set initial setting
+    if (!storageSetting) {
+      chrome.storage.sync.set(
+        { setting: initSetting }, () => {
+          setting = initSetting
+        }
+      )
+    } else {
+      setting = storageSetting
+    }
+
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (changes.setting) {
+        setting = changes.setting.newValue
+      }
+    })
+  })
+
+}
+
 
 const eConsole = document.getElementById("console");
 
@@ -53,9 +87,14 @@ function displayConsole() {
 var scrollTarget = null
 
 function handleMouseMovement(e) {
-  var y = - e.movementY;
+  // handle Escape cancelled pointer lock
+  if (!document.pointerLockElement) {
+    deActivateScrollMode()
+    return
+  }
+
+  var y = e.movementY * (setting.isNaturalScrolling ? -1 : 1);
   scrollTarget.scrollBy(0, y)
-  // elmt.scroll(elmt.scrollX, y);
 }
 
 function captureClick(e) {
@@ -76,12 +115,10 @@ function deActivateScrollMode() {
 }
 
 function handleClick(e) {
-  console.log('handleClick')
     // 0: left, 1: middle, 2: right
 
     if (state.scrolling) {
       state.scrolling = false;
-
       if (e.button == 0) {
         window.addEventListener('click', captureClick, true)
         e.preventDefault()
@@ -91,15 +128,20 @@ function handleClick(e) {
       deActivateScrollMode();
       return
     } else {
-      if (e.button == 1) {
+      console.log('button: ', e.button)
+      if (e.button == setting.buttonActivation
+        && (!setting.keyActivation || e[setting.keyActivation])
+        && !(setting.keyNonActivation && e[setting.keyNonActivation])
+        ) {
+        e.stopImmediatePropagation()
+        e.stopPropagation()
+        e.preventDefault()
         const path = e.composedPath()
         anchor = path.find(elm => elm.tagName == 'A')
 
         if (anchor && anchor.href) {
             return
         }
-
-        console.log(path)
 
         scrollTarget = document.documentElement
 
@@ -117,10 +159,21 @@ function handleClick(e) {
       }
     }
     displayConsole();
+    return false
 }
 
 function attachFeature() {
-  window.addEventListener("mousedown", handleClick, true);
+  addEventListener("mousedown", handleClick, true);
+
+  // TODO: only if set right button as activationButton
+  addEventListener('contextmenu', e => {
+    console.log('contextmenu event')
+
+    if (state.scrolling) {
+      e.preventDefault()
+      return false
+    }
+  }, true)
 }
 
 attachFeature();
@@ -131,6 +184,7 @@ var debug = true
 debug = false
 
 if (debug) {
+  console.log('[debug mode]')
   var button = document.createElement("button")
   button.innerText = "btn"
 
@@ -142,5 +196,7 @@ if (debug) {
 
   loadDocument();
   displayConsole();
-
 }
+console.log('main')
+
+loadSetting()

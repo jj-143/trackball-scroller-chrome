@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Option Page</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      height: 100vh;
+    }
+    section {
+      flex: 1;
+      height: 100%;
+    }
+
+    section#testing {
+      overflow-y: scroll;
+      height: 100%;
+      background-color: blanchedalmond;
+    }
+
+    section#testing > * {
+      margin-bottom: 8rem;
+    }
+  </style>
+</head>
+<body>
+  <section id="settings">
+    <div>
+      <label for="mbutton-activation">activate mouse button
+        <select name="mbutton_activation" id="mbutton-activation">
+          <option value="1">middle click</option>
+          <option value="2">right click</option>
+        </select>
+      </label>
+    </div>
+    <div>
+      <label for="key-activation">activate key combo
+        <select name="key-activation" id="key-activation">
+          <option value="">None</option>
+          <option value="ctrlKey">Ctrl</option>
+          <option value="altKey">Alt</option>
+          <option value="shiftKey">Shift</option>
+        </select>
+      </label>
+    </div>
+    <div>
+      <label for="key-non-activation">non-activation key combo
+        <select name="key-non-activation" id="key-non-activation">
+          <option value="">None</option>
+          <option value="ctrlKey">Ctrl</option>
+          <option value="altKey">Alt</option>
+          <option value="shiftKey">Shift</option>
+        </select>
+      </label>
+    </div>
+
+    <div>
+      <label for="scroll-direction">
+        <span>natural scrolling</span>
+        <input type="checkbox" name="direction" id="scroll-direction">
+      </label>
+    </div>
+  </section>
+  <section id="testing">
+    <h1>header</h1>
+    <h1>header</h1>
+    <h1>header</h1>
+    <h1>header</h1>
+    <h1>header</h1>
+    <h1>header</h1>
+    <h1>header</h1>
+    <h1>header</h1>
+    <h1>header</h1>
+    <h1>header</h1>
+  </section>
+  
+  <script src="main.js"></script>
+  <script src='options.js'></script>
+</body>
+</html>

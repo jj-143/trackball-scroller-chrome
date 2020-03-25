@@ -2,10 +2,11 @@
   "name": "Trackball Scroller",
   "version": "1.0",
   "description": "Enables scroll mode using trackball",
-  "permissions": ["tabs", "*://*/*", "activeTab"],
+  "permissions": ["*://*/*", "storage"],
   "background": {
     "scripts": ["background.js"],
     "persistent": false
   },
+  "options_page": "options.html",
   "manifest_version": 2
 }
