@@ -25,6 +25,21 @@ function loadSetting() {
       )
     } else {
       setting = storageSetting
+
+      // set new setting values
+      var migration = false
+      for (var key in initSetting) {
+        if (!setting[key]) {
+          setting[key] = initSetting[key]
+          migration = true
+        }
+      }
+
+      if (migration) {
+        chrome.storage.sync.set(
+          { setting }
+        )
+      }
     }
 
     chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -133,9 +148,6 @@ function handleClick(e) {
         && (!setting.keyActivation || e[setting.keyActivation])
         && !(setting.keyNonActivation && e[setting.keyNonActivation])
         ) {
-        e.stopImmediatePropagation()
-        e.stopPropagation()
-        e.preventDefault()
         const path = e.composedPath()
         anchor = path.find(elm => elm.tagName == 'A')
 
@@ -149,7 +161,12 @@ function handleClick(e) {
           var p = path[i]
           if (getComputedStyle(p).overflowY == 'auto'
             || getComputedStyle(p).overflowY == 'scroll') {
-            scrollTarget = p
+
+            if (p.tagName == 'BODY') {
+              scrollTarget = document.documentElement
+            } else {
+              scrollTarget = p
+            }
             break
           }
         }
