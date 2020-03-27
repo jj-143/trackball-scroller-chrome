@@ -101,9 +101,12 @@ function displayConsole() {
 
 var scrollTarget = null
 
+
+/* also fired when tab changed */
 function handleMouseMovement(e) {
   // handle Escape cancelled pointer lock
   if (!document.pointerLockElement) {
+    state.scrolling = false
     deActivateScrollMode()
     return
   }
@@ -132,9 +135,9 @@ function deActivateScrollMode() {
 
 function handleClick(e) {
     // 0: left, 1: middle, 2: right
-
     if (state.scrolling) {
       state.scrolling = false;
+
       if (e.button == 0) {
         window.addEventListener('click', captureClick, true)
         e.preventDefault()
