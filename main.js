@@ -107,6 +107,7 @@ function handleMouseMovement(e) {
     deActivateScrollMode()
     return
   }
+  if (e.movementY == 0) return
 
   var y = e.movementY * (setting.isNaturalScrolling ? -1 : 1);
   scrollTarget.scrollBy(0, y)
@@ -143,7 +144,6 @@ function handleClick(e) {
       deActivateScrollMode();
       return
     } else {
-      console.log('button: ', e.button)
       if (e.button == setting.buttonActivation
         && (!setting.keyActivation || e[setting.keyActivation])
         && !(setting.keyNonActivation && e[setting.keyNonActivation])
@@ -156,13 +156,20 @@ function handleClick(e) {
         }
 
         scrollTarget = document.documentElement
+        console.log(path)
 
         for(var i=0; i<path.length - 2;i++) {
           var p = path[i]
-          if (getComputedStyle(p).overflowY == 'auto'
-            || getComputedStyle(p).overflowY == 'scroll') {
 
-            if (p.tagName == 'BODY') {
+          // also detecting "auto" and non-scrollable element; pass and go higher.
+          if ((getComputedStyle(p).overflowY == 'auto'
+            || getComputedStyle(p).overflowY == 'scroll'
+            ) && p.clientHeight != p.scrollHeight) {
+
+            // change to HTML only scrollingElement is also HTML
+            if (p.tagName == 'BODY'
+              && document.scrollingElement.tagName == 'HTML'
+            ) {
               scrollTarget = document.documentElement
             } else {
               scrollTarget = p
