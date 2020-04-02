@@ -1,23 +1,35 @@
-const config = {
+var config = {
   version: "0.0.1-fix-windows-01"
 }
 
+// TODO: maybe move to background.
+// default Setting.
 var initSetting = {
   init: true,
 
   // default Settings
-  isNaturalScrolling: true,
+  naturalScrolling: {
+    type: "options",
+    value: true
+  },
+  startInScroll: {
+    type: "options",
+    value: false
+  },
   buttonActivation: 1,
   keyActivation: "",
   keyNonActivation: ""
 }
 
+// copy of chrome.setting; from option.
 var setting
+
+// 'local state' - state for each tab OR page
 var state = {
   scrolling: false
 }
 
-function loadSetting() {
+function loadSetting(cb) {
   chrome.storage.sync.get("setting", ({ setting: storageSetting }) => {
     // if not set, sync set initial setting
     if (!storageSetting) {
@@ -41,57 +53,10 @@ function loadSetting() {
       }
     }
 
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (changes.setting) {
-        setting = changes.setting.newValue
-      }
-    })
+    if (cb) {
+      cb()
+    }
   })
-}
-
-const eConsole = document.getElementById("console")
-
-function loadDocument() {
-  for (var i = 0; i < 80; i++) {
-    var post = document.createElement("div")
-    var header = document.createElement("h1")
-
-    var link = document.createElement("a")
-    link.href = "/" + i
-    link.innerText = "link"
-
-    var linkDiv = document.createElement("div")
-    linkDiv.style = "border: 1px solid red;"
-    linkDiv.innerText = "interesting post detail"
-    link.appendChild(linkDiv)
-
-    post.appendChild(header)
-    post.appendChild(link)
-
-    header.innerText = "header #" + i
-
-    post.style = "text-align: center; margin-bottom: 4em;"
-    document.body.appendChild(post)
-  }
-}
-
-function displayConsole() {
-  if (!eConsole) return
-
-  eConsole.querySelectorAll("p").forEach(p => p.remove())
-
-  for (k in state) {
-    var p = document.createElement("p")
-    var span = document.createElement("span")
-    span.innerText = k + ": "
-    p.appendChild(span)
-
-    span = document.createElement("span")
-    span.innerText = state[k]
-    p.appendChild(span)
-
-    eConsole.appendChild(p)
-  }
 }
 
 var scrollTarget = null
@@ -99,14 +64,14 @@ var scrollTarget = null
 /* also fired when tab changed */
 function handleMouseMovement(e) {
   // handle Escape cancelled pointer lock
-  if (!document.pointerLockElement) {
+  if (!document.pointerLockElement && state.scrolling) {
     state.scrolling = false
     deActivateScrollMode()
     return
   }
   if (e.movementY == 0) return
 
-  var y = e.movementY * (setting.isNaturalScrolling ? -1 : 1)
+  var y = e.movementY * (setting.naturalScrolling.value ? -1 : 1)
   scrollTarget.scrollBy(0, y)
 }
 
@@ -118,17 +83,20 @@ function captureClick(e) {
 }
 
 function activateScrollMode() {
+  console.log("activate")
   document.body.requestPointerLock()
   window.addEventListener("mousemove", handleMouseMovement, false)
 }
 
 function deActivateScrollMode() {
+  console.log("deactivate")
   window.removeEventListener("mousemove", handleMouseMovement, false)
   document.exitPointerLock()
 }
 
 function handleClick(e) {
   // 0: left, 1: middle, 2: right
+  console.log("handle click, scrolling:", state)
   if (state.scrolling) {
     state.scrolling = false
 
@@ -184,47 +152,65 @@ function handleClick(e) {
       activateScrollMode()
     }
   }
-  displayConsole()
   return false
+}
+
+function preventContextMenu(e) {
+  if (state.scrolling) {
+    e.preventDefault()
+    return false
+  }
 }
 
 function attachFeature() {
   addEventListener("mousedown", handleClick, true)
-
-  // TODO: only if set right button as activationButton
-  // TODO - FIX: state.scrolling is not correct regardless of firing order of events.
-  // - contextmenu vs handle click
-  addEventListener(
-    "contextmenu",
-    e => {
-      if (state.scrolling) {
-        e.preventDefault()
-        return false
-      }
-    },
-    true
-  )
+  addEventListener("contextmenu", preventContextMenu, true)
 }
 
-attachFeature()
+function detachFeature() {
+  removeEventListener("mousedown", handleClick, true)
+  removeEventListener("contextmenu", preventContextMenu, true)
+}
 
+console.log("main")
+// Init
 scrollTarget = document.documentElement
 
-var debug = true
-debug = false
-
-if (debug) {
-  var button = document.createElement("button")
-  button.innerText = "btn"
-
-  button.addEventListener("click", e => {
-    alert("hello")
+loadSetting(() => {
+  // Sync Setting
+  // @ setting changed
+  // @ enabled / disabled via BrowserAction
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    console.log("storage.onchanged")
+    if (changes.setting) {
+      setting = changes.setting.newValue
+    } else if (changes.enabled) {
+      console.log("enabled/disabled: ", changes.enabled.newValue)
+      if (changes.enabled.newValue) {
+        attachFeature()
+      } else {
+        detachFeature()
+      }
+    }
   })
 
-  document.body.appendChild(button)
+  // start
+  chrome.storage.sync.get("enabled", ({ enabled }) => {
+    console.log("load enabled")
+    if (enabled) {
+      console.log("enabled.")
+      attachFeature()
 
-  loadDocument()
-  displayConsole()
-}
+      if (setting.startInScroll.value) {
+        // TODO: check "main" scroll area.
+        // currently scrolltarget.
 
-loadSetting()
+        //TODO: scrollTarget to set in [state]
+        scrollTarget = document.scrollingElement
+        console.log("startinscroll.")
+        state.scrolling = true
+        activateScrollMode()
+      }
+    }
+  })
+})
