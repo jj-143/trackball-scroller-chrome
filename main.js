@@ -18,6 +18,7 @@ var initSetting = {
   },
   buttonActivation: 1,
   keyActivation: "",
+  nonActivation: ["Control", "Meta"],
   keyNonActivation: ""
 }
 
@@ -96,7 +97,6 @@ function deActivateScrollMode() {
 
 function handleClick(e) {
   // 0: left, 1: middle, 2: right
-  console.log("handle click, scrolling:", state)
   if (state.scrolling) {
     state.scrolling = false
 
@@ -111,7 +111,7 @@ function handleClick(e) {
     if (
       e.button == setting.buttonActivation &&
       (!setting.keyActivation || e[setting.keyActivation]) &&
-      !(setting.keyNonActivation && e[setting.keyNonActivation])
+      !setting.nonActivation.some(key => e.getModifierState(key))
     ) {
       const path = e.composedPath()
       anchor = path.find(elm => elm.tagName == "A")

@@ -88,22 +88,22 @@ function loadSetting() {
   chrome.storage.sync.get("setting", ({ setting }) => {
     storageSetting = setting
 
-    console.log(setting)
+    // non-activation
+    setting.nonActivation.forEach(key => {
+      document.querySelector(
+        "#non-activation input[name=" + key + "]"
+      ).checked = true
+    })
+
+    // options
     for (key in setting) {
       if (setting[key].type === "options") {
+        console.log(key)
         document.querySelector(
           "input[type=checkbox][name=" + key + "]"
         ).checked = setting[key].value
       }
     }
-
-    // document.getElementById("mbutton-activation").value =
-    //   setting.buttonActivation
-    // document.getElementById("scroll-direction").checked =
-    //   setting.isNaturalScrolling
-    // document.getElementById("key-activation").value = setting.keyActivation
-    // document.getElementById("key-non-activation").value =
-    //   setting.keyNonActivation
   })
 }
 
@@ -119,8 +119,6 @@ function setValue(key, value) {
 }
 
 function attachEvents() {
-  // replaced to custom input
-
   // document.getElementById("mbutton-activation").addEventListener('change', e => {
   //   const value = e.target.value
   //   setValue('buttonActivation', value)
@@ -130,21 +128,21 @@ function attachEvents() {
   //   setValue('keyActivation', value)
   // })
 
-  // TODO: change to "chips"
-  // document
-  //   .getElementById("key-non-activation")
-  //   .addEventListener("change", e => {
-  //     const value = e.target.value
-  //     setValue("keyNonActivation", value)
-  //   })
+  // non-activation
+  document
+    .querySelectorAll("#non-activation input[type=checkbox]")
+    .forEach(elm => {
+      elm.addEventListener("change", e => {
+        const newValue = Array.from(
+          document.querySelectorAll(
+            "#non-activation input[type=checkbox]:checked"
+          )
+        ).map(checked => checked.name)
+        setValue("nonActivation", newValue)
+      })
+    })
 
-  // TODO: make programatical method
-  // document.getElementById("scroll-direction").addEventListener("change", e => {
-  //   const value = e.target.checked
-  //   setValue("isNaturalScrolling", value)
-  // })
-
-  // programatic method
+  // options
   document.querySelectorAll(".checkbox input[type=checkbox]").forEach(elm => {
     elm.addEventListener("change", e => {
       const key = elm.name
@@ -156,9 +154,6 @@ function attachEvents() {
     })
   })
 
-  // console.log("options - event attached")
-
-  // NEW
   // custom input button event
   document.getElementById("activation").addEventListener("click", e => {
     document.getElementById("activation").disabled = true

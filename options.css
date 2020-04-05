@@ -44,6 +44,8 @@ main > div {
   margin-bottom: 3.25rem;
 }
 
+/* non-activation */
+
 .chips {
   display: flex;
 }
@@ -76,6 +78,8 @@ input[type="checkbox"]:checked + .chip {
   background-color: #c6f1e9;
 }
 
+/* options */
+
 label.control,
 .checkbox > label {
   display: block;
@@ -104,7 +108,7 @@ label.control,
   border-radius: 4px;
 }
 
-input[type="checkbox"]:checked + .input-checkbox {
+.checkbox input[type="checkbox"]:checked + .input-checkbox {
   background-color: #c6f1e9;
 }
 

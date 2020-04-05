@@ -32,21 +32,13 @@
           <label class="control"
             >don't activate if pressed.. (any of below)</label
           >
-          <div class="chips">
+
+          <div class="chips" id="non-activation">
             <span>
               <input
                 type="checkbox"
-                name="nonActivateAlt"
-                id="non-activate-alt"
-                hidden
-                checked
-              />
-              <label class="chip" for="non-activate-alt">alt</label>
-            </span>
-            <span>
-              <input
-                type="checkbox"
-                name="nonActivateCtrl"
+                name="Control"
+                value="ctrl"
                 id="non-activate-ctrl"
                 hidden
               />
@@ -55,17 +47,28 @@
             <span>
               <input
                 type="checkbox"
-                name="nonActivateShift"
+                name="Alt"
+                id="non-activate-alt"
+                value="alt"
+                hidden
+              />
+              <label class="chip" for="non-activate-alt">alt</label>
+            </span>
+            <span>
+              <input
+                type="checkbox"
+                name="Shift"
+                value="shift"
                 id="non-activate-shift"
                 hidden
-                checked
               />
               <label class="chip" for="non-activate-shift">shift</label>
             </span>
             <span>
               <input
                 type="checkbox"
-                name="nonActivateMeta"
+                name="Meta"
+                value="meta"
                 id="non-activate-meta"
                 hidden
               />
