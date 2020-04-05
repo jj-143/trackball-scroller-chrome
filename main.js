@@ -2,24 +2,32 @@ var config = {
   version: "0.0.1-fix-windows-01"
 }
 
+const isOptionsPage =
+  location.href.search("^chrome-extension://.*/options.html$") === 0
+
 // TODO: maybe move to background.
 // default Setting.
 var initSetting = {
-  init: true,
-
   // default Settings
   naturalScrolling: {
     type: "options",
     value: true
   },
-  startInScroll: {
-    type: "options",
-    value: false
+
+  // startInScroll: {
+  //   type: "options",
+  //   value: false
+  // },
+
+  activation: {
+    modifiers: [],
+    input: {
+      key: 1,
+      text: "Mouse 2",
+      type: "mouse"
+    }
   },
-  buttonActivation: 1,
-  keyActivation: "",
-  nonActivation: ["Control", "Meta"],
-  keyNonActivation: ""
+  nonActivation: []
 }
 
 // copy of chrome.setting; from option.
@@ -84,19 +92,23 @@ function captureClick(e) {
 }
 
 function activateScrollMode() {
-  console.log("activate")
   document.body.requestPointerLock()
   window.addEventListener("mousemove", handleMouseMovement, false)
 }
 
 function deActivateScrollMode() {
-  console.log("deactivate")
   window.removeEventListener("mousemove", handleMouseMovement, false)
   document.exitPointerLock()
 }
 
 function handleClick(e) {
   // 0: left, 1: middle, 2: right
+
+  // enabling mouse 0 click on activation button
+  if (isOptionsPage && e.target.id === "activation") {
+    return
+  }
+
   if (state.scrolling) {
     state.scrolling = false
 
@@ -109,8 +121,8 @@ function handleClick(e) {
     return
   } else {
     if (
-      e.button == setting.buttonActivation &&
-      (!setting.keyActivation || e[setting.keyActivation]) &&
+      e.button == setting.activation.input.key &&
+      setting.activation.modifiers.every(key => e.getModifierState(key)) &&
       !setting.nonActivation.some(key => e.getModifierState(key))
     ) {
       const path = e.composedPath()
@@ -172,7 +184,6 @@ function detachFeature() {
   removeEventListener("contextmenu", preventContextMenu, true)
 }
 
-console.log("main")
 // Init
 scrollTarget = document.documentElement
 
@@ -181,11 +192,9 @@ loadSetting(() => {
   // @ setting changed
   // @ enabled / disabled via BrowserAction
   chrome.storage.onChanged.addListener((changes, namespace) => {
-    console.log("storage.onchanged")
     if (changes.setting) {
       setting = changes.setting.newValue
     } else if (changes.enabled) {
-      console.log("enabled/disabled: ", changes.enabled.newValue)
       if (changes.enabled.newValue) {
         attachFeature()
       } else {
@@ -196,21 +205,20 @@ loadSetting(() => {
 
   // start
   chrome.storage.sync.get("enabled", ({ enabled }) => {
-    console.log("load enabled")
     if (enabled) {
-      console.log("enabled.")
       attachFeature()
 
-      if (setting.startInScroll.value) {
-        // TODO: check "main" scroll area.
-        // currently scrolltarget.
+      // DEV: Cancelled. start in scroll
+      // if (setting.startInScroll.value) {
+      //   // TODO: check "main" scroll area.
+      //   // currently scrolltarget.
 
-        //TODO: scrollTarget to set in [state]
-        scrollTarget = document.scrollingElement
-        console.log("startinscroll.")
-        state.scrolling = true
-        activateScrollMode()
-      }
+      //   //TODO: scrollTarget to set in [state]
+      //   scrollTarget = document.scrollingElement
+      //   console.log("startinscroll.")
+      //   state.scrolling = true
+      //   activateScrollMode()
+      // }
     }
   })
 })

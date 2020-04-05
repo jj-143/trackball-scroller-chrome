@@ -1,5 +1,7 @@
 // html script
 
+var storageSetting
+
 const modifiers = ["Control", "Alt", "Shift", "Meta"]
 
 function preventDefault(e) {
@@ -32,6 +34,11 @@ function stopCustomInput(isCancel = false) {
   document.getElementById("activation").classList.remove("editing")
 }
 
+// return setting object to display text e.g "Ctrl + Alt + Mouse 1"
+function activationToText(activation) {
+  return activation.modifiers.concat(activation.input.text).join(" + ")
+}
+
 function listenComboInput(e) {
   e.preventDefault()
   e.stopPropagation()
@@ -43,19 +50,43 @@ function listenComboInput(e) {
   } else if (e.key != "Escape") {
     var combos = []
 
+    // collect pressed modifiers
     for (mod of modifiers) {
       if (e.getModifierState(mod)) {
         combos.push(mod)
       }
     }
 
+    // collect pressed key OR mouse
+    var input
     if (e.type == "keydown") {
-      combos.push(e.key.toUpperCase())
+      input = {
+        key: e.key,
+        text: e.key.toUpperCase(),
+        type: "keydown"
+      }
     } else {
-      combos.push("Mouse " + (parseInt(e.button) + 1))
+      // combos.push("Mouse " + (parseInt(e.button) + 1))
+      // input = e.key.toUpperCase()
+      input = {
+        key: e.button,
+        text: "Mouse " + (parseInt(e.button) + 1),
+        type: "mouse"
+      }
     }
 
-    document.getElementById("activation").innerText = combos.join(" + ")
+    // set global activation
+    activation = {
+      modifiers: combos,
+      input
+    }
+
+    document.getElementById("activation").innerText = activationToText(
+      activation
+    )
+
+    setValue("activation", activation)
+
     checkMouse3Warning()
     return stopCustomInput()
   }
@@ -69,12 +100,8 @@ function makeTestArticles() {
     var p = document.createElement("p")
 
     h.innerText = "Article " + (i + 1)
-    p.innerText = `
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit
-      corrupti accusantium sunt! Quam, a illo reprehenderit eveniet
-      officiis minima, vitae molestias earum voluptatum repellendus
-      nostrum tempore modi aliquam, praesentium magnam.`
-
+    p.innerText =
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, cumque? Ea facilis velit accusantium error sapiente doloribus iure qui suscipit sunt, itaque non veniam ex harum assumenda praesentium magnam. Perferendis?"
     context.appendChild(h)
     context.appendChild(p)
   }
@@ -82,11 +109,14 @@ function makeTestArticles() {
 
 // END - html script
 
-var storageSetting
-
 function loadSetting() {
   chrome.storage.sync.get("setting", ({ setting }) => {
     storageSetting = setting
+
+    // activation
+    document.getElementById("activation").innerText = activationToText(
+      setting.activation
+    )
 
     // non-activation
     setting.nonActivation.forEach(key => {
@@ -98,7 +128,6 @@ function loadSetting() {
     // options
     for (key in setting) {
       if (setting[key].type === "options") {
-        console.log(key)
         document.querySelector(
           "input[type=checkbox][name=" + key + "]"
         ).checked = setting[key].value
@@ -119,15 +148,6 @@ function setValue(key, value) {
 }
 
 function attachEvents() {
-  // document.getElementById("mbutton-activation").addEventListener('change', e => {
-  //   const value = e.target.value
-  //   setValue('buttonActivation', value)
-  // })
-  // document.getElementById("key-activation").addEventListener('change', e => {
-  //   const value = e.target.value
-  //   setValue('keyActivation', value)
-  // })
-
   // non-activation
   document
     .querySelectorAll("#non-activation input[type=checkbox]")
@@ -181,9 +201,13 @@ function handleCancelPointerLock(e) {
 }
 
 function checkMouse3Warning() {
-  // TODO: if current activation == 'mouse3 only'
-  // this will both affect when changed to this OR start in this (user set to this.)
-  if (true) {
+  var activation = storageSetting.activation
+
+  if (
+    activation.modifiers.length == 0 &&
+    activation.input.type == "mouse" &&
+    activation.input.key == 2
+  ) {
     document.getElementById("warning-mouse3").classList.remove("hidden")
   } else {
     document.getElementById("warning-mouse3").classList.add("hidden")
