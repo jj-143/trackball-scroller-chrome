@@ -129,7 +129,7 @@ main {
 }
 
 #test-context > h2 {
-  margin: 1rem 0 0 0;
+  margin: 1rem 0;
 }
 
 #test-context > p {

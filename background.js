@@ -20,6 +20,5 @@ chrome.browserAction.onClicked.addListener(tab => {
   }
 
   chrome.storage.sync.set({ enabled }, () => {
-    // setting = initSetting
   })
 })
