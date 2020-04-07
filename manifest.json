@@ -1,7 +1,7 @@
 {
   "name": "Trackball Scroller",
   "version": "0.0.1",
-  "description": "Enables scroll mode using trackball",
+  "description": "Adds scroll mode to browse the web easily.",
   "permissions": ["*://*/*", "storage"],
   "background": {
     "scripts": ["background.js"],
