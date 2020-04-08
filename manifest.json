@@ -2,7 +2,7 @@
   "name": "Trackball Scroller",
   "version": "0.0.1",
   "description": "Adds scroll mode to browse the web easily.",
-  "permissions": ["*://*/*", "storage"],
+  "permissions": ["storage"],
   "background": {
     "scripts": ["background.js"],
     "persistent": false
