@@ -63,7 +63,7 @@ function listenComboInput(e) {
       input = {
         key: e.key,
         text: e.key.toUpperCase(),
-        type: "keydown"
+        type: "keydown",
       }
     } else {
       // combos.push("Mouse " + (parseInt(e.button) + 1))
@@ -71,14 +71,14 @@ function listenComboInput(e) {
       input = {
         key: e.button,
         text: "Mouse " + (parseInt(e.button) + 1),
-        type: "mouse"
+        type: "mouse",
       }
     }
 
     // set global activation
     activation = {
       modifiers: combos,
-      input
+      input,
     }
 
     document.getElementById("activation").innerText = activationToText(
@@ -119,7 +119,7 @@ function loadSetting() {
     )
 
     // non-activation
-    setting.nonActivation.forEach(key => {
+    setting.nonActivation.forEach((key) => {
       document.querySelector(
         "#non-activation input[name=" + key + "]"
       ).checked = true
@@ -141,7 +141,7 @@ function setValue(key, value) {
 
   storageSetting = {
     ...storageSetting,
-    [key]: value
+    [key]: value,
   }
 
   chrome.storage.sync.set({ setting: storageSetting })
@@ -151,31 +151,31 @@ function attachEvents() {
   // non-activation
   document
     .querySelectorAll("#non-activation input[type=checkbox]")
-    .forEach(elm => {
-      elm.addEventListener("change", e => {
+    .forEach((elm) => {
+      elm.addEventListener("change", (e) => {
         const newValue = Array.from(
           document.querySelectorAll(
             "#non-activation input[type=checkbox]:checked"
           )
-        ).map(checked => checked.name)
+        ).map((checked) => checked.name)
         setValue("nonActivation", newValue)
       })
     })
 
   // options
-  document.querySelectorAll(".checkbox input[type=checkbox]").forEach(elm => {
-    elm.addEventListener("change", e => {
+  document.querySelectorAll(".checkbox input[type=checkbox]").forEach((elm) => {
+    elm.addEventListener("change", (e) => {
       const key = elm.name
       const value = elm.checked
       setValue(key, {
         type: "options",
-        value
+        value,
       })
     })
   })
 
   // custom input button event
-  document.getElementById("activation").addEventListener("click", e => {
+  document.getElementById("activation").addEventListener("click", (e) => {
     document.getElementById("activation").disabled = true
 
     document.body.requestPointerLock()

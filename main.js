@@ -1,66 +1,17 @@
-var config = {
-  version: "0.0.1-fix-windows-01"
-}
-
 const isOptionsPage =
   location.href.search("^chrome-extension://.*/options.html$") === 0
-
-// TODO: maybe move to background.
-// default Setting.
-var initSetting = {
-  // default Settings
-  naturalScrolling: {
-    type: "options",
-    value: true
-  },
-
-  // startInScroll: {
-  //   type: "options",
-  //   value: false
-  // },
-
-  activation: {
-    modifiers: [],
-    input: {
-      key: 1,
-      text: "Mouse 2",
-      type: "mouse"
-    }
-  },
-  nonActivation: []
-}
 
 // copy of chrome.setting; from option.
 var setting
 
 // 'local state' - state for each tab OR page
 var state = {
-  scrolling: false
+  scrolling: false,
 }
 
 function loadSetting(cb) {
   chrome.storage.sync.get("setting", ({ setting: storageSetting }) => {
-    // if not set, sync set initial setting
-    if (!storageSetting) {
-      chrome.storage.sync.set({ setting: initSetting }, () => {
-        setting = initSetting
-      })
-    } else {
-      setting = storageSetting
-
-      // set new setting values
-      var migration = false
-      for (var key in initSetting) {
-        if (!setting[key]) {
-          setting[key] = initSetting[key]
-          migration = true
-        }
-      }
-
-      if (migration) {
-        chrome.storage.sync.set({ setting })
-      }
-    }
+    setting = storageSetting
 
     if (cb) {
       cb()
@@ -122,11 +73,11 @@ function handleClick(e) {
   } else {
     if (
       e.button == setting.activation.input.key &&
-      setting.activation.modifiers.every(key => e.getModifierState(key)) &&
-      !setting.nonActivation.some(key => e.getModifierState(key))
+      setting.activation.modifiers.every((key) => e.getModifierState(key)) &&
+      !setting.nonActivation.some((key) => e.getModifierState(key))
     ) {
       const path = e.composedPath()
-      anchor = path.find(elm => elm.tagName == "A")
+      anchor = path.find((elm) => elm.tagName == "A")
 
       if (anchor && anchor.href) {
         return
