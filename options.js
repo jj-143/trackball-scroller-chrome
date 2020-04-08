@@ -133,6 +133,8 @@ function loadSetting() {
         ).checked = setting[key].value
       }
     }
+
+    checkMouse3Warning()
   })
 }
 
@@ -218,4 +220,3 @@ makeTestArticles()
 
 loadSetting()
 attachEvents()
-// checkMouse3Warning()
