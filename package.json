@@ -1,0 +1,23 @@
+{
+  "name": "trackball-scroller",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  },
+  "scripts": {
+    "build": "parcel build *.js *.html *.css --no-source-maps && cp -ru ./images ./dist/images && cp -u ./manifest.json ./dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/jj-143/trackball-scroller.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/jj-143/trackball-scroller/issues"
+  },
+  "homepage": "https://gitlab.com/jj-143/trackball-scroller#readme"
+}
