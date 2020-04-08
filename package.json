@@ -8,7 +8,7 @@
     "parcel-bundler": "^1.12.4"
   },
   "scripts": {
-    "build": "parcel build *.js *.html *.css --no-source-maps && cp -ru ./images ./dist/images && cp -u ./manifest.json ./dist/"
+    "build": "parcel build *.js *.html *.css --no-source-maps && cp -ru ./images ./dist/images && cp -u ./manifest.json *.ttf icon.png ./dist/"
   },
   "repository": {
     "type": "git",
