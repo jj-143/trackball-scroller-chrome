@@ -148,8 +148,8 @@ button#activation {
   appearance: none;
   padding: 0.5em 0.75em;
   font-size: 1.125rem;
-  /* font-weight: 700; */
-  font-variation-settings: 'wght' 700;
+  font-weight: 700;
+  /* font-variation-settings: 'wght' 700; */
   color: #c6f1e9;
   user-select: none;
   margin-right: 1rem;
