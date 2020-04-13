@@ -55,14 +55,14 @@ chrome.browserAction.onClicked.addListener((tab) => {
 
     if (newEnabled) {
       chrome.browserAction.setIcon({
-        path: "/images/icon-c1-128.png",
+        path: "./static/icon-c1-128.png",
       })
       chrome.browserAction.setTitle({
         title: "",
       })
     } else {
       chrome.browserAction.setIcon({
-        path: "/images/icon-c1-128-outline.png",
+        path: "./static/icon-c1-128-outline.png",
       })
       chrome.browserAction.setTitle({
         title: "Trackball Scroller (disabled)",
