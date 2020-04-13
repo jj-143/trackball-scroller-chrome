@@ -98,7 +98,7 @@ function handleClick(e) {
         if (
           (getComputedStyle(p).overflowY == "auto" ||
             getComputedStyle(p).overflowY == "scroll") &&
-          p.clientHeight != p.scrollHeight
+          p.clientHeight < p.scrollHeight
         ) {
           // change to HTML only scrollingElement is also HTML
           if (
