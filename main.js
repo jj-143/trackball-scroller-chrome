@@ -88,7 +88,8 @@ function handleClick(e) {
       e.stopPropagation()
       state.scrolling = true
 
-      scrollTarget = document.documentElement
+      // default target if no specific area.
+      scrollTarget = document.scrollingElement
 
       for (var i = 0; i < path.length - 2; i++) {
         var p = path[i]
