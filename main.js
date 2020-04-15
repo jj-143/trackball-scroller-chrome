@@ -8,6 +8,20 @@ var setting
 var state = {
   scrolling: false,
   scrollTarget: null,
+  smoothScrollElements: [],
+}
+
+function _stripSmoothScroll(elm) {
+  elm.style.scrollBehavior = "auto"
+  state.smoothScrollElements.push(elm)
+}
+
+function _reverseSmoothScroll() {
+  if (state.smoothScrollElements.length) {
+    state.smoothScrollElements.forEach((elm) => (elm.style = ""))
+
+    state.smoothScrollElements = []
+  }
 }
 
 function _isOnViewport(elm) {
@@ -38,13 +52,35 @@ function _isScrollable(elm) {
   }
 }
 
+function __computeVisibleArea(elm) {
+  var rect = elm.getBoundingClientRect()
+
+  var visibleLeft = Math.max(rect.left, 0)
+  var visibleRight = Math.min(rect.right, window.innerWidth)
+
+  var visibleTop = Math.max(rect.top, 0)
+  var visibleBottom = Math.min(rect.bottom, window.innerHeight)
+
+  return (visibleRight - visibleLeft) * (visibleBottom - visibleTop)
+}
+
 function _searchTarget() {
   var found = []
 
+  const searchExcludes = ["A", "SPAN", "P", "H1", "H2", "I"]
   document.body.querySelectorAll("*").forEach((elm) => {
-    if (_isScrollable(elm).value && _isOnViewport(elm)) {
+    if (
+      !searchExcludes.includes(elm.tagName) &&
+      _isScrollable(elm).value &&
+      _isOnViewport(elm)
+    ) {
       found.push(elm)
     }
+  })
+
+  // sort by screen area, desc
+  found.sort((a, b) => {
+    return __computeVisibleArea(b) - __computeVisibleArea(a)
   })
 
   return found
@@ -112,11 +148,33 @@ function captureClick(e) {
 }
 
 function activateScrollMode() {
+  // strip smooth scroll.
+  if (
+    state.scrollTarget == window ||
+    state.scrollTarget.tagName == "BODY" ||
+    state.scrollTarget.tagName == "HTML"
+  ) {
+    if (
+      getComputedStyle(document.documentElement).scrollBehavior === "smooth"
+    ) {
+      _stripSmoothScroll(document.documentElement)
+    }
+
+    if (getComputedStyle(document.body).scrollBehavior === "smooth") {
+      _stripSmoothScroll(document.body)
+    }
+  } else {
+    if (getComputedStyle(state.scrollTarget).scrollBehavior === "smooth") {
+      _stripSmoothScroll(state.scrollTarget)
+    }
+  }
+
   document.body.requestPointerLock()
   window.addEventListener("mousemove", handleMouseMovement, false)
 }
 
 function deActivateScrollMode() {
+  _reverseSmoothScroll()
   window.removeEventListener("mousemove", handleMouseMovement, false)
   document.exitPointerLock()
 }
