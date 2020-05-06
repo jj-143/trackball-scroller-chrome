@@ -222,3 +222,12 @@ input#activation + button {
 #warning-mouse3.hidden {
   display: none;
 }
+
+
+/* temp */
+
+#option-sensitivity > button {
+  width: 80px;
+  height: 80px;
+
+}

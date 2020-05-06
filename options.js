@@ -95,7 +95,7 @@ function listenComboInput(e) {
 function makeTestArticles() {
   const context = document.getElementById("test-context")
 
-  for (var i = 0; i < 30; i++) {
+  for (var i = 0; i < 60; i++) {
     var h = document.createElement("h2")
     var p = document.createElement("p")
 
@@ -125,6 +125,10 @@ function loadSetting() {
       ).checked = true
     })
 
+    // sensitivity
+    document.getElementById("sensitivity-value").innerText =
+      setting.sensitivityStep
+
     // options
     for (key in setting) {
       if (setting[key].type === "options") {
@@ -138,7 +142,7 @@ function loadSetting() {
   })
 }
 
-function setValue(key, value) {
+function setValue(key, value, cb) {
   // only set value, change ext's setting is up to caller to this.
 
   storageSetting = {
@@ -146,7 +150,17 @@ function setValue(key, value) {
     [key]: value,
   }
 
-  chrome.storage.sync.set({ setting: storageSetting })
+  chrome.storage.sync.set({ setting: storageSetting }, cb)
+}
+
+// multiple values
+function setValueObject(obj, cb) {
+  storageSetting = {
+    ...storageSetting,
+    ...obj,
+  }
+
+  chrome.storage.sync.set({ setting: storageSetting }, cb)
 }
 
 function attachEvents() {
@@ -173,6 +187,36 @@ function attachEvents() {
         type: "options",
         value,
       })
+    })
+  })
+
+  document.querySelectorAll("#option-sensitivity > button").forEach((elm) => {
+    elm.addEventListener("click", (e) => {
+      console.log(storageSetting)
+      // TODO: make value to be integer "steps" and interpret with multiplier .5 when applying
+
+      var newSStep =
+        parseFloat(storageSetting.sensitivityStep) + parseInt(elm.value)
+
+      var newSValue =
+        newSStep <= 10
+          ? newSStep * 0.1
+          : newSStep < 15
+          ? 1 + (newSStep - 10) * 0.1
+          : 1.5 + (newSStep - 15) * 0.3
+
+      if (newSStep >= 1 && newSStep <= 20) {
+        setValueObject(
+          {
+            sensitivityValue: newSValue,
+            sensitivityStep: newSStep,
+          },
+          () => {
+            const s = storageSetting.sensitivityStep
+            document.getElementById("sensitivity-value").innerText = s
+          }
+        )
+      }
     })
   })
 

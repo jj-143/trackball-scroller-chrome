@@ -136,7 +136,10 @@ function handleMouseMovement(e) {
   }
   if (e.movementY == 0) return
 
-  var y = e.movementY * (setting.naturalScrolling.value ? -1 : 1)
+  var y =
+    e.movementY *
+    (setting.naturalScrolling.value ? -1 : 1) *
+    setting.sensitivityValue
   state.scrollTarget.scrollBy(0, y)
 }
 

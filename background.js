@@ -1,9 +1,13 @@
 // default Setting.
 const initSetting = {
+  // options: checkboxes.
   naturalScrolling: {
     type: "options",
     value: true,
   },
+
+  sensitivityStep: 10,
+  sensitivityValue: 1,
 
   // startInScroll: {
   //   type: "options",

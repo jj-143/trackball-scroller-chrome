@@ -1,7 +1,7 @@
 {
   "name": "Trackball Scroller",
-  "version": "0.0.2",
-  "description": "Make your trackball into a scroller ball",
+  "version": "0.0.2.99",
+  "description": "Scroll with your trackball.",
   "permissions": ["storage"],
   "background": {
     "scripts": ["background.js"],
