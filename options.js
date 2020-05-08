@@ -16,7 +16,7 @@ function stopCustomInput(isCancel = false) {
   if (isCancel) {
     // TODO - show prev combo
     // config.default
-    document.getElementById("activation").innertext = "Mouse 1"
+    btnActivation.innertext = "Mouse 1"
   }
 
   // reset from combo input mode
@@ -30,8 +30,8 @@ function stopCustomInput(isCancel = false) {
   removeEventListener("keydown", listenComboInput, true)
   removeEventListener("mousedown", listenComboInput, true)
 
-  document.getElementById("activation").disabled = false
-  document.getElementById("activation").classList.remove("editing")
+  btnActivation.disabled = false
+  btnActivation.classList.remove("editing")
 }
 
 // return setting object to display text e.g "Ctrl + Alt + Mouse 1"
@@ -81,9 +81,7 @@ function listenComboInput(e) {
       input,
     }
 
-    document.getElementById("activation").innerText = activationToText(
-      activation
-    )
+    btnActivation.innerText = activationToText(activation)
 
     setValue("activation", activation)
 
@@ -114,9 +112,7 @@ function loadSetting() {
     storageSetting = setting
 
     // activation
-    document.getElementById("activation").innerText = activationToText(
-      setting.activation
-    )
+    btnActivation.innerText = activationToText(setting.activation)
 
     // non-activation
     setting.nonActivation.forEach((key) => {
@@ -190,7 +186,7 @@ function attachEvents() {
     })
   })
 
-  document.querySelectorAll("#option-sensitivity > button").forEach((elm) => {
+  document.querySelectorAll("#option-sensitivity button").forEach((elm) => {
     elm.addEventListener("click", (e) => {
       console.log(storageSetting)
       // TODO: make value to be integer "steps" and interpret with multiplier .5 when applying
@@ -221,13 +217,13 @@ function attachEvents() {
   })
 
   // custom input button event
-  document.getElementById("activation").addEventListener("click", (e) => {
-    document.getElementById("activation").disabled = true
+  btnActivation.addEventListener("click", (e) => {
+    btnActivation.disabled = true
 
     document.body.requestPointerLock()
 
-    document.getElementById("activation").innerText = "hit combo"
-    document.getElementById("activation").classList.add("editing")
+    btnActivation.innerText = "hit combo"
+    btnActivation.classList.add("editing")
 
     stopContextMenu()
 
@@ -254,11 +250,17 @@ function checkMouse3Warning() {
     activation.input.type == "mouse" &&
     activation.input.key == 2
   ) {
-    document.getElementById("warning-mouse3").classList.remove("hidden")
+    document.querySelector(".option#activation").classList.add("warning-mouse3")
+    // document.getElementById("warning-mouse3").classList.remove("hidden")
   } else {
-    document.getElementById("warning-mouse3").classList.add("hidden")
+    document
+      .querySelector(".option#activation")
+      .classList.remove("warning-mouse3")
+    // document.getElementById("warning-mouse3").classList.add("hidden")
   }
 }
+
+const btnActivation = document.querySelector("button.activation")
 
 makeTestArticles()
 

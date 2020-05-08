@@ -21,10 +21,10 @@
     </header>
     <main>
       <div id="settings">
-        <div class="option" style="position: relative;">
+        <div class="option" id="activation" style="position: relative;">
           <label class="control">activation</label>
           <div style="display: flex; align-items: center;">
-            <button id="activation">Mouse 1</button>
+            <button class="activation">Mouse 1</button>
           </div>
           <span id="warning-mouse3" class="hidden" style="position: absolute;">
             To use context menu, make sure to tick any modifier keys below.
@@ -32,7 +32,7 @@
         </div>
         <div class="option">
           <label class="control"
-            >don't activate if pressed.. (any of below)</label
+            >don't activate if pressed.. (any)</label
           >
 
           <div class="chips" id="non-activation">
@@ -80,10 +80,12 @@
         </div>
 
         <div class="option" id="option-sensitivity">
-          <label class="control">sensitivity</label>
-          <button value="-1">-</button>
-          <span id="sensitivity-value">1</span>
-          <button value="1">+</button>
+          <label class="control">sensitivity (1 - 20)</label>
+          <div>
+            <button class="push" value="-1">-</button>
+            <span id="sensitivity-value">1</span>
+            <button class="push" value="1">+</button>
+          </div>
         </div>
 
         <div class="option">

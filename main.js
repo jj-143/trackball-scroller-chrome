@@ -219,7 +219,7 @@ function handleClick(e) {
   // 0: left, 1: middle, 2: right
 
   // enabling mouse 0 click on activation button
-  if (isOptionsPage && e.target.id === "activation") {
+  if (isOptionsPage && e.target.className === "activation") {
     return
   }
 
