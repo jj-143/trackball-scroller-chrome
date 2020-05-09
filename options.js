@@ -14,9 +14,7 @@ function stopContextMenu() {
 
 function stopCustomInput(isCancel = false) {
   if (isCancel) {
-    // TODO - show prev combo
-    // config.default
-    btnActivation.innertext = "Mouse 1"
+    btnActivation.innerText = activationToText(storageSetting.activation)
   }
 
   // reset from combo input mode
@@ -188,9 +186,6 @@ function attachEvents() {
 
   document.querySelectorAll("#option-sensitivity button").forEach((elm) => {
     elm.addEventListener("click", (e) => {
-      console.log(storageSetting)
-      // TODO: make value to be integer "steps" and interpret with multiplier .5 when applying
-
       var newSStep =
         parseFloat(storageSetting.sensitivityStep) + parseInt(elm.value)
 
@@ -251,12 +246,10 @@ function checkMouse3Warning() {
     activation.input.key == 2
   ) {
     document.querySelector(".option#activation").classList.add("warning-mouse3")
-    // document.getElementById("warning-mouse3").classList.remove("hidden")
   } else {
     document
       .querySelector(".option#activation")
       .classList.remove("warning-mouse3")
-    // document.getElementById("warning-mouse3").classList.add("hidden")
   }
 }
 
