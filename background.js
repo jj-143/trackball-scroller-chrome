@@ -38,18 +38,14 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     })
   } else if (details.reason === "update") {
-    // TODO: handle new settings variable
-    // if there's new version includes new setting variables, include it.
-    // var migration = false
-    // for (var key in setting) {
-    //   if (!setting[key]) {
-    //     setting[key] = setting[key]
-    //     migration = true
-    //   }
-    // }
-    // if (migration) {
-    //   chrome.storage.sync.set({ setting })
-    // }
+    chrome.storage.sync.get("setting", ({ setting }) => {
+      const migrated = {
+        ...JSON.parse(JSON.stringify(initSetting)),
+        ...setting,
+      }
+
+      chrome.storage.sync.set({ setting: migrated }, (newS) => {})
+    })
   }
 })
 
