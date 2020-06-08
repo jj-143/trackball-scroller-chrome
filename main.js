@@ -19,7 +19,6 @@ function _stripSmoothScroll(elm) {
 function _reverseSmoothScroll() {
   if (state.smoothScrollElements.length) {
     state.smoothScrollElements.forEach((elm) => (elm.style = ""))
-
     state.smoothScrollElements = []
   }
 }
@@ -27,17 +26,12 @@ function _reverseSmoothScroll() {
 function _isOnViewport(elm) {
   var rect = elm.getBoundingClientRect()
 
-  // or document.documentElement.clientWidth. (check browser support; chrome supports below)
-  var viewportWidth = window.innerWidth
-  var viewportHeight = window.innerHeight
-
+  // window.innerWidth or document.documentElement.clientWidth. (check browser support; chrome supports below)
   return (
-    rect.width &&
-    rect.height &&
-    ((rect.left < 0 && rect.left + rect.width > 0) ||
-      (0 <= rect.left && rect.left < viewportWidth)) &&
-    ((rect.top < 0 && rect.top + rect.height > 0) ||
-      (0 <= rect.top && rect.top < viewportHeight))
+    (rect.left * rect.right < 0 ||
+      (rect.right > 0 && rect.right < window.innerWidth)) &&
+    (rect.top * rect.bottom < 0 ||
+      (rect.bottom > 0 && rect.bottom < window.innerHeight))
   )
 }
 
@@ -53,35 +47,29 @@ function _isScrollable(elm) {
 }
 
 function __computeVisibleArea(elm) {
+  // elm is entirely / partially visible on the viewport
   var rect = elm.getBoundingClientRect()
-
   var visibleLeft = Math.max(rect.left, 0)
   var visibleRight = Math.min(rect.right, window.innerWidth)
-
   var visibleTop = Math.max(rect.top, 0)
   var visibleBottom = Math.min(rect.bottom, window.innerHeight)
-
   return (visibleRight - visibleLeft) * (visibleBottom - visibleTop)
 }
 
 function _searchTarget() {
-  var found = []
+  const excludes = ["A", "SPAN", "P", "H1", "H2", "I"]
 
-  const searchExcludes = ["A", "SPAN", "P", "H1", "H2", "I"]
-  document.body.querySelectorAll("*").forEach((elm) => {
-    if (
-      !searchExcludes.includes(elm.tagName) &&
-      _isScrollable(elm).value &&
-      _isOnViewport(elm)
-    ) {
-      found.push(elm)
-    }
-  })
+  var found = document.body
+    .querySelectorAll("*")
+    .filter(
+      (elm) =>
+        !excludes.includes(elm.tagName) &&
+        _isScrollable(elm).value &&
+        _isOnViewport(elm)
+    )
 
-  // sort by screen area, desc
-  found.sort((a, b) => {
-    return __computeVisibleArea(b) - __computeVisibleArea(a)
-  })
+  // sort by screen area, descending order
+  found.sort((a, b) => __computeVisibleArea(b) - __computeVisibleArea(a))
 
   return found
 }
@@ -90,15 +78,17 @@ function autoTargetScrollingElement() {
   var diffHTML =
     document.documentElement.scrollHeight -
     document.documentElement.clientHeight
-
-  var styleHTML = getComputedStyle(document.documentElement).overflowY
-
   var diffBODY = document.body.scrollHeight - document.body.clientHeight
-  var styleBODY = getComputedStyle(document.body).overflowY
+  var overflowHTML = getComputedStyle(document.documentElement).overflowY
+  var overflowBODY = getComputedStyle(document.body).overflowY
 
+  // "overflow: hidden" with difference in height meaning
+  // there's modal-like content acting as "body".
+  // (e.g click post on reddit; different from comment page)
+  // so find that element (usually the biggest one)
   if (
-    ((diffHTML != 0 || diffBODY != 0) && styleHTML === "hidden") ||
-    styleBODY === "hidden"
+    ((diffHTML != 0 || diffBODY != 0) && overflowHTML === "hidden") ||
+    overflowBODY === "hidden"
   ) {
     var found = _searchTarget()
 
@@ -107,9 +97,12 @@ function autoTargetScrollingElement() {
       target = found[0]
     }
   } else if (diffHTML == 0 && diffBODY == 0) {
-    // no scroll (options) -> 바디에서 찾고 풀Width? 아니면 말기.
+    // the page is "full page" (no scroll)
+    // NOTE: there can be scollable elements but it's not the "intended" content.
+    // so don't search target, for now.
     target = null
   } else {
+    // natural scroll target
     target = window
   }
 
