@@ -12,6 +12,21 @@ function stopContextMenu() {
   addEventListener("contextmenu", preventDefault, true)
 }
 
+function makeTestArticles() {
+  const context = document.getElementById("test-context")
+
+  for (var i = 0; i < 60; i++) {
+    var h = document.createElement("h2")
+    var p = document.createElement("p")
+
+    h.innerText = "Article " + (i + 1)
+    p.innerText =
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, cumque? Ea facilis velit accusantium error sapiente doloribus iure qui suscipit sunt, itaque non veniam ex harum assumenda praesentium magnam. Perferendis?"
+    context.appendChild(h)
+    context.appendChild(p)
+  }
+}
+
 function stopCustomInput(isCancel = false) {
   if (isCancel) {
     btnActivation.innerText = activationToText(storageSetting.activation)
@@ -42,65 +57,40 @@ function listenComboInput(e) {
   e.stopPropagation()
   e.stopImmediatePropagation()
 
-  if (e.type == "keydown" && modifiers.indexOf(e.key) != -1) {
-    // ignore only modifier
-    return
-  } else if (e.key != "Escape") {
-    var combos = []
+  // ignore only modifier
+  if (e.type === "keydown" && modifiers.indexOf(e.key) != -1) return
+  // ignore esc - handled by PointerLock (this function might already be canceled)
+  if (e.key === "Escape") return
 
-    // collect pressed modifiers
-    for (mod of modifiers) {
-      if (e.getModifierState(mod)) {
-        combos.push(mod)
-      }
+  var input
+
+  if (e.type == "keydown") {
+    input = {
+      key: e.key,
+      text: e.key.toUpperCase(),
+      type: "keydown",
     }
-
-    // collect pressed key OR mouse
-    var input
-    if (e.type == "keydown") {
-      input = {
-        key: e.key,
-        text: e.key.toUpperCase(),
-        type: "keydown",
-      }
-    } else {
-      // combos.push("Mouse " + (parseInt(e.button) + 1))
-      // input = e.key.toUpperCase()
-      input = {
-        key: e.button,
-        text: "Mouse " + (parseInt(e.button) + 1),
-        type: "mouse",
-      }
+  } else {
+    input = {
+      key: e.button,
+      text: "Mouse " + (parseInt(e.button) + 1),
+      type: "mouse",
     }
-
-    // set global activation
-    activation = {
-      modifiers: combos,
-      input,
-    }
-
-    btnActivation.innerText = activationToText(activation)
-
-    setValue("activation", activation)
-
-    checkMouse3Warning()
-    return stopCustomInput()
   }
-}
 
-function makeTestArticles() {
-  const context = document.getElementById("test-context")
+  var modifiersPressed = modifiers.filter((m) => e.getModifierState(m))
 
-  for (var i = 0; i < 60; i++) {
-    var h = document.createElement("h2")
-    var p = document.createElement("p")
-
-    h.innerText = "Article " + (i + 1)
-    p.innerText =
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, cumque? Ea facilis velit accusantium error sapiente doloribus iure qui suscipit sunt, itaque non veniam ex harum assumenda praesentium magnam. Perferendis?"
-    context.appendChild(h)
-    context.appendChild(p)
+  // set global activation
+  var activation = {
+    input,
+    modifiers: modifiersPressed,
   }
+  setValue("activation", activation)
+  stopCustomInput()
+
+  // update UI
+  btnActivation.innerText = activationToText(activation)
+  checkMouse3Warning()
 }
 
 // END - html script
