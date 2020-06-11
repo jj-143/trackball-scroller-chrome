@@ -1,3 +1,6 @@
+const { connect } = require("./utils/reload")
+
+connect()
 // default Setting.
 const initSetting = {
   // options: checkboxes.
@@ -28,6 +31,11 @@ const initSetting = {
 // initial enabled setting
 var enabled = true
 
+console.log("background")
+chrome.runtime.onUpdateAvailable.addListener((details) => {
+  console.log("onupdatea", detail)
+})
+
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
     chrome.storage.sync.set({ setting: initSetting, enabled }, () => {
@@ -38,6 +46,10 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     })
   } else if (details.reason === "update") {
+    // dev : open options page
+    if (chrome.runtime.getManifest().version.split(".").length === 4) {
+      chrome.runtime.openOptionsPage()
+    }
     chrome.storage.sync.get("setting", ({ setting }) => {
       const migrated = {
         ...JSON.parse(JSON.stringify(initSetting)),

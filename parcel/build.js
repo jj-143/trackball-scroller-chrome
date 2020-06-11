@@ -1,8 +1,15 @@
 const Bundler = require("parcel-bundler")
 const Path = require("path")
 const fs = require("fs-extra")
+const WebSocket = require("ws")
 
-const outDir = "build"
+const WS_PORT = "9992"
+var outDir
+
+function getOutDir({ debug = false }) {
+  return debug ? "debug" : "build"
+}
+
 const entryFiles = [
   "src/main.js",
   "src/background.js",
@@ -12,7 +19,6 @@ const entryFiles = [
 const statics = ["src/manifest.json", "src/images"]
 
 const options = {
-  outDir: outDir,
   sourceMaps: false,
   watch: false,
 }
@@ -23,10 +29,19 @@ function clean() {
 
 function build({ watch = false }) {
   const entries = entryFiles.map((f) => Path.join(__dirname, "..", f))
-  const bundler = new Bundler(entries, { ...options, watch: true })
+  const bundler = new Bundler(entries, { ...options, outDir, watch: watch })
+  const sockets = []
+
   if (watch) {
+    const server = new WebSocket.Server({ port: WS_PORT })
+    server.on("connection", (ws) => {
+      sockets.push(ws)
+    })
+
     bundler.on("buildEnd", () => {
-      //TODO: [reload code here].
+      sockets.forEach((ws) => {
+        ws.send(JSON.stringify({ message: "reload" }))
+      })
     })
   }
   return bundler.bundle()
@@ -43,11 +58,13 @@ function copyStatic() {
 function run() {
   const args = process.argv.slice(2)
 
-  if (args.includes("--watch")) {
+  if (args.includes("--debug")) {
+    outDir = getOutDir({ debug: true })
     clean()
       .then(() => build({ watch: true }))
       .then(copyStatic)
   } else {
+    outDir = getOutDir({ debug: false })
     clean().then(build).then(copyStatic)
   }
 }

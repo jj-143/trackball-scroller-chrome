@@ -1,27 +1,21 @@
 {
   "name": "trackball-scroller",
-  "version": "0.0.3.1",
+  "version": "0.3.1",
   "description": "",
   "dependencies": {
     "fs-extra": "^9.0.1"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4"
+    "parcel-bundler": "^1.12.4",
+    "ws": "^7.3.0"
   },
   "scripts": {
+    "dev": "node parcel/build.js --debug",
     "build": "node ./parcel/build.js",
     "build:prod": "npm run build",
     "postbuild:prod": "npm run zip",
     "zip": "cd ./dist && zip -r ../Trackball-Scroller.zip ./ && cd .."
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@gitlab.com/jj-143/trackball-scroller.git"
-  },
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/jj-143/trackball-scroller/issues"
-  },
-  "homepage": "https://gitlab.com/jj-143/trackball-scroller#readme"
+  "license": "ISC"
 }

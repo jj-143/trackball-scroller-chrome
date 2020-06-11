@@ -1,3 +1,5 @@
+console.log("main", new Date())
+
 const isOptionsPage =
   location.href.search("^chrome-extension://.*/options.html$") === 0
 
