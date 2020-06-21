@@ -79,6 +79,12 @@ export default class Scroller {
   }
 
   handleMouseMove(e) {
+    // handles losing PointerLock.
+    // `document.pointerLockElement === null`
+    // when user hit ESC / focus moved to other window / tab
+    if (!document.pointerLockElement && this.isActivated) {
+      return this.deactivate()
+    }
     this.scrollTarget = document.documentElement
     if (this.scrollTarget) {
       const dy = e.movementY * -1

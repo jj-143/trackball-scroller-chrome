@@ -236,6 +236,33 @@ describe("activation by mouse", () => {
     document.dispatchEvent(evt)
     expect(scroller.isActivated).toBe(false)
   })
+
+  it("should be deactivated after losing PointerLock", () => {
+    const scroller = new Scroller()
+    scroller.enable()
+    let activation = {
+      type: "mouse",
+      button: 0,
+      mods: new Set(),
+      nonActivation: new Set(),
+    }
+    scroller.activation = activation
+
+    let evt = new MouseEvent("mousedown", {
+      button: 0,
+    })
+    document.dispatchEvent(evt)
+
+    // mocking ESC or Tab switch or etc.
+    document.pointerLockElement = null
+
+    evt = new MouseEvent("mousemove", {
+      button: 0,
+    })
+    document.dispatchEvent(evt)
+
+    expect(scroller.isActivated).toBe(false)
+  })
 })
 
 describe("scroll", () => {
