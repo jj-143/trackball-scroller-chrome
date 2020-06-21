@@ -42,6 +42,7 @@ export default class Scroller {
   activate() {
     if (this.isEnabled) {
       this.isActivated = true
+      document.documentElement.requestPointerLock()
       document.removeEventListener("mousedown", this.handleMouseDown)
       document.addEventListener("mousedown", this.handleClickCancel)
       document.addEventListener("mousemove", this.handleMouseMove)
@@ -49,8 +50,7 @@ export default class Scroller {
   }
   deactivate() {
     this.isActivated = false
-    // document.exitPointerLock()
-
+    document.exitPointerLock()
     document.addEventListener("mousedown", this.handleMouseDown)
     document.removeEventListener("mousedown", this.handleClickCancel)
     document.removeEventListener("mousemove", this.handleMouseMove)

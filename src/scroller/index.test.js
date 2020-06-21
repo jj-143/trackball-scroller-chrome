@@ -1,8 +1,7 @@
 import Scroller from "."
 
-// TODO:
-// add mock function requestPointerLock(), exitPointerLock()
-// jsdom seems don't have these.
+document.documentElement.requestPointerLock = jest.fn()
+document.exitPointerLock = jest.fn()
 
 describe("enable / disable", () => {
   it("should be initially disabled", () => {
@@ -240,8 +239,7 @@ describe("activation by mouse", () => {
 })
 
 describe("scroll", () => {
-  // TODO: jsdom doesn't seem to support PointerLock
-  // dom simulation needed for test even if it does.
+  // TODO: dom simulation needed for test
   xit("should scroll", () => {
     const scroller = new Scroller()
     scroller.enable()
