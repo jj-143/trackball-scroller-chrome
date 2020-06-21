@@ -1,4 +1,6 @@
 node_modules
-build/
-debug/
-.cache/
+build
+debug
+dist
+.cache
+coverage

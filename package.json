@@ -6,6 +6,10 @@
     "fs-extra": "^9.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "babel-jest": "^26.0.1",
+    "jest": "^26.0.1",
     "parcel-bundler": "^1.12.4",
     "ws": "^7.3.0"
   },
@@ -14,7 +18,10 @@
     "build": "node ./parcel/build.js",
     "build:prod": "npm run build",
     "postbuild:prod": "npm run zip",
-    "zip": "cd ./dist && zip -r ../Trackball-Scroller.zip ./ && cd .."
+    "zip": "cd ./dist && zip -r ../Trackball-Scroller.zip ./ && cd ..",
+    "dev-test": "parcel ./src/tests/test.html",
+    "test": "jest --config=./jest.config.js",
+    "test:watch": "jest --watch --config=./jest.config.js"
   },
   "author": "",
   "license": "ISC"
