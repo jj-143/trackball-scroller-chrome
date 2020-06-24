@@ -11,8 +11,12 @@ function getOutDir({ debug = false }) {
 }
 
 const entryFiles = [
-  "src/main.js",
-  "src/background.js",
+  // old - 0.0.3
+  // "src/main.js",
+  // "src/background.js",
+  // new - 1.0.0
+  "src/background/index.ts",
+  "src/tests/inject.ts",
   "src/options/options.html",
 ]
 

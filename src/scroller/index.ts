@@ -1,21 +1,26 @@
+/// <reference path="../definitions.d.ts" />
 import { parseMouseInput } from "./utils/parseInput"
 
 export default class Scroller {
-  // TODO: method for setting activation
+  isEnabled: boolean
+  isActivated: boolean
+  activation: Activation
+  scrollTarget: HTMLElement
+  isConfigUpdated: boolean
+
   constructor() {
     this.isEnabled = false
     this.isActivated = false
-    this.activation = {
-      type: "mouse",
-      button: 1,
-      mods: new Set(),
-      nonActivation: new Set(),
-    }
+    this.activation = null
     this.scrollTarget = null
-
-    this.handleMouseDown = this.handleMouseDown.bind(this)
+    this.isConfigUpdated = false
+    this.checkTrigger = this.checkTrigger.bind(this)
     this.handleMouseMove = this.handleMouseMove.bind(this)
     this.handleClickCancel = this.handleClickCancel.bind(this)
+  }
+
+  setActivation(activation: Activation) {
+    this.activation = activation
   }
 
   enable() {
@@ -23,19 +28,11 @@ export default class Scroller {
     // it needs to check [isEnabled] first.
     // same with [disable()]
     this.isEnabled = true
-    document.addEventListener("mousedown", this.handleMouseDown)
+    document.addEventListener("mousedown", this.checkTrigger)
   }
   disable() {
-    // should it deactivate also?
-    // in order to disable it by Action Button (currently only way),
-    // need a mouse to do it. Or there's a way to do it so clean up here.
-
-    // [check needed.]
-    // this is just internal "disable state" but disabling in
-    // browser's extension manager and then enabling it probably
-    // restart the whole app (including background.js)
-
     this.deactivate()
+    document.removeEventListener("mousedown", this.checkTrigger)
     this.isEnabled = false
   }
 
@@ -43,33 +40,40 @@ export default class Scroller {
     if (this.isEnabled) {
       this.isActivated = true
       document.documentElement.requestPointerLock()
-      document.removeEventListener("mousedown", this.handleMouseDown)
+      document.removeEventListener("mousedown", this.checkTrigger)
       document.addEventListener("mousedown", this.handleClickCancel)
       document.addEventListener("mousemove", this.handleMouseMove)
     }
   }
+
   deactivate() {
     this.isActivated = false
     document.exitPointerLock()
-    document.addEventListener("mousedown", this.handleMouseDown)
+    document.addEventListener("mousedown", this.checkTrigger)
     document.removeEventListener("mousedown", this.handleClickCancel)
     document.removeEventListener("mousemove", this.handleMouseMove)
   }
 
-  matchCombo(combo) {
+  matchCombo(combo: Combo) {
     return (
       this.activation.type === combo.type &&
       this.activation.button === combo.button &&
-      Array.from(this.activation.mods.keys()).every((mod) =>
-        combo.mods.has(mod)
-      ) &&
-      Array.from(this.activation.nonActivation.keys()).every(
-        (mod) => !combo.mods.has(mod)
-      )
+      Object.entries(this.activation.modifiers)
+        .filter(([_, mod]) => mod)
+        .every(([key, _]) => combo.modifiers[key]) &&
+      Object.entries(this.activation.nonActivation)
+        .filter(([_, mod]) => mod)
+        .every(([key, _]) => !combo.modifiers[key])
     )
   }
 
-  handleMouseDown(e) {
+  checkTrigger(e) {
+    if (this.isConfigUpdated) {
+      // should test speed
+      //TODO: how to call get new config??
+      // `inject.ts` should be manage this..
+    }
+
     const combo = parseMouseInput(e)
     const matched = this.matchCombo(combo)
 

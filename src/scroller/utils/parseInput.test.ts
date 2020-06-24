@@ -1,11 +1,18 @@
 import { parseMouseInput } from "./parseInput"
 
+const modifiers = {
+  ctrl: false,
+  alt: false,
+  shift: false,
+  meta: false,
+}
+
 describe("parse MouseDown event", () => {
   it("should parse mouse input", () => {
-    let expected = {
-      type: "mouse",
+    let expected: Combo = {
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(),
+      modifiers: { ...modifiers },
     }
     let evt = new MouseEvent("mousedown", {
       button: 0,
@@ -14,9 +21,9 @@ describe("parse MouseDown event", () => {
     expect(parseMouseInput(evt)).toEqual(expected)
 
     expected = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(),
+      modifiers: { ...modifiers },
     }
     evt = new MouseEvent("mousedown", {
       button: 1,
@@ -24,9 +31,9 @@ describe("parse MouseDown event", () => {
     expect(parseMouseInput(evt)).toEqual(expected)
 
     expected = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 2,
-      mods: new Set(),
+      modifiers: { ...modifiers },
     }
     evt = new MouseEvent("mousedown", {
       button: 2,
@@ -36,9 +43,9 @@ describe("parse MouseDown event", () => {
 
   it("should parse mouse input with modifiers", () => {
     let expected = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
+      modifiers: { ...modifiers, ctrl: true },
     }
     let evt = new MouseEvent("mousedown", {
       button: 1,
@@ -48,9 +55,9 @@ describe("parse MouseDown event", () => {
     expect(parseMouseInput(evt)).toEqual(expected)
 
     expected = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl", "alt"]),
+      modifiers: { ...modifiers, ctrl: true, alt: true },
     }
     evt = new MouseEvent("mousedown", {
       button: 1,

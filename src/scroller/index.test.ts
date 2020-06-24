@@ -3,45 +3,59 @@ import Scroller from "."
 document.documentElement.requestPointerLock = jest.fn()
 document.exitPointerLock = jest.fn()
 
+const modifiers = {
+  ctrl: false,
+  alt: false,
+  shift: false,
+  meta: false,
+}
+
 describe("enable / disable", () => {
   it("should be initially disabled", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     expect(scroller.isEnabled).toBe(false)
   })
 
   test("enable() should set state correctly", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     expect(scroller.isEnabled).toBe(false)
     scroller.enable()
     expect(scroller.isEnabled).toBe(true)
   })
 
   test("disable() should set state correctly", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     scroller.enable()
     scroller.disable()
     expect(scroller.isEnabled).toBe(false)
   })
 })
 
+let scroller: Scroller
+
+afterEach(() => {
+  scroller.disable()
+})
+
 describe("activation / deactivation", () => {
   it("cannot be activated after disable()", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     scroller.enable()
     scroller.disable()
     scroller.activate()
     expect(scroller.isActivated).toBe(false)
+    scroller.disable()
   })
 
   it("can be activated after enable()", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     scroller.enable()
     scroller.activate()
     expect(scroller.isActivated).toBe(true)
   })
 
   it("should be deactivated", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     scroller.enable()
     scroller.activate()
     scroller.deactivate()
@@ -49,7 +63,7 @@ describe("activation / deactivation", () => {
   })
 
   it("should be deactivated after disable()", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     scroller.enable()
     scroller.activate()
     scroller.disable()
@@ -59,153 +73,154 @@ describe("activation / deactivation", () => {
 
 describe("match mouse combo", () => {
   it("should match combo", () => {
-    const scroller = new Scroller()
-    let combo = {
-      type: "mouse",
+    scroller = new Scroller()
+    let combo: Combo = {
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(),
+      modifiers: { ...modifiers },
     }
-    let activation = {
-      type: "mouse",
+    let activation: Activation = {
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(true)
   })
 
-  it("should match combo with mods", () => {
-    const scroller = new Scroller()
-    let combo = {
-      type: "mouse",
+  it("should match combo with modifiers", () => {
+    scroller = new Scroller()
+    let combo: Combo = {
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(["ctrl"]),
+      modifiers: { ...modifiers, ctrl: true },
     }
     let activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(["ctrl"]),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers, ctrl: true },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(true)
 
     combo = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(["ctrl", "alt", "shift"]),
+      modifiers: { ...modifiers, ctrl: true, alt: true, shift: true },
     }
     activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(["ctrl"]),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers, ctrl: true },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(true)
 
     combo = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
+      modifiers: { ...modifiers, ctrl: true },
     }
     activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
-      nonActivation: new Set(["alt"]),
+      modifiers: { ...modifiers, ctrl: true },
+      nonActivation: { ...modifiers, alt: true },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(true)
   })
 
   it("should not match", () => {
-    const scroller = new Scroller()
-    let combo = {
-      type: "keyboard",
+    scroller = new Scroller()
+    let combo: Combo = {
+      type: "keyboard" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
+      modifiers: { ...modifiers, ctrl: true },
     }
     let activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers, ctrl: true },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(false)
 
     combo = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(),
+      modifiers: { ...modifiers },
     }
     activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(false)
 
     combo = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
+      modifiers: { ...modifiers, ctrl: true },
     }
     activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(["ctrl"]),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers, ctrl: true },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(false)
 
     combo = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["alt"]),
+      modifiers: { ...modifiers, alt: true },
     }
     activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers, ctrl: true },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(false)
 
     combo = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
+      modifiers: { ...modifiers, ctrl: true },
     }
     activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 1,
-      mods: new Set(["ctrl"]),
-      nonActivation: new Set(["ctrl"]),
+      modifiers: { ...modifiers, ctrl: true },
+      nonActivation: { ...modifiers, ctrl: true },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     expect(scroller.matchCombo(combo)).toBe(false)
   })
 })
 
+//here
 describe("activation by mouse", () => {
   it("should activate by mouse", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     scroller.enable()
 
-    const activation = {
-      type: "mouse",
+    const activation: Activation = {
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
     const evt = new MouseEvent("mousedown", {
       button: 0,
     })
@@ -214,15 +229,15 @@ describe("activation by mouse", () => {
   })
 
   it("should deactivate by mouse", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     scroller.enable()
     let activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
 
     let evt = new MouseEvent("mousedown", {
       button: 0,
@@ -238,15 +253,15 @@ describe("activation by mouse", () => {
   })
 
   it("should be deactivated after losing PointerLock", () => {
-    const scroller = new Scroller()
+    scroller = new Scroller()
     scroller.enable()
     let activation = {
-      type: "mouse",
+      type: "mouse" as const,
       button: 0,
-      mods: new Set(),
-      nonActivation: new Set(),
+      modifiers: { ...modifiers },
+      nonActivation: { ...modifiers },
     }
-    scroller.activation = activation
+    scroller.setActivation(activation)
 
     let evt = new MouseEvent("mousedown", {
       button: 0,
@@ -254,7 +269,8 @@ describe("activation by mouse", () => {
     document.dispatchEvent(evt)
 
     // mocking ESC or Tab switch or etc.
-    document.pointerLockElement = null
+    // In test, requestPointerLock is NOOP, so it's null
+    // document.pointerLockElement === null
 
     evt = new MouseEvent("mousemove", {
       button: 0,
@@ -265,10 +281,10 @@ describe("activation by mouse", () => {
   })
 })
 
-describe("scroll", () => {
+xdescribe("scroll", () => {
   // TODO: dom simulation needed for test
-  xit("should scroll", () => {
-    const scroller = new Scroller()
+  it("should scroll", () => {
+    scroller = new Scroller()
     scroller.enable()
     // setTarget
     scroller.activate()
@@ -281,8 +297,8 @@ describe("scroll", () => {
   })
 })
 
-describe("testing testScroll", () => {
-  xit("should scroll", () => {
+xdescribe("testing testScroll", () => {
+  it("should scroll", () => {
     // TODO: [DOMElement.scrollBy()] is not defined.
     // need some scrollable content here.
     const target = document.createElement("div")

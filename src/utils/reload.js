@@ -1,6 +1,6 @@
 const PORT = "9992"
 
-function connect() {
+export function connect() {
   const socket = new WebSocket(`ws://localhost:${PORT}`)
   socket.onmessage = (e) => {
     const { message } = JSON.parse(e.data)
@@ -8,8 +8,4 @@ function connect() {
       chrome.runtime.reload()
     }
   }
-}
-
-module.exports = {
-  connect,
 }

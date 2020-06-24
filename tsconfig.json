@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target":"es6",
+    "lib": [
+      "dom"
+    ],
+    "moduleResolution": "node"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
