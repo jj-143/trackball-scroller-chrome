@@ -7,20 +7,23 @@ interface ScrollerConfig {
 
 function getStore(): Promise<ScrollerConfig> {
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage("GET_SCROLLER_OPTION", ({ option, enabled }) => {
+    chrome.runtime.sendMessage(
+      { type: "GET_SCROLLER_OPTION" },
+      ({ option, enabled }) => {
       console.log("inject: ", option)
       resolve({
         option,
         enabled,
       })
+      }
+    )
     })
-  })
 }
 
 let scroller = new Scroller()
 
 // notify this tab
-chrome.runtime.sendMessage("CONNECT")
+chrome.runtime.sendMessage({ type: "CONNECT" })
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
   // UserSettings has both enabled and options.

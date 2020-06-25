@@ -7,7 +7,7 @@ import Extension from "./extension"
 const extension = new Extension()
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  switch (msg) {
+  switch (msg.type) {
     case "GET_SCROLLER_OPTION":
       extension.store
         .getScrollerOption()
