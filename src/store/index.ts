@@ -32,7 +32,7 @@ async function _setDefault(store) {
 function loadSettings() {
   return new Promise((resolve, reject) => {
     try {
-      chrome.storage.sync.get("USER_SETTINGS", (setting) => {
+      chrome.storage.sync.get("USER_SETTINGS", ({ USER_SETTINGS: setting }) => {
         resolve(setting)
       })
     } catch (e) {
@@ -72,9 +72,7 @@ export class Store {
       return this._store
     }
 
-    // DEV
-    // return loadSettings()
-    return new Promise((resolve) => resolve({}))
+    return loadSettings()
       .then(_setDefault)
       .then(this._keepStore)
       .catch((e) => {
@@ -90,7 +88,6 @@ export class Store {
 
   getScrollerOption() {
     return this.get().then((store) => {
-      console.log(store)
       return {
         scrollerOption: store.userOption.scroller,
         enabled: store.enabled,

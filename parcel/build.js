@@ -16,7 +16,7 @@ const entryFiles = [
   // "src/background.js",
   // new - 1.0.0
   "src/background/index.ts",
-  "src/tests/inject.ts",
+  "src/inject.ts",
   "src/options/options.html",
 ]
 
@@ -25,6 +25,7 @@ const statics = ["src/manifest.json", "src/images"]
 const options = {
   sourceMaps: false,
   watch: false,
+  contentHash: false,
 }
 
 function clean() {
