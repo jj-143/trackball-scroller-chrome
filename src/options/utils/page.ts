@@ -11,13 +11,13 @@ export function updateDOM(setting: UserSettings) {
   )
 
   // Non Activation
-  Object.entries(setting.userOption.scroller.activation.nonActivation)
-    .filter(([_, v]) => v)
-    .forEach(([key, _]) => {
+  Object.entries(setting.userOption.scroller.activation.nonActivation).forEach(
+    ([k, v]) => {
       ;(document.querySelector(
-        "#non-activation input[name=" + key + "]"
-      ) as HTMLInputElement).checked = true
-    })
+        "#non-activation input[name=" + k + "]"
+      ) as HTMLInputElement).checked = v
+    }
+  )
 
   // Sensitivity
   document.getElementById(
