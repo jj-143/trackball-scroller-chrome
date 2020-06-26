@@ -2,6 +2,8 @@
 import { parseMouseInput } from "./utils/parseInput"
 import { isFromAnchor } from "./utils/isFromAnchor"
 import { findTarget } from "./utils/findTarget"
+import { preventContextMenu, allowContextMenu } from "./utils/utils"
+import { calcMultiplier } from "./utils/sensitivityToValue"
 
 export default class Scroller {
   config: ScrollerConfig
@@ -47,6 +49,7 @@ export default class Scroller {
     if (this.isEnabled) {
       this.isActivated = true
       document.documentElement.requestPointerLock()
+      preventContextMenu()
       document.removeEventListener("mousedown", this.checkTrigger)
       document.addEventListener("mousedown", this.handleClickCancel)
       document.addEventListener("mousemove", this.handleMouseMove)
@@ -56,6 +59,7 @@ export default class Scroller {
   deactivate() {
     this.isActivated = false
     document.exitPointerLock()
+    allowContextMenu()
     document.addEventListener("mousedown", this.checkTrigger)
     document.removeEventListener("mousedown", this.handleClickCancel)
     document.removeEventListener("mousemove", this.handleMouseMove)
@@ -103,7 +107,10 @@ export default class Scroller {
       return this.deactivate()
     }
     if (this.scrollTarget) {
-      const dy = e.movementY * (this.config.naturalScrolling ? -1 : 1)
+      const dy =
+        e.movementY *
+        (this.config.naturalScrolling ? -1 : 1) *
+        calcMultiplier(this.config.sensitivity)
       this.scrollTarget.scrollBy(0, dy)
     }
   }
