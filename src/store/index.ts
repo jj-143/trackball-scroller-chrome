@@ -86,13 +86,11 @@ export class Store {
       .catch((e) => {})
   }
 
-  getScrollerOption() {
-    return this.get().then((store) => {
-      return {
-        scrollerOption: store.userOption.scroller,
-        enabled: store.enabled,
-      }
-    })
+  getScrollerSetting(): Promise<StoreResponse> {
+    return this.get().then((store) => ({
+      enabled: store.enabled,
+      scrollerConfig: store.userOption.scroller,
+    }))
   }
 }
 

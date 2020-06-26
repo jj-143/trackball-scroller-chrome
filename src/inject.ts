@@ -1,21 +1,8 @@
 import Scroller from "./scroller"
 
-interface ScrollerConfig {
-  option: ScrollerOption
-  enabled: boolean
-}
-
-function getStore(): Promise<ScrollerConfig> {
+function getStore(): Promise<StoreResponse> {
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage(
-      { type: "GET_SCROLLER_OPTION" },
-      ({ option, enabled }) => {
-        resolve({
-          option,
-          enabled,
-        })
-      }
-    )
+    chrome.runtime.sendMessage({ type: "GET_SCROLLER_SETTING" }, resolve)
   })
 }
 
@@ -57,8 +44,8 @@ chrome.runtime.sendMessage({ type: "CONNECT" })
 //   }
 // })
 
-getStore().then(({ option, enabled }) => {
-  scroller.setActivation(option.activation)
+getStore().then(({ enabled, scrollerConfig }) => {
+  scroller.setConfig(scrollerConfig)
   if (enabled) {
     scroller.enable()
   }

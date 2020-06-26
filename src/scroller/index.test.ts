@@ -74,35 +74,47 @@ describe("activation / deactivation", () => {
 describe("match mouse combo", () => {
   it("should match combo", () => {
     scroller = new Scroller()
+    const scrollerConfig = {
+      activation: null,
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+
     let combo: Combo = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers },
     }
-    let activation: Activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(true)
   })
 
   it("should match combo with modifiers", () => {
     scroller = new Scroller()
+    const scrollerConfig = {
+      activation: null,
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+
     let combo: Combo = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers, ctrl: true },
     }
-    let activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers, ctrl: true },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(true)
 
     combo = {
@@ -110,13 +122,13 @@ describe("match mouse combo", () => {
       button: 0,
       modifiers: { ...modifiers, ctrl: true, alt: true, shift: true },
     }
-    activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers, ctrl: true },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(true)
 
     combo = {
@@ -124,30 +136,36 @@ describe("match mouse combo", () => {
       button: 1,
       modifiers: { ...modifiers, ctrl: true },
     }
-    activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 1,
       modifiers: { ...modifiers, ctrl: true },
       nonActivation: { ...modifiers, alt: true },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(true)
   })
 
   it("should not match", () => {
     scroller = new Scroller()
+    const scrollerConfig = {
+      activation: null,
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+
     let combo: Combo = {
       type: "keyboard" as const,
       button: 1,
       modifiers: { ...modifiers, ctrl: true },
     }
-    let activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 1,
       modifiers: { ...modifiers, ctrl: true },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(false)
 
     combo = {
@@ -155,13 +173,13 @@ describe("match mouse combo", () => {
       button: 1,
       modifiers: { ...modifiers },
     }
-    activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(false)
 
     combo = {
@@ -169,13 +187,13 @@ describe("match mouse combo", () => {
       button: 1,
       modifiers: { ...modifiers, ctrl: true },
     }
-    activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers, ctrl: true },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(false)
 
     combo = {
@@ -183,13 +201,13 @@ describe("match mouse combo", () => {
       button: 1,
       modifiers: { ...modifiers, alt: true },
     }
-    activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 1,
       modifiers: { ...modifiers, ctrl: true },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(false)
 
     combo = {
@@ -197,13 +215,13 @@ describe("match mouse combo", () => {
       button: 1,
       modifiers: { ...modifiers, ctrl: true },
     }
-    activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 1,
       modifiers: { ...modifiers, ctrl: true },
       nonActivation: { ...modifiers, ctrl: true },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(false)
   })
 })
@@ -212,15 +230,21 @@ describe("match mouse combo", () => {
 describe("activation by mouse", () => {
   it("should activate by mouse", () => {
     scroller = new Scroller()
+    const scrollerConfig = {
+      activation: null,
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+
     scroller.enable()
 
-    const activation: Activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
     const evt = new MouseEvent("mousedown", {
       button: 0,
     })
@@ -230,14 +254,20 @@ describe("activation by mouse", () => {
 
   it("should deactivate by mouse", () => {
     scroller = new Scroller()
+    const scrollerConfig = {
+      activation: null,
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+
     scroller.enable()
-    let activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
 
     let evt = new MouseEvent("mousedown", {
       button: 0,
@@ -254,14 +284,20 @@ describe("activation by mouse", () => {
 
   it("should be deactivated after losing PointerLock", () => {
     scroller = new Scroller()
+    const scrollerConfig = {
+      activation: null,
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+
     scroller.enable()
-    let activation = {
+    scrollerConfig.activation = {
       type: "mouse" as const,
       button: 0,
       modifiers: { ...modifiers },
       nonActivation: { ...modifiers },
     }
-    scroller.setActivation(activation)
+    scroller.setConfig(scrollerConfig)
 
     let evt = new MouseEvent("mousedown", {
       button: 0,

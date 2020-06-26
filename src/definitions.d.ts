@@ -23,17 +23,22 @@ interface Activation {
   nonActivation: ModifierFlag
 }
 
-interface ScrollerOption {
+interface ScrollerConfig {
   activation: Activation
   sensitivity: number
   naturalScrolling: boolean
 }
 
 interface UserOption {
-  scroller: ScrollerOption
+  scroller: ScrollerConfig
 }
 
 interface UserSettings {
   enabled: boolean
   userOption: UserOption
+}
+
+interface StoreResponse {
+  enabled: boolean
+  scrollerConfig: ScrollerConfig
 }

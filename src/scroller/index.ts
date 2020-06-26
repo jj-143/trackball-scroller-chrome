@@ -4,25 +4,30 @@ import { isFromAnchor } from "./utils/isFromAnchor"
 import { findTarget } from "./utils/findTarget"
 
 export default class Scroller {
+  config: ScrollerConfig
+
+  // state
   isEnabled: boolean
   isActivated: boolean
-  activation: Activation
   scrollTarget: Element
   isConfigUpdated: boolean
 
   constructor() {
+    this.config = null
+
+    // state
     this.isEnabled = false
     this.isActivated = false
-    this.activation = null
     this.scrollTarget = null
     this.isConfigUpdated = false
+
     this.checkTrigger = this.checkTrigger.bind(this)
     this.handleMouseMove = this.handleMouseMove.bind(this)
     this.handleClickCancel = this.handleClickCancel.bind(this)
   }
 
-  setActivation(activation: Activation) {
-    this.activation = activation
+  setConfig(config: ScrollerConfig) {
+    this.config = config
   }
 
   enable() {
@@ -58,12 +63,12 @@ export default class Scroller {
 
   matchCombo(combo: Combo) {
     return (
-      this.activation.type === combo.type &&
-      this.activation.button === combo.button &&
-      Object.entries(this.activation.modifiers)
+      this.config.activation.type === combo.type &&
+      this.config.activation.button === combo.button &&
+      Object.entries(this.config.activation.modifiers)
         .filter(([_, mod]) => mod)
         .every(([key, _]) => combo.modifiers[key]) &&
-      Object.entries(this.activation.nonActivation)
+      Object.entries(this.config.activation.nonActivation)
         .filter(([_, mod]) => mod)
         .every(([key, _]) => !combo.modifiers[key])
     )
@@ -87,8 +92,8 @@ export default class Scroller {
     e.preventDefault()
     e.stopPropagation()
     this.scrollTarget = findTarget(path)
-      this.activate()
-    }
+    this.activate()
+  }
 
   handleMouseMove(e) {
     // handles losing PointerLock.
@@ -98,7 +103,7 @@ export default class Scroller {
       return this.deactivate()
     }
     if (this.scrollTarget) {
-      const dy = e.movementY * -1
+      const dy = e.movementY * (this.config.naturalScrolling ? -1 : 1)
       this.scrollTarget.scrollBy(0, dy)
     }
   }

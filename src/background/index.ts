@@ -20,26 +20,15 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   switch (msg.type) {
-    case "GET_SCROLLER_OPTION":
-      extension.store
-        .getScrollerOption()
-        .then((r) => {
-          console.log("sOption: ", r)
-          return r
-        })
-        .then(({ scrollerOption, enabled }) => {
-          console.log("bg: ", scrollerOption)
-          sendResponse({ option: scrollerOption, enabled })
-        })
+    case "GET_SCROLLER_SETTING":
+      extension.store.getScrollerSetting().then(sendResponse)
       break
     case "CONNECT":
       //TODO
       extension.addTab(msg.tabID)
       break
     case "GET_USER_SETTINGS": // from Option
-      extension.store.get().then((res) => {
-        sendResponse(res)
-      })
+      extension.store.get().then(sendResponse)
       break
     case "SAVE_USER_SETTINGS":
       extension.store
