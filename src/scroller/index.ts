@@ -1,11 +1,13 @@
 /// <reference path="../definitions.d.ts" />
 import { parseMouseInput } from "./utils/parseInput"
+import { isFromAnchor } from "./utils/isFromAnchor"
+import { findTarget } from "./utils/findTarget"
 
 export default class Scroller {
   isEnabled: boolean
   isActivated: boolean
   activation: Activation
-  scrollTarget: HTMLElement
+  scrollTarget: Element
   isConfigUpdated: boolean
 
   constructor() {
@@ -67,7 +69,7 @@ export default class Scroller {
     )
   }
 
-  checkTrigger(e) {
+  checkTrigger(e: MouseEvent) {
     if (this.isConfigUpdated) {
       // should test speed
       //TODO: how to call get new config??
@@ -76,11 +78,17 @@ export default class Scroller {
 
     const combo = parseMouseInput(e)
     const matched = this.matchCombo(combo)
+    if (!matched) return
 
-    if (matched) {
+    const path = e.composedPath()
+    if (isFromAnchor(path)) return
+
+    // need both to work without any erratic behaviors
+    e.preventDefault()
+    e.stopPropagation()
+    this.scrollTarget = findTarget(path)
       this.activate()
     }
-  }
 
   handleMouseMove(e) {
     // handles losing PointerLock.
@@ -89,7 +97,6 @@ export default class Scroller {
     if (!document.pointerLockElement && this.isActivated) {
       return this.deactivate()
     }
-    this.scrollTarget = document.documentElement
     if (this.scrollTarget) {
       const dy = e.movementY * -1
       this.scrollTarget.scrollBy(0, dy)
