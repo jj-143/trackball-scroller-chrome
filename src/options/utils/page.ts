@@ -34,3 +34,16 @@ export function updateDOM(setting: UserSettings) {
 
   // TODO: MOUSE 3 warning
 }
+
+export function makeTestArticles() {
+  const context = document.getElementById("test-context")
+  for (var i = 0; i < 60; i++) {
+    var h = document.createElement("h2")
+    var p = document.createElement("p")
+    h.textContent = "Article " + (i + 1)
+    p.textContent =
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, cumque? Ea facilis velit accusantium error sapiente doloribus iure qui suscipit sunt, itaque non veniam ex harum assumenda praesentium magnam. Perferendis?"
+    context.appendChild(h)
+    context.appendChild(p)
+  }
+}
