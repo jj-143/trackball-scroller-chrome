@@ -21,6 +21,16 @@ export function formatActivation(activation: Activation): string {
   return modifiers.concat(button).join(" + ")
 }
 
+export function isOnlyMouse3(activation: Activation) {
+  // added: no warning after checking non-activation
+  return (
+    Object.values(activation.modifiers).filter((_) => _).length === 0 &&
+    activation.type === "mouse" &&
+    activation.button === 2 &&
+    Object.values(activation.nonActivation).filter((_) => _).length === 0
+  )
+}
+
 export function getSettings(): Promise<UserSettings> {
   return new Promise((resolve) => {
     chrome.runtime.sendMessage(

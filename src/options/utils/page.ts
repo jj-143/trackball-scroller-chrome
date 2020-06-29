@@ -1,4 +1,4 @@
-import { formatActivation } from "./utils"
+import { formatActivation, isOnlyMouse3 } from "./utils"
 import { parseMouseInput } from "../../scroller/utils/parseInput"
 import {
   allowContextMenu,
@@ -7,68 +7,6 @@ import {
 
 const OPTION_KEYS = ["naturalScrolling"]
 const MODIFIERS = ["Control", "Alt", "Shift", "Meta"]
-
-function isMouse3Alone(activation: Activation) {
-  // added: no warning after checking non-activation
-  return (
-    Object.values(activation.modifiers).filter((_) => _).length === 0 &&
-    activation.type === "mouse" &&
-    activation.button === 2 &&
-    Object.values(activation.nonActivation).filter((_) => _).length === 0
-  )
-}
-
-export function updateDOM(setting: UserSettings) {
-  const activation = document.querySelector("button.activation")
-
-  // Activation
-  activation.textContent = formatActivation(
-    setting.userOption.scroller.activation
-  )
-
-  // Non Activation
-  Object.entries(setting.userOption.scroller.activation.nonActivation).forEach(
-    ([k, v]) => {
-      ;(document.querySelector(
-        "#non-activation input[name=" + k + "]"
-      ) as HTMLInputElement).checked = v
-    }
-  )
-
-  // Sensitivity
-  document.getElementById(
-    "sensitivity-value"
-  ).textContent = setting.userOption.scroller.sensitivity.toString()
-
-  // Checkboxes
-  OPTION_KEYS.forEach((key) => {
-    ;(document.querySelector(
-      "input[type=checkbox][name=" + key + "]"
-    ) as HTMLInputElement).checked = setting.userOption.scroller[key]
-  })
-
-  // Mouse 3 warning
-  if (isMouse3Alone(setting.userOption.scroller.activation)) {
-    document.querySelector(".option#activation").classList.add("warning-mouse3")
-  } else {
-    document
-      .querySelector(".option#activation")
-      .classList.remove("warning-mouse3")
-  }
-}
-
-export function makeTestArticles() {
-  const context = document.getElementById("test-context")
-  for (var i = 0; i < 60; i++) {
-    var h = document.createElement("h2")
-    var p = document.createElement("p")
-    h.textContent = "Article " + (i + 1)
-    p.textContent =
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, cumque? Ea facilis velit accusantium error sapiente doloribus iure qui suscipit sunt, itaque non veniam ex harum assumenda praesentium magnam. Perferendis?"
-    context.appendChild(h)
-    context.appendChild(p)
-  }
-}
 
 function attachNonActivationHandler() {
   document.querySelector("#non-activation").addEventListener("change", (e) => {
@@ -103,7 +41,6 @@ function onPointerLockChange() {
     document.removeEventListener("pointerlockchange", onPointerLockChange)
     stopCustomizeActivation()
     document.dispatchEvent(new CustomEvent("CANCEL_CUSTOMIZE_ACTIVATION"))
-    // btnActivation.textContent = formatActivation(storageSetting.activation)
   }
 }
 
@@ -120,6 +57,34 @@ function handleMouseActivation(e) {
 
   let combo: Combo = parseMouseInput(e)
 
+  // if (e.type == "keydown") {
+  //   throw
+  //   combo = {
+  //     type: 'keyboard' as const,
+  //     button: e.key,
+  //     //TODO: where do you use text??
+  //     text: e.key.toUpperCase(),
+  //     modifiers
+  //   }
+  // } else {
+  //   combo = {
+  //     type: 'mouse' as const,
+  //     button: e.button,
+  //     // text: "Mouse " + (parseInt(e.button) + 1),
+  //     modifiers
+  //   }
+  // }
+
+  // const newActivation = {
+  //   //TODO: mayby seprate nonActivation from type Activation?
+  //   ... combo,
+  // }
+  // set global activation
+
+  // var activation = {
+  //   input,
+  //   modifiers: modifiersPressed,
+  // }
 
   stopCustomizeActivation()
 
@@ -142,8 +107,8 @@ function startCustomizeActivation() {
   btnActivation.classList.add("editing")
 
   preventContextMenu()
-  addEventListener("pointerlockchange", onPointerLockChange)
-  addEventListener("mousedown", handleMouseActivation, true)
+  document.addEventListener("pointerlockchange", onPointerLockChange)
+  document.addEventListener("mousedown", handleMouseActivation, true)
 }
 
 function stopCustomizeActivation() {
@@ -153,8 +118,8 @@ function stopCustomizeActivation() {
   ) as HTMLButtonElement
 
   allowContextMenu()
-  removeEventListener("pointerlockchange", onPointerLockChange)
-  removeEventListener("mousedown", handleMouseActivation, true)
+  document.removeEventListener("pointerlockchange", onPointerLockChange)
+  document.removeEventListener("mousedown", handleMouseActivation, true)
 
   btnActivation.disabled = false
   btnActivation.classList.remove("editing")
@@ -191,4 +156,56 @@ export function attachEvents() {
   attachNonActivationHandler()
   attachCheckboxHandler()
   attachSensitivityHandler()
+}
+
+export function updateDOM(setting: UserSettings) {
+  const activation = document.querySelector("button.activation")
+
+  // Activation
+  activation.textContent = formatActivation(
+    setting.userOption.scroller.activation
+  )
+
+  // Non Activation
+  Object.entries(setting.userOption.scroller.activation.nonActivation).forEach(
+    ([k, v]) => {
+      ;(document.querySelector(
+        "#non-activation input[name=" + k + "]"
+      ) as HTMLInputElement).checked = v
+    }
+  )
+
+  // Sensitivity
+  document.getElementById(
+    "sensitivity-value"
+  ).textContent = setting.userOption.scroller.sensitivity.toString()
+
+  // Checkboxes
+  OPTION_KEYS.forEach((key) => {
+    ;(document.querySelector(
+      "input[type=checkbox][name=" + key + "]"
+    ) as HTMLInputElement).checked = setting.userOption.scroller[key]
+  })
+
+  // Mouse 3 warning
+  if (isOnlyMouse3(setting.userOption.scroller.activation)) {
+    document.querySelector(".option#activation").classList.add("warning-mouse3")
+  } else {
+    document
+      .querySelector(".option#activation")
+      .classList.remove("warning-mouse3")
+  }
+}
+
+export function makeTestArticles() {
+  const context = document.getElementById("test-context")
+  for (var i = 0; i < 60; i++) {
+    var h = document.createElement("h2")
+    var p = document.createElement("p")
+    h.textContent = "Article " + (i + 1)
+    p.textContent =
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, cumque? Ea facilis velit accusantium error sapiente doloribus iure qui suscipit sunt, itaque non veniam ex harum assumenda praesentium magnam. Perferendis?"
+    context.appendChild(h)
+    context.appendChild(p)
+  }
 }
