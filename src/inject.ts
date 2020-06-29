@@ -6,7 +6,7 @@ function getStore(): Promise<StoreResponse> {
   })
 }
 
-let scroller = new Scroller()
+export const scroller = new Scroller()
 
 // notify this tab
 chrome.runtime.sendMessage({ type: "CONNECT" })

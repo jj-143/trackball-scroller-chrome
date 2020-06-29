@@ -1,8 +1,18 @@
 import { saveSettings, getSettings } from "./utils/utils"
 import { updateDOM, makeTestArticles, attachEvents } from "./utils/page"
-import "../inject"
+import { scroller } from "../inject"
+import Scroller from "../scroller"
 
 let settings: UserSettings
+
+// disable trigger on cusomize activation Button
+scroller.checkTrigger = function (e: MouseEvent) {
+  const elm = e.target as Element
+  if (elm.classList.contains("activation")) {
+    return
+  }
+  return Scroller.prototype.checkTrigger.bind(scroller)(e)
+}
 
 // Maybe combine 'update events' to one
 document.addEventListener(
