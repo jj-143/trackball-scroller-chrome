@@ -24,8 +24,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       extension.store.getScrollerSetting().then(sendResponse)
       break
     case "CONNECT":
-      //TODO
-      extension.addTab(msg.tabID)
+      extension.addTab(sender.tab.id)
       break
     case "GET_USER_SETTINGS": // from Option
       extension.store.get().then(sendResponse)
@@ -44,5 +43,26 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true
 })
 
-//TODO: later
-// chrome.storage.onChanage
+// User Setting changed
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "sync") {
+    if (changes.USER_SETTINGS) {
+      const userSetting = changes.USER_SETTINGS.newValue as UserSettings
+      const storeResponse = {
+        scrollerConfig: userSetting.userOption.scroller,
+        enabled: userSetting.enabled,
+      }
+      extension.tabs.forEach((tabId) => {
+        chrome.tabs.sendMessage(tabId, {
+          type: "UPDATE_SETTING",
+          storeResponse,
+        })
+      })
+
+      if (userSetting.enabled !== changes.USER_SETTINGS.oldValue.enabled) {
+        console.log(userSetting.enabled)
+        updateBrowserActionIcon(userSetting.enabled)
+      }
+    }
+  }
+})

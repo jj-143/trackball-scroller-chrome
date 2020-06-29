@@ -36,10 +36,15 @@ export default class Scroller {
     // if it has some side-effect thing,
     // it needs to check [isEnabled] first.
     // same with [disable()]
-    this.isEnabled = true
+
+    // prevent applying multiple times
+    // & handle when global [enable] changed
+    if (this.isEnabled) return
     document.addEventListener("mousedown", this.checkTrigger)
+    this.isEnabled = true
   }
   disable() {
+    if (!this.isEnabled) return
     this.deactivate()
     document.removeEventListener("mousedown", this.checkTrigger)
     this.isEnabled = false

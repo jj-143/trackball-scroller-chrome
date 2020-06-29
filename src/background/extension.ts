@@ -2,15 +2,14 @@ import { Store } from "../store"
 
 export default class Extension {
   store: Store
-  tabs: string[]
+  tabs: number[]
 
   constructor() {
     this.store = new Store()
     this.tabs = []
   }
 
-  addTab(tabId: string) {
-    //TODO
+  addTab(tabId: number) {
     this.tabs.push(tabId)
   }
 }
