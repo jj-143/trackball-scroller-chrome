@@ -2,6 +2,29 @@ import "regenerator-runtime/runtime"
 import Extension from "./extension"
 import { connect } from "../utils/reload"
 
+const BROWSER_ACTION_ICON_PATH_ENABLED = "./images/icon-c1-128.png"
+const BROWSER_ACTION_TITLE_ENABLED = ""
+const BROWSER_ACTION_ICON_PATH_DISABLED = "./images/icon-c1-128-outline.png"
+const BROWSER_ACTION_TITLE_DISABLED = "Trackball Scroller (disabled)"
+
+function updateBrowserActionIcon(enabled: boolean) {
+  if (enabled) {
+    chrome.browserAction.setIcon({
+      path: BROWSER_ACTION_ICON_PATH_ENABLED,
+    })
+    chrome.browserAction.setTitle({
+      title: BROWSER_ACTION_TITLE_ENABLED,
+    })
+  } else {
+    chrome.browserAction.setIcon({
+      path: BROWSER_ACTION_ICON_PATH_DISABLED,
+    })
+    chrome.browserAction.setTitle({
+      title: BROWSER_ACTION_TITLE_DISABLED,
+    })
+  }
+}
+
 const extension = new Extension()
 
 // dev
@@ -65,4 +88,17 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       }
     }
   }
+})
+
+// Enabled changed (via Browser Action)
+chrome.browserAction.onClicked.addListener((tab) => {
+  extension.store.get().then((store) => {
+    store.enabled = !store.enabled
+    extension.store.save(store)
+  })
+})
+
+// Initialize Browser Action Status
+extension.store.get().then((store) => {
+  updateBrowserActionIcon(store.enabled)
 })

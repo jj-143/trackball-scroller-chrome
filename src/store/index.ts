@@ -24,11 +24,11 @@ const DEFAULT_USER_SETTINGS: UserSettings = {
   },
 }
 
-async function _setDefault(store) {
+async function _setDefault(store: UserSettings): Promise<UserSettings> {
   return store ? store : DEFAULT_USER_SETTINGS
 }
 
-function _loadSettings() {
+function _loadSettings(): Promise<UserSettings> {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.sync.get("USER_SETTINGS", ({ USER_SETTINGS: setting }) => {
@@ -40,7 +40,7 @@ function _loadSettings() {
   })
 }
 
-function _saveSettings(store) {
+function _saveSettings(store: UserSettings) {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.sync.set({ USER_SETTINGS: store }, () => {
@@ -75,7 +75,7 @@ export class Store {
           })
   }
 
-  async save(store) {
+  async save(store: UserSettings): Promise<UserSettings> {
     return _saveSettings(store)
       .then(this._keepStore)
       .catch((e) => {})
