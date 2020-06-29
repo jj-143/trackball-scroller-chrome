@@ -2,9 +2,9 @@ import "regenerator-runtime/runtime"
 import Extension from "./extension"
 import { connect } from "../utils/reload"
 
-const BROWSER_ACTION_ICON_PATH_ENABLED = "./images/icon-c1-128.png"
+const BROWSER_ACTION_ICON_PATH_ENABLED = "./images/icon.png"
 const BROWSER_ACTION_TITLE_ENABLED = ""
-const BROWSER_ACTION_ICON_PATH_DISABLED = "./images/icon-c1-128-outline.png"
+const BROWSER_ACTION_ICON_PATH_DISABLED = "./images/icon-outline.png"
 const BROWSER_ACTION_TITLE_DISABLED = "Trackball Scroller (disabled)"
 
 function updateBrowserActionIcon(enabled: boolean) {

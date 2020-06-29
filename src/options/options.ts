@@ -8,10 +8,11 @@ let settings: UserSettings
 // disable trigger on cusomize activation Button
 scroller.checkTrigger = function (e: MouseEvent) {
   const elm = e.target as Element
+  const originalFn = Scroller.prototype.checkTrigger.bind(scroller)
   if (elm.classList.contains("activation")) {
     return
   }
-  return Scroller.prototype.checkTrigger.bind(scroller)(e)
+  return originalFn(e)
 }
 
 // Maybe combine 'update events' to one
