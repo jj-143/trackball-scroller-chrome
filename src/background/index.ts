@@ -1,11 +1,14 @@
 import "regenerator-runtime/runtime"
 import Extension from "./extension"
-import { connect } from "../utils/reload"
+import { connectReloader } from "../utils/reload"
 
 const BROWSER_ACTION_ICON_PATH_ENABLED = "./images/icon.png"
 const BROWSER_ACTION_TITLE_ENABLED = ""
 const BROWSER_ACTION_ICON_PATH_DISABLED = "./images/icon-outline.png"
 const BROWSER_ACTION_TITLE_DISABLED = "Trackball Scroller (disabled)"
+
+const IS_DEV_BUILD =
+  chrome.runtime.getManifest().version.split(".").length === 4
 
 function updateBrowserActionIcon(enabled: boolean) {
   if (enabled) {
@@ -27,15 +30,16 @@ function updateBrowserActionIcon(enabled: boolean) {
 
 const extension = new Extension()
 
-// dev
-connect()
+if (IS_DEV_BUILD) {
+  connectReloader()
+}
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
+    chrome.runtime.openOptionsPage()
   }
   if (details.reason === "update") {
-    if (chrome.runtime.getManifest().version.split(".").length === 4) {
-      // dev build
+    if (IS_DEV_BUILD) {
       chrome.runtime.openOptionsPage()
     }
   }

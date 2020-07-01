@@ -1,8 +1,3 @@
-interface Option {
-  key: string
-  value: object
-}
-
 interface Combo {
   type: "mouse" | "keyboard"
   button: number | string

@@ -1,4 +1,4 @@
-const DEFAULT_USER_SETTINGS: UserSettings = {
+export const DEFAULT_USER_SETTINGS: UserSettings = {
   enabled: true,
   userOption: {
     scroller: {
@@ -87,25 +87,4 @@ export class Store {
       scrollerConfig: store.userOption.scroller,
     }))
   }
-}
-
-function migrateSettingsFrom_0_0_3(): Promise<UserSettings> {
-  // migrate from 0.0.3 to 1.0.0
-  return loadSettings_0_0_3().then((setting) => {
-    // FIXME
-    const newSetting: UserSettings = DEFAULT_USER_SETTINGS
-    return newSetting
-  })
-}
-
-function loadSettings_0_0_3() {
-  return new Promise((resolve, reject) => {
-    try {
-      chrome.storage.sync.get("setting", (setting) => {
-        resolve(setting)
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
 }

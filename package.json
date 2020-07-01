@@ -2,7 +2,17 @@
   "name": "trackball-scroller",
   "version": "0.3.1",
   "description": "",
-  "dependencies": {},
+  "scripts": {
+    "dev": "node parcel/build.js --debug",
+    "build": "node ./parcel/build.js",
+    "build:prod": "npm run build",
+    "postbuild:prod": "npm run zip",
+    "zip": "cd ./build && zip -r ../Trackball-Scroller.zip ./ && cd ..",
+    "dev-test": "parcel ./src/tests/test.html",
+    "test": "jest --config=./jest.config.js",
+    "test:watch": "jest --watch --config=./jest.config.js",
+    "prettier": "prettier --write -c ./src/**/*.ts"
+  },
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
@@ -16,17 +26,6 @@
     "ts-jest": "^26.1.0",
     "typescript": "^3.9.5",
     "ws": "^7.3.0"
-  },
-  "scripts": {
-    "dev": "node parcel/build.js --debug",
-    "build": "node ./parcel/build.js",
-    "build:prod": "npm run build",
-    "postbuild:prod": "npm run zip",
-    "zip": "cd ./build && zip -r ../Trackball-Scroller.zip ./ && cd ..",
-    "dev-test": "parcel ./src/tests/test.html",
-    "test": "jest --config=./jest.config.js",
-    "test:watch": "jest --watch --config=./jest.config.js",
-    "prettier": "prettier --write -c ./src/**/*.ts"
   },
   "author": "",
   "license": "ISC"

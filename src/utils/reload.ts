@@ -1,6 +1,6 @@
 const PORT = "9992"
 
-export function connect() {
+export function connectReloader() {
   const socket = new WebSocket(`ws://localhost:${PORT}`)
   socket.onmessage = (e) => {
     const { message } = JSON.parse(e.data)
