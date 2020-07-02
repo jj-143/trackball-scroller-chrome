@@ -17,9 +17,6 @@ function updateScroller({ enabled, scrollerConfig }: StoreResponse) {
   }
 }
 
-// notify this tab
-chrome.runtime.sendMessage({ type: "CONNECT" })
-
 chrome.runtime.onMessage.addListener((msg) => {
   switch (msg.type) {
     case "UPDATE_SETTING":
