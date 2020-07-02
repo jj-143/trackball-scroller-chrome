@@ -26,6 +26,8 @@ export default class Scroller {
     this.checkTrigger = this.checkTrigger.bind(this)
     this.handleMouseMove = this.handleMouseMove.bind(this)
     this.handleClickCancel = this.handleClickCancel.bind(this)
+    this.pointerLockChange = this.pointerLockChange.bind(this)
+    this.pointerLockError = this.pointerLockError.bind(this)
   }
 
   setConfig(config: ScrollerConfig) {
@@ -33,41 +35,71 @@ export default class Scroller {
   }
 
   enable() {
-    // if it has some side-effect thing,
-    // it needs to check [isEnabled] first.
-    // same with [disable()]
-
-    // prevent applying multiple times
-    // & handle when global [enable] changed
     if (this.isEnabled) return
-    document.addEventListener("mousedown", this.checkTrigger)
     this.isEnabled = true
+    document.addEventListener("mousedown", this.checkTrigger)
+    document.addEventListener("pointerlockchange", this.pointerLockChange)
+    document.addEventListener("pointerlockerror", this.pointerLockError)
   }
+
   disable() {
     if (!this.isEnabled) return
     this.deactivate()
     document.removeEventListener("mousedown", this.checkTrigger)
+    document.removeEventListener("pointerlockchange", this.pointerLockChange)
+    document.removeEventListener("pointerlockerror", this.pointerLockError)
     this.isEnabled = false
   }
 
   activate() {
-    if (this.isEnabled) {
+    preventContextMenu()
+    if (this.isEnabled && !this.isActivated) {
       this.isActivated = true
       document.documentElement.requestPointerLock()
-      preventContextMenu()
-      document.removeEventListener("mousedown", this.checkTrigger)
-      document.addEventListener("mousedown", this.handleClickCancel)
-      document.addEventListener("mousemove", this.handleMouseMove)
     }
   }
 
   deactivate() {
-    this.isActivated = false
-    document.exitPointerLock()
+    if (this.isActivated) {
+      this.isActivated = false
+      document.exitPointerLock()
+    }
+  }
+
+  onActivated() {
+    document.removeEventListener("mousedown", this.checkTrigger)
+    document.addEventListener("mousedown", this.handleClickCancel)
+    document.addEventListener("mousemove", this.handleMouseMove)
+  }
+
+  onDeactivated() {
     allowContextMenu()
     document.addEventListener("mousedown", this.checkTrigger)
     document.removeEventListener("mousedown", this.handleClickCancel)
     document.removeEventListener("mousemove", this.handleMouseMove)
+  }
+
+  pointerLockChange() {
+    if (document.pointerLockElement) {
+      if (this.isActivated) {
+        // normal activation
+        this.onActivated()
+      }
+    } else {
+      if (this.isActivated) {
+        // lost PointerLock by ESC, window losing focus
+        this.isActivated = false
+      }
+      // normal deactivation
+      this.onDeactivated()
+    }
+  }
+
+  // sandboxed iframe prevents using PointerLock (e.g. Yahoo)
+  pointerLockError() {
+    // manual call since pointerLockChange never called when errored
+    this.onDeactivated()
+    this.disable()
   }
 
   matchCombo(combo: Combo) {
@@ -84,12 +116,6 @@ export default class Scroller {
   }
 
   checkTrigger(e: MouseEvent) {
-    if (this.isConfigUpdated) {
-      // should test speed
-      //TODO: how to call get new config??
-      // `inject.ts` should be manage this..
-    }
-
     const combo = parseMouseInput(e)
     const matched = this.matchCombo(combo)
     if (!matched) return
@@ -100,17 +126,12 @@ export default class Scroller {
     // need both to work without any erratic behaviors
     e.preventDefault()
     e.stopPropagation()
+
     this.scrollTarget = findTarget(path)
     this.activate()
   }
 
   handleMouseMove(e) {
-    // handles losing PointerLock.
-    // `document.pointerLockElement === null`
-    // when user hit ESC / focus moved to other window / tab
-    if (!document.pointerLockElement && this.isActivated) {
-      return this.deactivate()
-    }
     if (this.scrollTarget) {
       const dy =
         e.movementY *
@@ -119,7 +140,8 @@ export default class Scroller {
       this.scrollTarget.scrollBy(0, dy)
     }
   }
-  handleClickCancel(e) {
+
+  handleClickCancel() {
     if (this.isActivated) {
       this.deactivate()
     }
