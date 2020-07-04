@@ -32,7 +32,7 @@ function clean() {
   return fs.remove(Path.join(__dirname, "..", outDir))
 }
 
-function build({ watch = false }) {
+function build({ watch } = { watch: false }) {
   const entries = entryFiles.map((f) => Path.join(__dirname, "..", f))
   const bundler = new Bundler(entries, { ...options, outDir, watch: watch })
   const sockets = []
