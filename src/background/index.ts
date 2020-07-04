@@ -1,6 +1,7 @@
 import "regenerator-runtime/runtime"
 import Extension from "./extension"
 import { connectReloader } from "../utils/reload"
+import { migrateStoreFrom_0_0_3 } from "../store/migration"
 
 const BROWSER_ACTION_ICON_PATH_ENABLED = "./images/icon.png"
 const BROWSER_ACTION_TITLE_ENABLED = ""
@@ -42,6 +43,9 @@ chrome.runtime.onInstalled.addListener((details) => {
     if (IS_DEV_BUILD) {
       chrome.runtime.openOptionsPage()
     }
+    if (details.previousVersion === "0.0.3") {
+      migrateStoreFrom_0_0_3(extension.store)
+    }
   }
 })
 
@@ -70,7 +74,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 // User Setting changed
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "sync") {
-    if (changes.USER_SETTINGS) {
+    if (changes.USER_SETTINGS && changes.USER_SETTINGS.oldValue) {
       const userSetting = changes.USER_SETTINGS.newValue as UserSettings
       const storeResponse = {
         scrollerConfig: userSetting.userOption.scroller,
