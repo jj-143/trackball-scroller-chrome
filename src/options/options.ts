@@ -23,7 +23,7 @@ document.addEventListener(
   // maybe move to setting.userOption.scroller
   "UPDATE_ACTIVATION",
   ({ detail: combo }: CustomEvent) => {
-    const newSettings = { ...settings }
+    const newSettings = JSON.parse(JSON.stringify(settings))
     newSettings.userOption.scroller.activation = {
       ...newSettings.userOption.scroller.activation,
       ...combo,
@@ -39,7 +39,7 @@ document.addEventListener(
 document.addEventListener(
   "UPDATE_NON_ACTIVATION",
   ({ detail: { key, value } }: CustomEvent) => {
-    const newSettings = { ...settings }
+    const newSettings = JSON.parse(JSON.stringify(settings))
     newSettings.userOption.scroller.activation.nonActivation[key] = value
 
     saveSettings(newSettings).then(() => {
@@ -52,7 +52,7 @@ document.addEventListener(
 document.addEventListener(
   "UPDATE_CHECKBOX",
   ({ detail: { key, value } }: CustomEvent) => {
-    const newSettings = { ...settings }
+    const newSettings = JSON.parse(JSON.stringify(settings))
     newSettings.userOption.scroller[key] = value
 
     saveSettings(newSettings).then(() => {
@@ -65,7 +65,7 @@ document.addEventListener(
 document.addEventListener(
   "UPDATE_SENSITIVITY",
   ({ detail: sensitivity }: CustomEvent) => {
-    const newSettings = { ...settings }
+    const newSettings = JSON.parse(JSON.stringify(settings))
     const newSensitivity =
       newSettings.userOption.scroller.sensitivity + sensitivity
 
