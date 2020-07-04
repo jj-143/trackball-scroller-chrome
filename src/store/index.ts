@@ -25,10 +25,10 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
 }
 
 async function _setDefault(store: UserSettings): Promise<UserSettings> {
-  return store ? store : DEFAULT_USER_SETTINGS
+  return store ? store : saveSettings(DEFAULT_USER_SETTINGS)
 }
 
-function _loadSettings(): Promise<UserSettings> {
+function loadSettings(): Promise<UserSettings> {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.sync.get("USER_SETTINGS", ({ USER_SETTINGS: setting }) => {
@@ -40,7 +40,7 @@ function _loadSettings(): Promise<UserSettings> {
   })
 }
 
-function _saveSettings(store: UserSettings) {
+function saveSettings(store: UserSettings): Promise<UserSettings> {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.sync.set({ USER_SETTINGS: store }, () => {
@@ -67,7 +67,7 @@ export class Store {
   async get(): Promise<UserSettings> {
     return this._store
       ? this._store
-      : _loadSettings()
+      : loadSettings()
           .then(_setDefault)
           .then(this._keepStore)
           .catch((e) => {
@@ -76,9 +76,7 @@ export class Store {
   }
 
   async save(store: UserSettings): Promise<UserSettings> {
-    return _saveSettings(store)
-      .then(this._keepStore)
-      .catch((e) => {})
+    return saveSettings(store).then(this._keepStore)
   }
 
   getScrollerSetting(): Promise<StoreResponse> {
