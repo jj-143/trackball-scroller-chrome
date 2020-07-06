@@ -1,4 +1,4 @@
-import { parseMouseInput } from "./parseInput"
+import { parseInput } from "./parseInput"
 
 const modifiers = {
   ctrl: false,
@@ -18,7 +18,7 @@ describe("parse MouseDown event", () => {
       button: 0,
     })
 
-    expect(parseMouseInput(evt)).toEqual(expected)
+    expect(parseInput(evt)).toEqual(expected)
 
     expected = {
       type: "mouse" as const,
@@ -28,7 +28,7 @@ describe("parse MouseDown event", () => {
     evt = new MouseEvent("mousedown", {
       button: 1,
     })
-    expect(parseMouseInput(evt)).toEqual(expected)
+    expect(parseInput(evt)).toEqual(expected)
 
     expected = {
       type: "mouse" as const,
@@ -38,7 +38,7 @@ describe("parse MouseDown event", () => {
     evt = new MouseEvent("mousedown", {
       button: 2,
     })
-    expect(parseMouseInput(evt)).toEqual(expected)
+    expect(parseInput(evt)).toEqual(expected)
   })
 
   it("should parse mouse input with modifiers", () => {
@@ -52,7 +52,7 @@ describe("parse MouseDown event", () => {
       ctrlKey: true,
     })
 
-    expect(parseMouseInput(evt)).toEqual(expected)
+    expect(parseInput(evt)).toEqual(expected)
 
     expected = {
       type: "mouse" as const,
@@ -64,6 +64,68 @@ describe("parse MouseDown event", () => {
       ctrlKey: true,
       altKey: true,
     })
-    expect(parseMouseInput(evt)).toEqual(expected)
+    expect(parseInput(evt)).toEqual(expected)
+  })
+})
+
+describe("parse keydown event", () => {
+  it("should parse keyboard input", () => {
+    let expected: Combo = {
+      type: "keyboard" as const,
+      button: "z",
+      modifiers: { ...modifiers },
+    }
+    let evt = new KeyboardEvent("keydown", {
+      key: "z",
+    })
+
+    expect(parseInput(evt)).toEqual(expected)
+
+    expected = {
+      type: "keyboard" as const,
+      button: "F1",
+      modifiers: { ...modifiers },
+    }
+
+    evt = new KeyboardEvent("keydown", {
+      key: "F1",
+    })
+    expect(parseInput(evt)).toEqual(expected)
+
+    expected = {
+      type: "keyboard" as const,
+      button: "1",
+      modifiers: { ...modifiers },
+    }
+    evt = new KeyboardEvent("keydown", {
+      key: "1",
+    })
+    expect(parseInput(evt)).toEqual(expected)
+  })
+
+  it("should parse keyboard input with modifiers", () => {
+    let expected = {
+      type: "keyboard" as const,
+      button: "z",
+      modifiers: { ...modifiers, ctrl: true },
+    }
+    let evt = new KeyboardEvent("keydown", {
+      key: "z",
+      ctrlKey: true,
+    })
+
+    expect(parseInput(evt)).toEqual(expected)
+
+    expected = {
+      type: "keyboard" as const,
+      button: "z",
+      modifiers: { ...modifiers, ctrl: true, alt: true },
+    }
+    evt = new KeyboardEvent("keydown", {
+      key: "z",
+      ctrlKey: true,
+      altKey: true,
+    })
+    expect(parseInput(evt)).toEqual(expected)
   })
 })

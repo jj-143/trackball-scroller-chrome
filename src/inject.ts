@@ -9,19 +9,16 @@ function getStore(): Promise<StoreResponse> {
 }
 
 function updateScroller({ enabled, scrollerConfig }: StoreResponse) {
-  scroller.setConfig(scrollerConfig)
-  if (enabled) {
-    scroller.enable()
-  } else {
-    scroller.disable()
+  scroller.updateConfig(scrollerConfig)
+  if (enabled !== scroller.isEnabled) {
+    enabled ? scroller.enable() : scroller.disable()
   }
 }
 
-chrome.runtime.onMessage.addListener((msg) => {
+chrome.runtime.onMessage.addListener((msg, _, sendResponse) => {
   switch (msg.type) {
     case "UPDATE_SETTING":
-      const { scrollerConfig, enabled } = msg.storeResponse
-      updateScroller({ scrollerConfig, enabled })
+      updateScroller(msg.storeResponse)
       break
   }
 })

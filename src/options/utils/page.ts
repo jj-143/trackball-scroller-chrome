@@ -1,5 +1,5 @@
 import { formatActivation, isOnlyMouse3 } from "./utils"
-import { parseMouseInput } from "../../scroller/utils/parseInput"
+import { parseInput } from "../../scroller/utils/parseInput"
 import {
   allowContextMenu,
   preventContextMenu,
@@ -44,50 +44,14 @@ function onPointerLockChange() {
   }
 }
 
-function handleMouseActivation(e) {
+function handleComboInput(e) {
   e.preventDefault()
   e.stopPropagation()
   e.stopImmediatePropagation()
 
-  // ignore pressing only modifier key
-  if (e.type === "keydown" && MODIFIERS.includes(e.key)) return
-
-  // ignore esc - handled by PointerLock (this function might already be canceled)
-  if (e.key === "Escape") return
-
-  let combo: Combo = parseMouseInput(e)
-
-  // if (e.type == "keydown") {
-  //   throw
-  //   combo = {
-  //     type: 'keyboard' as const,
-  //     button: e.key,
-  //     //TODO: where do you use text??
-  //     text: e.key.toUpperCase(),
-  //     modifiers
-  //   }
-  // } else {
-  //   combo = {
-  //     type: 'mouse' as const,
-  //     button: e.button,
-  //     // text: "Mouse " + (parseInt(e.button) + 1),
-  //     modifiers
-  //   }
-  // }
-
-  // const newActivation = {
-  //   //TODO: mayby seprate nonActivation from type Activation?
-  //   ... combo,
-  // }
-  // set global activation
-
-  // var activation = {
-  //   input,
-  //   modifiers: modifiersPressed,
-  // }
-
+  let combo: Combo = parseInput(e)
+  if (!combo) return
   stopCustomizeActivation()
-
   document.dispatchEvent(
     new CustomEvent("UPDATE_ACTIVATION", {
       detail: combo,
@@ -108,7 +72,8 @@ function startCustomizeActivation() {
 
   preventContextMenu()
   document.addEventListener("pointerlockchange", onPointerLockChange)
-  document.addEventListener("mousedown", handleMouseActivation, true)
+  document.addEventListener("mousedown", handleComboInput, true)
+  document.addEventListener("keydown", handleComboInput, true)
 }
 
 function stopCustomizeActivation() {
@@ -119,7 +84,8 @@ function stopCustomizeActivation() {
 
   allowContextMenu()
   document.removeEventListener("pointerlockchange", onPointerLockChange)
-  document.removeEventListener("mousedown", handleMouseActivation, true)
+  document.removeEventListener("mousedown", handleComboInput, true)
+  document.removeEventListener("keydown", handleComboInput, true)
 
   btnActivation.disabled = false
   btnActivation.classList.remove("editing")

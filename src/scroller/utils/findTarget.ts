@@ -1,4 +1,16 @@
-export function findTarget(path: EventTarget[]): Element {
+import { isFromAnchor } from "./isFromAnchor"
+
+export function findTarget(e: MouseEvent | KeyboardEvent) {
+  if (e.type.startsWith("mouse")) {
+    const path = e.composedPath()
+    if (isFromAnchor(path)) return
+    return findTargetFromPath(path)
+  } else {
+    return autoTarget()
+  }
+}
+
+function findTargetFromPath(path: EventTarget[]): Element {
   let target = document.scrollingElement
 
   for (var i = 0; i < path.length - 2; i++) {
@@ -24,4 +36,8 @@ export function findTarget(path: EventTarget[]): Element {
   }
 
   return target
+}
+
+function autoTarget(): Element {
+  return document.documentElement
 }

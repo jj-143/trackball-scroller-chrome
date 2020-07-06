@@ -1,6 +1,5 @@
 /// <reference path="../definitions.d.ts" />
-import { parseMouseInput } from "./utils/parseInput"
-import { isFromAnchor } from "./utils/isFromAnchor"
+import { parseInput } from "./utils/parseInput"
 import { findTarget } from "./utils/findTarget"
 import { preventContextMenu, allowContextMenu } from "./utils/utils"
 import { calcMultiplier } from "./utils/sensitivityToValue"
@@ -34,21 +33,36 @@ export default class Scroller {
     this.config = config
   }
 
+  updateConfig(config: ScrollerConfig) {
+    if (
+      this.isEnabled &&
+      config.activation.type !== this.config.activation.type
+    ) {
+      this.detachTrigger(this.config.activation.type)
+      this.attachTrigger(config.activation.type)
+    }
+    this.setConfig(config)
+  }
+
   enable() {
+    // it's not convenient but [setConfig] must be called before
+    // enabling scroller: it attaches trigger based on the trigger type.
+    // the term "enable", "disable" might not be the best choice;
+    // it's more of "listen to trigger event"
     if (this.isEnabled) return
     this.isEnabled = true
-    document.addEventListener("mousedown", this.checkTrigger)
+    this.attachTrigger()
     document.addEventListener("pointerlockchange", this.pointerLockChange)
     document.addEventListener("pointerlockerror", this.pointerLockError)
   }
 
   disable() {
     if (!this.isEnabled) return
+    this.isEnabled = false
     this.deactivate()
-    document.removeEventListener("mousedown", this.checkTrigger)
+    this.detachTrigger()
     document.removeEventListener("pointerlockchange", this.pointerLockChange)
     document.removeEventListener("pointerlockerror", this.pointerLockError)
-    this.isEnabled = false
   }
 
   activate() {
@@ -67,16 +81,40 @@ export default class Scroller {
   }
 
   onActivated() {
-    document.removeEventListener("mousedown", this.checkTrigger)
+    this.detachTrigger()
     document.addEventListener("mousedown", this.handleClickCancel)
     document.addEventListener("mousemove", this.handleMouseMove)
   }
 
   onDeactivated() {
     allowContextMenu()
-    document.addEventListener("mousedown", this.checkTrigger)
+    this.isEnabled && this.attachTrigger()
     document.removeEventListener("mousedown", this.handleClickCancel)
     document.removeEventListener("mousemove", this.handleMouseMove)
+  }
+
+  attachTrigger(type: "mouse" | "keyboard" | void) {
+    if (type === undefined) {
+      type = this.config.activation.type
+    }
+
+    if (type === "mouse") {
+      document.addEventListener("mousedown", this.checkTrigger)
+    } else {
+      document.addEventListener("keydown", this.checkTrigger)
+    }
+  }
+
+  detachTrigger(type: "mouse" | "keyboard" | void) {
+    if (type === undefined) {
+      type = this.config.activation.type
+    }
+
+    if (type === "mouse") {
+      document.removeEventListener("mousedown", this.checkTrigger)
+    } else {
+      document.removeEventListener("keydown", this.checkTrigger)
+    }
   }
 
   pointerLockChange() {
@@ -104,6 +142,7 @@ export default class Scroller {
 
   matchCombo(combo: Combo) {
     return (
+      combo &&
       this.config.activation.type === combo.type &&
       this.config.activation.button === combo.button &&
       Object.entries(this.config.activation.modifiers)
@@ -115,19 +154,17 @@ export default class Scroller {
     )
   }
 
-  checkTrigger(e: MouseEvent) {
-    const combo = parseMouseInput(e)
+  checkTrigger(e: MouseEvent | KeyboardEvent) {
+    const combo = parseInput(e)
     const matched = this.matchCombo(combo)
     if (!matched) return
 
-    const path = e.composedPath()
-    if (isFromAnchor(path)) return
+    const target = findTarget(e)
+    if (!target) return
 
-    // need both to work without any erratic behaviors
+    this.scrollTarget = target
     e.preventDefault()
     e.stopPropagation()
-
-    this.scrollTarget = findTarget(path)
     this.activate()
   }
 
