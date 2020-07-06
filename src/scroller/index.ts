@@ -27,6 +27,7 @@ export default class Scroller {
     this.handleClickCancel = this.handleClickCancel.bind(this)
     this.pointerLockChange = this.pointerLockChange.bind(this)
     this.pointerLockError = this.pointerLockError.bind(this)
+    this.handleKeyComboCancel = this.handleKeyComboCancel.bind(this)
   }
 
   setConfig(config: ScrollerConfig) {
@@ -83,6 +84,7 @@ export default class Scroller {
   onActivated() {
     this.detachTrigger()
     document.addEventListener("mousedown", this.handleClickCancel)
+    document.addEventListener("keydown", this.handleKeyComboCancel)
     document.addEventListener("mousemove", this.handleMouseMove)
   }
 
@@ -90,6 +92,7 @@ export default class Scroller {
     allowContextMenu()
     this.isEnabled && this.attachTrigger()
     document.removeEventListener("mousedown", this.handleClickCancel)
+    document.removeEventListener("keydown", this.handleKeyComboCancel)
     document.removeEventListener("mousemove", this.handleMouseMove)
   }
 
@@ -182,5 +185,10 @@ export default class Scroller {
     if (this.isActivated) {
       this.deactivate()
     }
+  }
+
+  handleKeyComboCancel(e) {
+    const combo = parseInput(e)
+    this.matchCombo(combo) && this.deactivate()
   }
 }
