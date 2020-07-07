@@ -37,3 +37,5 @@ interface StoreResponse {
   enabled: boolean
   scrollerConfig: ScrollerConfig
 }
+
+type ScrollTarget = HTMLElement | Window | void

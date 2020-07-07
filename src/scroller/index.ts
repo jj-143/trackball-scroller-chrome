@@ -1,7 +1,12 @@
 /// <reference path="../definitions.d.ts" />
 import { parseInput } from "./utils/parseInput"
 import { findTarget } from "./utils/findTarget"
-import { preventContextMenu, allowContextMenu } from "./utils/utils"
+import {
+  preventContextMenu,
+  allowContextMenu,
+  stripSmoothScroll,
+  revertSmoothScroll,
+} from "./utils/utils"
 import { calcMultiplier } from "./utils/sensitivityToValue"
 
 export default class Scroller {
@@ -10,7 +15,7 @@ export default class Scroller {
   // state
   isEnabled: boolean
   isActivated: boolean
-  scrollTarget: Element | Window
+  scrollTarget: ScrollTarget
   isConfigUpdated: boolean
 
   constructor() {
@@ -83,6 +88,7 @@ export default class Scroller {
 
   onActivated() {
     this.detachTrigger()
+    stripSmoothScroll(this.scrollTarget)
     document.addEventListener("mousedown", this.handleClickCancel)
     document.addEventListener("keydown", this.handleKeyComboCancel)
     document.addEventListener("mousemove", this.handleMouseMove)
@@ -90,6 +96,7 @@ export default class Scroller {
 
   onDeactivated() {
     allowContextMenu()
+    revertSmoothScroll()
     this.isEnabled && this.attachTrigger()
     document.removeEventListener("mousedown", this.handleClickCancel)
     document.removeEventListener("keydown", this.handleKeyComboCancel)

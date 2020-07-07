@@ -1,3 +1,5 @@
+let strippedSmoothScroll: [HTMLElement, string][] = []
+
 export function preventDefault(e) {
   e.preventDefault()
 }
@@ -18,7 +20,7 @@ export function allowContextMenu() {
  * but when the modal is short, no scroller, the biggest element
  * in the "backdropped" area scrolled. check: https://getbootstrap.com/docs/4.5/components/modal/
  */
-export function searchTarget(): Element[] {
+export function searchTarget(): HTMLElement[] {
   var found = []
 
   const searchExcludes = ["A", "SPAN", "P", "H1", "H2", "I"]
@@ -75,4 +77,32 @@ function isScrollable(elm: Element) {
       diff > 50 && style != "hidden" && (style == "auto" || style == "scroll"),
     info: "(" + diff + "," + style + ")",
   }
+}
+
+function _stripSmoothScroll(elm: HTMLElement) {
+  if (getComputedStyle(elm).scrollBehavior === "smooth") {
+    strippedSmoothScroll.push([elm, elm.style.scrollBehavior])
+    elm.style.scrollBehavior = "auto"
+  }
+}
+
+export function stripSmoothScroll(scrollTarget: ScrollTarget) {
+  if (!scrollTarget) return
+  const isNaturalTarget =
+    scrollTarget == window ||
+    (scrollTarget as HTMLElement).tagName == "BODY" ||
+    (scrollTarget as HTMLElement).tagName == "HTML"
+  if (isNaturalTarget) {
+    _stripSmoothScroll(document.documentElement)
+    _stripSmoothScroll(document.body)
+  } else {
+    _stripSmoothScroll(scrollTarget as HTMLElement)
+  }
+}
+
+export function revertSmoothScroll() {
+  strippedSmoothScroll.forEach(
+    ([elm, value]) => (elm.style.scrollBehavior = value)
+  )
+  strippedSmoothScroll = []
 }

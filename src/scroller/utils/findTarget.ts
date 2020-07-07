@@ -1,7 +1,7 @@
 import { isFromAnchor } from "./isFromAnchor"
 import { searchTarget } from "./utils"
 
-export function findTarget(e: MouseEvent | KeyboardEvent) {
+export function findTarget(e: MouseEvent | KeyboardEvent): ScrollTarget {
   if (e.type.startsWith("mouse")) {
     const path = e.composedPath()
     if (isFromAnchor(path)) return
@@ -11,12 +11,12 @@ export function findTarget(e: MouseEvent | KeyboardEvent) {
   }
 }
 
-function findTargetFromPath(path: EventTarget[]): Element {
-  let target = document.scrollingElement
+function findTargetFromPath(path: EventTarget[]): HTMLElement {
+  let target = document.scrollingElement as HTMLElement
 
+  // until [html]; without document, Window
   for (var i = 0; i < path.length - 2; i++) {
-    var elm = path[i] as Element
-
+    var elm = path[i] as HTMLElement
     // also detecting "auto" and non-scrollable element; pass and go higher.
     if (
       (getComputedStyle(elm).overflowY === "auto" ||
@@ -39,7 +39,7 @@ function findTargetFromPath(path: EventTarget[]): Element {
   return target
 }
 
-function autoTarget(): Element | Window {
+function autoTarget(): ScrollTarget | void {
   const diffHTML =
     document.documentElement.scrollHeight -
     document.documentElement.clientHeight
