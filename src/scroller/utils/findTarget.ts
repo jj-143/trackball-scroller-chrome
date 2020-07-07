@@ -1,4 +1,5 @@
 import { isFromAnchor } from "./isFromAnchor"
+import { searchTarget } from "./utils"
 
 export function findTarget(e: MouseEvent | KeyboardEvent) {
   if (e.type.startsWith("mouse")) {
@@ -38,6 +39,30 @@ function findTargetFromPath(path: EventTarget[]): Element {
   return target
 }
 
-function autoTarget(): Element {
-  return document.documentElement
+function autoTarget(): Element | Window {
+  const diffHTML =
+    document.documentElement.scrollHeight -
+    document.documentElement.clientHeight
+  const styleHTML = getComputedStyle(document.documentElement).overflowY
+  const diffBODY = document.body.scrollHeight - document.body.clientHeight
+  const styleBODY = getComputedStyle(document.body).overflowY
+
+  const isThereCoveringScrollingElement =
+    ((diffHTML != 0 || diffBODY != 0) && styleHTML === "hidden") ||
+    styleBODY === "hidden"
+
+  if (isThereCoveringScrollingElement) {
+    const found = searchTarget()
+    return found.length ? found[0] : null
+  }
+
+  if (diffHTML == 0 && diffBODY == 0) {
+    // no scroller on body.
+    // but the page is full-heighted with scrollable area, like it's options page.
+    // we could set the biggest as target but we don't, for now.
+    // implementing last active(clicked) element resolve these kind of pages.
+    return null
+  } else {
+    return window
+  }
 }

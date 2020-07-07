@@ -10,7 +10,7 @@ export default class Scroller {
   // state
   isEnabled: boolean
   isActivated: boolean
-  scrollTarget: Element
+  scrollTarget: Element | Window
   isConfigUpdated: boolean
 
   constructor() {
