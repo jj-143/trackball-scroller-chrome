@@ -26,18 +26,24 @@ const options = {
   sourceMaps: false,
   watch: false,
   contentHash: false,
+  minify: false,
 }
 
 function clean() {
   return fs.remove(Path.join(__dirname, "..", outDir))
 }
 
-function build({ watch } = { watch: false }) {
+function build({ debug } = { debug: false }) {
   const entries = entryFiles.map((f) => Path.join(__dirname, "..", f))
-  const bundler = new Bundler(entries, { ...options, outDir, watch: watch })
+  const bundler = new Bundler(entries, {
+    ...options,
+    outDir,
+    watch: debug,
+    minify: debug,
+  })
   const sockets = []
 
-  if (watch) {
+  if (debug) {
     const server = new WebSocket.Server({ port: WS_PORT })
     server.on("connection", (ws) => {
       sockets.push(ws)
@@ -66,7 +72,7 @@ function run() {
   if (args.includes("--debug")) {
     outDir = getOutDir({ debug: true })
     clean()
-      .then(() => build({ watch: true }))
+      .then(() => build({ debug: true }))
       .then(copyStatic)
   } else {
     outDir = getOutDir({ debug: false })
