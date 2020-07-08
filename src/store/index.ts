@@ -12,7 +12,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
           meta: false,
         },
         nonActivation: {
-          ctrl: false,
+          ctrl: true,
           alt: false,
           shift: false,
           meta: false,

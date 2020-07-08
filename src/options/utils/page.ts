@@ -6,16 +6,17 @@ import {
 } from "../../scroller/utils/utils"
 
 const OPTION_KEYS = ["naturalScrolling"]
-const MODIFIERS = ["Control", "Alt", "Shift", "Meta"]
 
 function attachNonActivationHandler() {
   document.querySelector("#non-activation").addEventListener("change", (e) => {
     const chip = e.target as HTMLInputElement
     document.dispatchEvent(
-      new CustomEvent("UPDATE_NON_ACTIVATION", {
+      new CustomEvent("UPDATE_OPTION", {
         detail: {
-          key: chip.name,
-          value: chip.checked,
+          type: "NON_ACTIVATION",
+          payload: {
+            [chip.name]: chip.checked,
+          },
         },
       })
     )
@@ -26,10 +27,12 @@ function attachCheckboxHandler() {
   document.querySelector("#checkboxes").addEventListener("change", (e) => {
     const checkbox = e.target as HTMLInputElement
     document.dispatchEvent(
-      new CustomEvent("UPDATE_CHECKBOX", {
+      new CustomEvent("UPDATE_OPTION", {
         detail: {
-          key: checkbox.name,
-          value: checkbox.checked,
+          type: "SCROLLER_OPTION",
+          payload: {
+            [checkbox.name]: checkbox.checked,
+          },
         },
       })
     )
@@ -53,8 +56,11 @@ function handleComboInput(e) {
   if (!combo) return
   stopCustomizeActivation()
   document.dispatchEvent(
-    new CustomEvent("UPDATE_ACTIVATION", {
-      detail: combo,
+    new CustomEvent("UPDATE_OPTION", {
+      detail: {
+        type: "ACTIVATION",
+        payload: combo,
+      },
     })
   )
 }
@@ -105,12 +111,16 @@ function attachSensitivityHandler() {
   document
     .querySelector("#option-sensitivity")
     .addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).tagName !== "BUTTON") return
       const button = e.target as HTMLInputElement
       const step = parseInt(button.value)
 
       document.dispatchEvent(
-        new CustomEvent("UPDATE_SENSITIVITY", {
-          detail: step,
+        new CustomEvent("UPDATE_OPTION", {
+          detail: {
+            type: "SENSITIVITY",
+            payload: step,
+          },
         })
       )
       return

@@ -49,12 +49,13 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 })
 
+// Message from content script or options page
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   switch (msg.type) {
     case "GET_SCROLLER_SETTING":
       extension.store.getScrollerSetting().then(sendResponse)
       break
-    case "GET_USER_SETTINGS": // from Option
+    case "GET_USER_SETTINGS": // Options page
       extension.store.get().then(sendResponse)
       break
     case "SAVE_USER_SETTINGS":
@@ -71,7 +72,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true
 })
 
-// User Setting changed
+// Broadcast setting change
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "sync") {
     if (changes.USER_SETTINGS && changes.USER_SETTINGS.oldValue) {
@@ -83,10 +84,10 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       chrome.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
           chrome.tabs.sendMessage(tab.id, {
-          type: "UPDATE_SETTING",
-          storeResponse,
+            type: "UPDATE_SETTING",
+            storeResponse,
+          })
         })
-      })
       })
 
       if (userSetting.enabled !== changes.USER_SETTINGS.oldValue.enabled) {

@@ -178,7 +178,7 @@ export default class Scroller {
     this.activate()
   }
 
-  handleMouseMove(e) {
+  handleMouseMove(e: MouseEvent) {
     if (this.scrollTarget) {
       const dy =
         e.movementY *
@@ -194,7 +194,7 @@ export default class Scroller {
     }
   }
 
-  handleKeyComboCancel(e) {
+  handleKeyComboCancel(e: KeyboardEvent) {
     const combo = parseInput(e)
     this.matchCombo(combo) && this.deactivate()
   }
