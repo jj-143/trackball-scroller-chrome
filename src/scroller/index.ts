@@ -17,9 +17,11 @@ export default class Scroller {
   isActivated: boolean
   scrollTarget: ScrollTarget
   isConfigUpdated: boolean
+  preventClickCancelOnce: boolean
 
   constructor() {
     this.config = null
+    this.preventClickCancelOnce = false
 
     // state
     this.isEnabled = false
@@ -88,8 +90,11 @@ export default class Scroller {
 
   onActivated() {
     this.detachTrigger()
+    this.preventClickCancelOnce = true
     stripSmoothScroll(this.scrollTarget)
-    document.addEventListener("mousedown", this.handleClickCancel)
+
+    // in "PointerLocked", any button click is calls [onclick]
+    document.addEventListener("click", this.handleClickCancel)
     document.addEventListener("keydown", this.handleKeyComboCancel)
     document.addEventListener("mousemove", this.handleMouseMove)
   }
@@ -98,7 +103,7 @@ export default class Scroller {
     allowContextMenu()
     revertSmoothScroll()
     this.isEnabled && this.attachTrigger()
-    document.removeEventListener("mousedown", this.handleClickCancel)
+    document.removeEventListener("click", this.handleClickCancel)
     document.removeEventListener("keydown", this.handleKeyComboCancel)
     document.removeEventListener("mousemove", this.handleMouseMove)
   }
@@ -188,7 +193,16 @@ export default class Scroller {
     }
   }
 
-  handleClickCancel() {
+  handleClickCancel(e: MouseEvent) {
+    // one-shot preventing immediate canceling after activation
+    if (
+      this.config.activation.type === "mouse" &&
+      this.preventClickCancelOnce
+    ) {
+      this.preventClickCancelOnce = false
+      return
+    }
+
     if (this.isActivated) {
       this.deactivate()
     }
