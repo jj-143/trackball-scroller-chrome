@@ -1,4 +1,4 @@
-import { saveSettings, getSettings } from "./utils/utils"
+import { saveSettings, getSettings, formatActivation } from "./utils/utils"
 import { updateDOM, makeTestArticles, attachEvents } from "./utils/page"
 import { scroller } from "../inject"
 import Scroller from "../scroller"
@@ -16,13 +16,22 @@ scroller.checkTrigger = function (e: MouseEvent) {
 }
 
 function handleOptionUpdate({ detail: { type, payload } }: CustomEvent) {
-  const newSettings = JSON.parse(JSON.stringify(settings))
+  const newSettings: UserSettings = JSON.parse(JSON.stringify(settings))
+
   switch (type) {
     case "ACTIVATION":
       // note: activation = combo + nonActivation (v1.0.0)
       newSettings.userOption.scroller.activation = {
         ...newSettings.userOption.scroller.activation,
         ...payload,
+      }
+
+      // same activation: revert to original
+      if (
+        formatActivation(newSettings.userOption.scroller.activation) ===
+        formatActivation(settings.userOption.scroller.activation)
+      ) {
+        return updateDOM(settings)
       }
       break
     case "NON_ACTIVATION":
@@ -44,16 +53,32 @@ function handleOptionUpdate({ detail: { type, payload } }: CustomEvent) {
       newSettings.userOption.scroller.sensitivity = newSensitivity
       break
   }
-  saveSettings(newSettings).then(() => {
-    settings = newSettings
-    updateDOM(newSettings)
-  })
+  saveSettings(newSettings)
 }
 
 document.addEventListener("UPDATE_OPTION", handleOptionUpdate)
 
 document.addEventListener("CANCEL_CUSTOMIZE_ACTIVATION", () => {
   updateDOM(settings)
+})
+
+// some setting changes ("enabled" via Browser Action)
+// might not from option page.
+// so handle both from Background Page's Event
+// triggered by [chrome.storage.onChanged]
+function updateSetting(storeResponse: StoreResponse) {
+  let { enabled, scrollerConfig } = storeResponse
+  settings.enabled = enabled
+  settings.userOption.scroller = scrollerConfig
+  updateDOM(settings)
+}
+
+chrome.runtime.onMessage.addListener((msg, _, sendResponse) => {
+  switch (msg.type) {
+    case "UPDATE_SETTING":
+      updateSetting(msg.storeResponse)
+      break
+  }
 })
 
 makeTestArticles()
