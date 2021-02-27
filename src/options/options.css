@@ -3,7 +3,7 @@ body {
   flex-flow: column;
   margin: 0;
   height: 100vh;
-  min-height: 960px;
+  min-height: 900px;
   background-color: #002e79;
   color: #c6f1e9;
   font-family: "Maven Pro", sans-serif;
@@ -13,10 +13,16 @@ body {
 header {
   text-align: center;
   display: flex;
+  align-items: center;
   flex-flow: column;
   /* font-weight: 900; */
-  font-variation-settings: 'wght' 900;
+  font-variation-settings: "wght" 900;
   padding-top: 2.5rem;
+}
+
+header > img {
+  width: 208px;
+  height: 209px;
 }
 
 #title {
@@ -62,7 +68,7 @@ main > div {
   border: 2px solid #c6f1e9;
   border-radius: 4px;
   /* font-weight: bold; */
-  font-variation-settings: 'wght' 700;
+  font-variation-settings: "wght" 700;
   font-size: 18px;
   padding: 8px 14px;
   cursor: pointer;
@@ -91,7 +97,7 @@ label.control,
   margin-bottom: 12px;
   font-size: 1.5rem;
   /* font-weight: 700; */
-  font-variation-settings: 'wght' 700;
+  font-variation-settings: "wght" 700;
 }
 
 .option .checkbox label {
@@ -223,10 +229,10 @@ input#activation + button {
   color: #d30953;
   font-size: 1.125rem;
   /* font-weight: bold; */
-  font-variation-settings: 'wght' 700;
+  font-variation-settings: "wght" 700;
 }
 
-#option-sensitivity > div > *{
+#option-sensitivity > div > * {
   margin-right: 1em;
 }
 
