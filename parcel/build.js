@@ -70,6 +70,7 @@ function run() {
   const args = process.argv.slice(2)
 
   if (args.includes("--debug")) {
+    process.env.NODE_ENV = "development"
     outDir = getOutDir({ debug: true })
     clean()
       .then(() => build({ debug: true }))

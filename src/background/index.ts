@@ -8,8 +8,7 @@ const BROWSER_ACTION_TITLE_ENABLED = ""
 const BROWSER_ACTION_ICON_PATH_DISABLED = "./images/icon-outline.png"
 const BROWSER_ACTION_TITLE_DISABLED = "Trackball Scroller (disabled)"
 
-const IS_DEV_BUILD =
-  chrome.runtime.getManifest().version.split(".").length === 4
+const IS_DEV_BUILD = process.env.NODE_ENV == "development"
 
 function updateBrowserActionIcon(enabled: boolean) {
   if (enabled) {
