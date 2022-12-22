@@ -93,7 +93,7 @@ export default class Scroller {
     this.preventClickCancelOnce = true
     stripSmoothScroll(this.scrollTarget)
 
-    // in "PointerLocked", any button click is calls [onclick]
+    // in "PointerLocked", any button click emits 'click' event
     document.addEventListener("click", this.handleClickCancel)
     document.addEventListener("keydown", this.handleKeyComboCancel)
     document.addEventListener("mousemove", this.handleMouseMove)
@@ -141,7 +141,7 @@ export default class Scroller {
       }
     } else {
       if (this.isActivated) {
-        // lost PointerLock by ESC, window losing focus
+        // lost PointerLock by ESC or window losing focus
         this.isActivated = false
       }
       // normal deactivation
@@ -201,7 +201,7 @@ export default class Scroller {
   }
 
   handleClickCancel(e: MouseEvent) {
-    // one-shot preventing immediate canceling after activation
+    // preventing immediate cancelation after activation
     if (
       this.config.activation.type === "mouse" &&
       this.preventClickCancelOnce

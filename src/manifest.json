@@ -1,6 +1,6 @@
 {
   "name": "Trackball Scroller",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Scroll with your trackball",
   "permissions": ["storage"],
   "background": {
