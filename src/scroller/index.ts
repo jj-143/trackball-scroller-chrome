@@ -99,6 +99,7 @@ export default class Scroller {
     document.addEventListener("mousemove", this.handleMouseMove)
   }
 
+  // NOTE: multiple call results to same result as one call
   onDeactivated() {
     allowContextMenu()
     revertSmoothScroll()
@@ -149,10 +150,16 @@ export default class Scroller {
   }
 
   // sandboxed iframe prevents using PointerLock (e.g. Yahoo)
-  pointerLockError() {
-    // manual call since pointerLockChange never called when errored
+  // or
+  // When browser exits PointerLock by ESC key,
+  // it takes 1 seconds before it accepts new request.
+  // if user trying to aquire lock during that period, it throws
+  // [DOMException: The user has "exited the lock" before this request was completed.]
+  // just clean up
+  pointerLockError(err) {
+    // the scroller never activated, but clean up just in case.
+    this.isActivated = false
     this.onDeactivated()
-    this.disable()
   }
 
   matchCombo(combo: Combo) {
