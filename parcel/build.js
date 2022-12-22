@@ -39,7 +39,7 @@ function build({ debug } = { debug: false }) {
     ...options,
     outDir,
     watch: debug,
-    minify: debug,
+    minify: !debug,
   })
   const sockets = []
 
