@@ -1,6 +1,6 @@
 {
   "name": "trackball-scroller",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Trackball Scroller for Chrome",
   "scripts": {
     "dev": "node parcel/build.js --debug",
