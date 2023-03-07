@@ -45,7 +45,7 @@ export function getSettings(): Promise<UserSettings> {
 }
 
 export function saveSettings(settings: UserSettings) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     chrome.runtime.sendMessage(
       { type: "SAVE_USER_SETTINGS", settings },
       (err) => {
