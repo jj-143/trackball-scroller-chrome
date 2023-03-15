@@ -1,9 +1,11 @@
-import { saveSettings, getSettings, formatActivation } from "./utils/utils"
+import { formatActivation } from "./utils/utils"
 import { updateDOM, makeTestArticles, attachEvents } from "./utils/page"
-import { scroller } from "../inject"
 import Scroller from "../scroller"
+import { Store } from "../store"
+import ChromeStorage from "../store/providers/chrome"
 
 let settings: UserSettings
+const scroller = new Scroller()
 
 // Bypass trigger on the "customize activation" button
 scroller.checkTrigger = function (e: MouseEvent) {
@@ -53,8 +55,10 @@ function handleOptionUpdate({ detail: { type, payload } }: CustomEvent) {
       newSettings.userOption.scroller.sensitivity = newSensitivity
       break
   }
-  saveSettings(newSettings)
+  store.updateStore(newSettings)
 }
+
+// NOTE: Will be replaced with direct function call rather than Custom Events
 
 document.addEventListener("UPDATE_OPTION", handleOptionUpdate)
 
@@ -62,28 +66,38 @@ document.addEventListener("CANCEL_CUSTOMIZE_ACTIVATION", () => {
   updateDOM(settings)
 })
 
-// some setting changes ("enabled" via Browser Action)
-// might not from option page.
-// so handle both from Background Page's Event
-// triggered by [chrome.storage.onChanged]
-function updateSetting(storeResponse: StoreResponse) {
-  let { enabled, scrollerConfig } = storeResponse
-  settings.enabled = enabled
-  settings.userOption.scroller = scrollerConfig
-  updateDOM(settings)
-}
-
-chrome.runtime.onMessage.addListener((msg, _, sendResponse) => {
-  switch (msg.type) {
-    case "UPDATE_SETTING":
-      updateSetting(msg.storeResponse)
-      break
-  }
-})
+// initialize DOM related features
 
 makeTestArticles()
 attachEvents()
-getSettings().then((settings_) => {
-  settings = settings_
-  updateDOM(settings)
+
+// Stores
+
+const store = new Store({
+  provider: new ChromeStorage(),
 })
+
+store.onUpdate((store) => {
+  update(store)
+})
+
+store.getStore().then((store) => {
+  update(store)
+})
+
+/**
+ * Updates DOM and Scroller settings
+ */
+function update(store: UserSettings) {
+  settings = store
+  updateDOM(store)
+  updateScroller(store)
+}
+
+// will be removed once this gets incorporated into Scroller's mehtod; probably into `Scroller.updateConfig()`.
+function updateScroller(store: UserSettings) {
+  scroller.updateConfig(store.userOption.scroller)
+  if (store.enabled !== scroller.isEnabled) {
+    store.enabled ? scroller.enable() : scroller.disable()
+  }
+}

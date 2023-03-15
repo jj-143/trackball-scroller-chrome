@@ -48,63 +48,22 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 })
 
-// Message from content script or options page
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  switch (msg.type) {
-    case "GET_SCROLLER_SETTING":
-      extension.store.getScrollerSetting().then(sendResponse)
-      break
-    case "GET_USER_SETTINGS": // Options page
-      extension.store.get().then(sendResponse)
-      break
-    case "SAVE_USER_SETTINGS":
-      extension.store
-        .save(msg.settings)
-        .then(() => {
-          sendResponse()
-        })
-        .catch(() => {
-          sendResponse("cannot be stored.")
-        })
-      break
-  }
-  return true
-})
-
-// Broadcast setting change
-chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "sync") {
-    if (changes.USER_SETTINGS && changes.USER_SETTINGS.oldValue) {
-      const userSetting = changes.USER_SETTINGS.newValue as UserSettings
-      const storeResponse = {
-        scrollerConfig: userSetting.userOption.scroller,
-        enabled: userSetting.enabled,
-      }
-      chrome.tabs.query({}, (tabs) => {
-        tabs.forEach((tab) => {
-          chrome.tabs.sendMessage(tab.id, {
-            type: "UPDATE_SETTING",
-            storeResponse,
-          })
-        })
-      })
-
-      if (userSetting.enabled !== changes.USER_SETTINGS.oldValue.enabled) {
-        updateBrowserActionIcon(userSetting.enabled)
-      }
-    }
-  }
-})
-
 // Enabled changed (via Browser Action)
-chrome.browserAction.onClicked.addListener((tab) => {
-  extension.store.get().then((store) => {
-    store.enabled = !store.enabled
-    extension.store.save(store)
+chrome.browserAction.onClicked.addListener(async () => {
+  const store = await extension.store.getStore()
+  extension.store.updateStore({
+    ...store,
+    enabled: !store.enabled,
   })
 })
 
 // Initialize Browser Action Status
-extension.store.get().then((store) => {
+extension.store.getStore().then((store) => {
   updateBrowserActionIcon(store.enabled)
+})
+
+extension.store.onUpdate((store, old) => {
+  if (store.enabled !== old?.enabled) {
+    updateBrowserActionIcon(store.enabled)
+  }
 })

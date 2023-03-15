@@ -30,31 +30,3 @@ export function isOnlyMouse3(activation: Activation) {
     Object.values(activation.nonActivation).filter((_) => _).length === 0
   )
 }
-
-export function getSettings(): Promise<UserSettings> {
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage(
-      {
-        type: "GET_USER_SETTINGS",
-      },
-      (settings: UserSettings) => {
-        resolve(settings)
-      }
-    )
-  })
-}
-
-export function saveSettings(settings: UserSettings) {
-  return new Promise<void>((resolve, reject) => {
-    chrome.runtime.sendMessage(
-      { type: "SAVE_USER_SETTINGS", settings },
-      (err) => {
-        if (!err) {
-          resolve()
-        } else {
-          reject()
-        }
-      }
-    )
-  })
-}

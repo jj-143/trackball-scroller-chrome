@@ -1,12 +1,8 @@
 import Scroller from "./scroller"
+import { Store } from "./store"
+import ChromeStorage from "./store/providers/chrome"
 
 export const scroller = new Scroller()
-
-function getStore(): Promise<StoreResponse> {
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage({ type: "GET_SCROLLER_SETTING" }, resolve)
-  })
-}
 
 function updateScroller({ enabled, scrollerConfig }: StoreResponse) {
   scroller.updateConfig(scrollerConfig)
@@ -15,12 +11,20 @@ function updateScroller({ enabled, scrollerConfig }: StoreResponse) {
   }
 }
 
-chrome.runtime.onMessage.addListener((msg, _, sendResponse) => {
-  switch (msg.type) {
-    case "UPDATE_SETTING":
-      updateScroller(msg.storeResponse)
-      break
-  }
+const store = new Store({
+  provider: new ChromeStorage(),
 })
 
-getStore().then(updateScroller)
+store.onUpdate((store) => {
+  updateScroller({
+    enabled: store.enabled,
+    scrollerConfig: store.userOption.scroller,
+  })
+})
+
+store.getStore().then((store) => {
+  updateScroller({
+    enabled: store.enabled,
+    scrollerConfig: store.userOption.scroller,
+  })
+})

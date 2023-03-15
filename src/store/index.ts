@@ -1,3 +1,5 @@
+import { StorageProvider } from "./providers"
+
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   enabled: true,
   userOption: {
@@ -24,65 +26,62 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   },
 }
 
-async function _setDefault(store: UserSettings): Promise<UserSettings> {
-  return store ? store : saveSettings(DEFAULT_USER_SETTINGS)
-}
+type OnUpdateListener = (store: UserSettings, old?: UserSettings) => void
 
-function loadSettings(): Promise<UserSettings> {
-  return new Promise((resolve, reject) => {
-    try {
-      chrome.storage.sync.get("USER_SETTINGS", ({ USER_SETTINGS: setting }) => {
-        resolve(setting)
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
-}
-
-function saveSettings(store: UserSettings): Promise<UserSettings> {
-  return new Promise((resolve, reject) => {
-    try {
-      chrome.storage.sync.set({ USER_SETTINGS: store }, () => {
-        resolve(store)
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
-}
-
+/**
+ * Store class handles the loading and saving of the user settings.
+ *
+ * Actual data persists are handled by a `StorageProvider` implementation.
+ */
 export class Store {
-  _store: UserSettings
+  #store?: UserSettings
+  #provider: StorageProvider
+  #onUpdateListeners: Set<OnUpdateListener> = new Set()
 
-  constructor() {
-    this._keepStore = this._keepStore.bind(this)
+  constructor({ provider }: { provider: StorageProvider }) {
+    this.#provider = provider
+    this.#listenUpdatesFromProvider()
   }
 
-  async _keepStore(store) {
-    this._store = store
-    return store
+  static #deepClone(store: UserSettings): UserSettings {
+    // we can do this since the store is JSON-ifiable.
+    return JSON.parse(JSON.stringify(store))
   }
 
-  async get(): Promise<UserSettings> {
-    return this._store
-      ? this._store
-      : loadSettings()
-          .then(_setDefault)
-          .then(this._keepStore)
-          .catch((e) => {
-            console.log(e)
-          })
+  #listenUpdatesFromProvider() {
+    this.#provider.onChange((store, old) => {
+      this.#onUpdateListeners.forEach((listener) => {
+        listener(store, old)
+      })
+      this.#store = store
+    })
   }
 
-  async save(store: UserSettings): Promise<UserSettings> {
-    return saveSettings(store).then(this._keepStore)
+  async #loadStore() {
+    const storage = await this.#provider.load()
+    if (storage) {
+      this.#store = storage as UserSettings
+    } else {
+      this.#store = DEFAULT_USER_SETTINGS
+      this.#provider.save(DEFAULT_USER_SETTINGS)
+    }
   }
 
-  getScrollerSetting(): Promise<StoreResponse> {
-    return this.get().then((store) => ({
-      enabled: store.enabled,
-      scrollerConfig: store.userOption.scroller,
-    }))
+  async getStore(): Promise<UserSettings> {
+    if (!this.#store) await this.#loadStore()
+    // returning a clone to prevent direct manipulation.
+    return Store.#deepClone(this.#store as UserSettings)
+  }
+
+  async updateStore(store: UserSettings): Promise<void> {
+    return this.#provider.save(store).then(() => {
+      this.#store = store
+    })
+  }
+
+  onUpdate(fn: (store: UserSettings, old?: UserSettings) => void): () => void {
+    this.#onUpdateListeners.add(fn)
+    // cleanup function
+    return () => this.#onUpdateListeners.delete(fn)
   }
 }
