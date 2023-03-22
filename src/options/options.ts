@@ -3,6 +3,7 @@ import { updateDOM, makeTestArticles, attachEvents } from "./utils/page"
 import Scroller from "../scroller"
 import { Store } from "../store"
 import ChromeStorage from "../store/providers/chrome"
+import { InMemoryStorage } from "../store/providers"
 
 let settings: UserSettings
 const scroller = new Scroller()
@@ -71,10 +72,15 @@ document.addEventListener("CANCEL_CUSTOMIZE_ACTIVATION", () => {
 makeTestArticles()
 attachEvents()
 
+// For dev & test enviroment where it can't access the extension storage
+const isDev = process.env.NODE_ENV === "development"
+const isExtensionPage = location.href.startsWith("chrome-extension://")
+const useInMemoryStorage = isDev && !isExtensionPage
+
 // Stores
 
 const store = new Store({
-  provider: new ChromeStorage(),
+  provider: useInMemoryStorage ? new InMemoryStorage() : new ChromeStorage(),
 })
 
 store.onUpdate((store) => {
