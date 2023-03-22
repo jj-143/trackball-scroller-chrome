@@ -1,9 +1,13 @@
-const { Parcel } = require("@parcel/core")
-const Path = require("path")
-const fs = require("fs-extra")
-const WebSocket = require("ws")
+import { Parcel } from "@parcel/core"
+import path from "path"
+import fs from "fs-extra"
+import process from "process"
+import WebSocket from "ws"
+import { fileURLToPath } from "url"
 
 const WS_PORT = "9992"
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url))
 let distDir
 
 function getDistDir({ debug = false }) {
@@ -23,7 +27,7 @@ const entries = [
 const statics = ["src/manifest.json", "src/images"]
 
 function clean() {
-  return fs.remove(Path.join(__dirname, "..", distDir))
+  return fs.remove(path.join(__dirname, "..", distDir))
 }
 
 function build({ debug } = { debug: false }) {
@@ -65,10 +69,10 @@ function build({ debug } = { debug: false }) {
 }
 
 function copyStatic() {
-  const files = statics.map((f) => Path.join(__dirname, "..", f))
+  const files = statics.map((f) => path.join(__dirname, "..", f))
 
   for (const file of files) {
-    fs.copy(file, Path.join(__dirname, "..", distDir, Path.basename(file)))
+    fs.copy(file, path.join(__dirname, "..", distDir, path.basename(file)))
   }
 }
 
