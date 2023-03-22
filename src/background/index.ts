@@ -1,6 +1,5 @@
 import "regenerator-runtime/runtime"
 import Extension from "./extension"
-import { connectReloader } from "../utils/reload"
 import { migrateStoreFrom_0_0_3 } from "../store/migration"
 
 const BROWSER_ACTION_ICON_PATH_ENABLED = "./images/icon.png"
@@ -29,10 +28,6 @@ function updateBrowserActionIcon(enabled: boolean) {
 }
 
 const extension = new Extension()
-
-if (IS_DEV_BUILD) {
-  connectReloader()
-}
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
