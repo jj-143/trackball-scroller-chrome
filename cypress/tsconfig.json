@@ -4,5 +4,10 @@
     "strict": true,
     "types": ["node", "cypress-real-events"]
   },
-  "include": ["**/*.ts"]
+  "include": [
+    "../src/definitions.d.ts",
+    "../src/store/providers",
+    "../src/types",
+    "**/*.ts"
+  ]
 }
