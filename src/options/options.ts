@@ -75,12 +75,14 @@ attachEvents()
 // For dev & test enviroment where it can't access the extension storage
 const isDev = process.env.NODE_ENV === "development"
 const isExtensionPage = location.href.startsWith("chrome-extension://")
-const useInMemoryStorage = isDev && !isExtensionPage
+const useTestStorage = isDev && !isExtensionPage
 
 // Stores
 
 const store = new Store({
-  provider: useInMemoryStorage ? new InMemoryStorage() : new ChromeStorage(),
+  provider: useTestStorage
+    ? window._testStorage ?? new InMemoryStorage()
+    : new ChromeStorage(),
 })
 
 store.onUpdate((store) => {
