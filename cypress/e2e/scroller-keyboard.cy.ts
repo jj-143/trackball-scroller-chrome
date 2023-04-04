@@ -58,4 +58,85 @@ describe("Browser Test for scroller : Keyboard", () => {
       })
     })
   })
+
+  context("Deactivation", () => {
+    beforeEach(() => {
+      return storage.save(createStorageData({ type: "keyboard", button: "e" }))
+    })
+
+    // activation. see: context "Activation"
+    beforeEach(() => {
+      cy.get("button:not(.activation)").first().focus()
+      cy.realPress("e")
+      cy.get("header").realMouseMove(0, 0)
+
+      // should have PointerLock
+      cy.document().should(($document) => {
+        expect($document.pointerLockElement).to.not.equal(null)
+      })
+    })
+
+    it("should deactivate with a click", () => {
+      // deactivation
+      cy.get("header").realClick({ button: "left", position: "top" })
+
+      // --- test
+
+      // should NOT have PointerLock
+      cy.document().should(($document) => {
+        expect($document.pointerLockElement).to.equal(null)
+      })
+
+      // try scroll
+      cy.get("header").realMouseMove(0, -100)
+
+      // should NOT scroll
+      cy.get("html").then(($element) => {
+        const top = $element.get(0).scrollTop
+        expect(top).to.equal(0)
+      })
+    })
+
+    it("should deactivate with activation combo", () => {
+      // deactivation
+      cy.realPress("e")
+
+      // --- test
+
+      // should NOT have PointerLock
+      cy.document().should(($document) => {
+        expect($document.pointerLockElement).to.equal(null)
+      })
+
+      // try scroll
+      cy.get("header").realMouseMove(0, -100)
+
+      // should NOT scroll
+      cy.get("html").then(($element) => {
+        const top = $element.get(0).scrollTop
+        expect(top).to.equal(0)
+      })
+    })
+
+    it("should not deactivate with non combo", () => {
+      // try deactivation
+      cy.realPress("a")
+
+      // --- test
+
+      // should have PointerLock
+      cy.document().should(($document) => {
+        expect($document.pointerLockElement).to.not.equal(null)
+      })
+
+      // try scroll
+      cy.get("header").realMouseMove(0, -100)
+
+      // should scroll
+      cy.get("html").then(($element) => {
+        const top = $element.get(0).scrollTop
+        expect(top).to.be.above(0)
+      })
+    })
+  })
 })
