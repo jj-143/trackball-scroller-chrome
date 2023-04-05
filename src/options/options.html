@@ -22,12 +22,17 @@
     </header>
     <main>
       <div id="settings">
-        <div class="option" id="activation" style="position: relative;">
+        <div class="option" id="activation" style="position: relative">
           <label class="control">activation</label>
-          <div style="display: flex; align-items: center;">
-            <button class="activation">Mouse 1</button>
+          <div style="display: flex; align-items: center">
+            <button class="activation" data-cy="activation">Mouse 1</button>
           </div>
-          <span id="warning-mouse3" class="hidden" style="position: absolute;">
+          <span
+            id="warning-mouse3"
+            class="hidden"
+            style="position: absolute"
+            data-cy="warning-mouse3"
+          >
             To use context menu, make sure to tick any modifier keys below.
           </span>
         </div>
@@ -43,7 +48,9 @@
                 id="non-activate-ctrl"
                 hidden
               />
-              <label class="chip" for="non-activate-ctrl">ctrl</label>
+              <label class="chip" for="non-activate-ctrl" data-cy="mod-ctrl"
+                >ctrl</label
+              >
             </span>
             <span>
               <input
@@ -53,7 +60,9 @@
                 value="alt"
                 hidden
               />
-              <label class="chip" for="non-activate-alt">alt</label>
+              <label class="chip" for="non-activate-alt" data-cy="mod-alt"
+                >alt</label
+              >
             </span>
             <span>
               <input
@@ -63,7 +72,9 @@
                 id="non-activate-shift"
                 hidden
               />
-              <label class="chip" for="non-activate-shift">shift</label>
+              <label class="chip" for="non-activate-shift" data-cy="mod-shift"
+                >shift</label
+              >
             </span>
             <span>
               <input
@@ -73,7 +84,9 @@
                 id="non-activate-meta"
                 hidden
               />
-              <label class="chip" for="non-activate-meta">meta</label>
+              <label class="chip" for="non-activate-meta" data-cy="mod-meta"
+                >meta</label
+              >
             </span>
           </div>
         </div>
@@ -81,9 +94,13 @@
         <div class="option" id="option-sensitivity">
           <label class="control">sensitivity (1 - 20)</label>
           <div>
-            <button class="push" value="-1">-</button>
-            <span id="sensitivity-value">1</span>
-            <button class="push" value="1">+</button>
+            <button class="push" value="-1" data-cy="sensitivity-decrease">
+              -
+            </button>
+            <span id="sensitivity-value" data-cy="sensitivity-value">1</span>
+            <button class="push" value="1" data-cy="sensitivity-increase">
+              +
+            </button>
           </div>
         </div>
 
@@ -98,7 +115,7 @@
                 checked
                 hidden
               />
-              <span class="input-checkbox" />
+              <span class="input-checkbox" data-cy="natural-scrolling" />
             </label>
           </div>
 

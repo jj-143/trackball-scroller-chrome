@@ -6,6 +6,8 @@ export function createStorageData<T extends "mouse" | "keyboard">(option: {
   button: T extends "mouse" ? number : string
   modsActivation?: ModsArgs
   modsNonActivation?: ModsArgs
+  sensitivity?: number
+  naturalScrolling?: boolean
 }): UserSettings {
   return {
     enabled: true,
@@ -29,8 +31,8 @@ export function createStorageData<T extends "mouse" | "keyboard">(option: {
             ...option.modsNonActivation,
           },
         },
-        sensitivity: 10,
-        naturalScrolling: true,
+        sensitivity: option.sensitivity ?? 10,
+        naturalScrolling: option.naturalScrolling ?? true,
       },
     },
   }
