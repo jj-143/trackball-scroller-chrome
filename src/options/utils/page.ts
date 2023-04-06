@@ -4,38 +4,25 @@ import {
   allowContextMenu,
   preventContextMenu,
 } from "../../scroller/utils/utils"
+import { handleCancelCustomizeActivation, handleOptionUpdate } from "../options"
 
 const OPTION_KEYS = ["naturalScrolling"]
 
 function attachNonActivationHandler() {
   document.querySelector("#non-activation").addEventListener("change", (e) => {
     const chip = e.target as HTMLInputElement
-    document.dispatchEvent(
-      new CustomEvent("UPDATE_OPTION", {
-        detail: {
-          type: "NON_ACTIVATION",
-          payload: {
-            [chip.name]: chip.checked,
-          },
-        },
-      })
-    )
+    handleOptionUpdate("NON_ACTIVATION", {
+      [chip.name]: chip.checked,
+    })
   })
 }
 
 function attachCheckboxHandler() {
   document.querySelector("#checkboxes").addEventListener("change", (e) => {
     const checkbox = e.target as HTMLInputElement
-    document.dispatchEvent(
-      new CustomEvent("UPDATE_OPTION", {
-        detail: {
-          type: "SCROLLER_OPTION",
-          payload: {
-            [checkbox.name]: checkbox.checked,
-          },
-        },
-      })
-    )
+    handleOptionUpdate("SCROLLER_OPTION", {
+      [checkbox.name]: checkbox.checked,
+    })
   })
 }
 
@@ -43,7 +30,7 @@ function onPointerLockChange() {
   if (!document.pointerLockElement) {
     document.removeEventListener("pointerlockchange", onPointerLockChange)
     stopCustomizeActivation()
-    document.dispatchEvent(new CustomEvent("CANCEL_CUSTOMIZE_ACTIVATION"))
+    handleCancelCustomizeActivation()
   }
 }
 
@@ -52,17 +39,10 @@ function handleComboInput(e) {
   e.stopPropagation()
   e.stopImmediatePropagation()
 
-  let combo: Combo = parseInput(e)
+  const combo = parseInput(e)
   if (!combo) return
   stopCustomizeActivation()
-  document.dispatchEvent(
-    new CustomEvent("UPDATE_OPTION", {
-      detail: {
-        type: "ACTIVATION",
-        payload: combo,
-      },
-    })
-  )
+  handleOptionUpdate("ACTIVATION", combo)
 }
 
 function startCustomizeActivation() {
@@ -115,15 +95,7 @@ function attachSensitivityHandler() {
       const button = e.target as HTMLInputElement
       const step = parseInt(button.value)
 
-      document.dispatchEvent(
-        new CustomEvent("UPDATE_OPTION", {
-          detail: {
-            type: "SENSITIVITY",
-            payload: step,
-          },
-        })
-      )
-      return
+      handleOptionUpdate("SENSITIVITY", step)
     })
 }
 

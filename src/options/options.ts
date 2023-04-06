@@ -1,4 +1,4 @@
-import { formatActivation } from "./utils/utils"
+import { Payload, formatActivation, updateSettingsReducer } from "./utils/utils"
 import { updateDOM, makeTestArticles, attachEvents } from "./utils/page"
 import Scroller from "../scroller"
 import { Store } from "../store"
@@ -18,54 +18,29 @@ scroller.checkTrigger = function (e: MouseEvent) {
   return originalFn(e)
 }
 
-function handleOptionUpdate({ detail: { type, payload } }: CustomEvent) {
-  const newSettings: UserSettings = JSON.parse(JSON.stringify(settings))
+export async function handleOptionUpdate<T extends keyof Payload>(
+  type: T,
+  payload: Payload[T]
+) {
+  const oldSettings = await store.getStore()
+  const newSettings = updateSettingsReducer(oldSettings, type, payload)
 
-  switch (type) {
-    case "ACTIVATION":
-      // note: activation = combo + nonActivation (v1.0.0)
-      newSettings.userOption.scroller.activation = {
-        ...newSettings.userOption.scroller.activation,
-        ...payload,
-      }
-
-      // same activation: revert to original
-      if (
-        formatActivation(newSettings.userOption.scroller.activation) ===
-        formatActivation(settings.userOption.scroller.activation)
-      ) {
-        return updateDOM(settings)
-      }
-      break
-    case "NON_ACTIVATION":
-      newSettings.userOption.scroller.activation.nonActivation = {
-        ...newSettings.userOption.scroller.activation.nonActivation,
-        ...payload,
-      }
-      break
-    case "SCROLLER_OPTION":
-      newSettings.userOption.scroller = {
-        ...newSettings.userOption.scroller,
-        ...payload,
-      }
-      break
-    case "SENSITIVITY":
-      const newSensitivity =
-        newSettings.userOption.scroller.sensitivity + payload
-      if (newSensitivity < 1 || newSensitivity > 20) return
-      newSettings.userOption.scroller.sensitivity = newSensitivity
-      break
+  if (
+    type === "ACTIVATION" &&
+    formatActivation(oldSettings.userOption.scroller.activation) ===
+      formatActivation(newSettings.userOption.scroller.activation)
+  ) {
+    updateDOM(oldSettings)
+    return
   }
   store.updateStore(newSettings)
 }
 
 // NOTE: Will be replaced with direct function call rather than Custom Events
 
-document.addEventListener("UPDATE_OPTION", handleOptionUpdate)
-
-document.addEventListener("CANCEL_CUSTOMIZE_ACTIVATION", () => {
-  updateDOM(settings)
-})
+export async function handleCancelCustomizeActivation() {
+  updateDOM(await store.getStore())
+}
 
 // initialize DOM related features
 
