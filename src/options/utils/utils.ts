@@ -1,8 +1,9 @@
-const MODIFIERS_ORDER = {
-  Ctrl: 0,
-  Alt: 1,
-  Shift: 2,
-  Meta: 3,
+const MODIFIER_ORDER = ["ctrl", "alt", "shift", "meta"]
+const MODIFIER_FORMAT_MAP: Record<keyof ModifierFlag, string> = {
+  ctrl: "Ctrl",
+  alt: "Alt",
+  shift: "Shift",
+  meta: "Meta",
 }
 
 export function formatActivation(activation: Activation): string {
@@ -11,13 +12,13 @@ export function formatActivation(activation: Activation): string {
       ? `Mouse ${(activation.button as number) + 1}`
       : `${activation.button.toString().toUpperCase()}`
   const modifiers = Object.entries(activation.modifiers)
-    .filter(([_, value]) => value)
-    .map(([key, _]) => key[0].toUpperCase() + key.substr(1))
-
-  modifiers.sort(
-    (a: string, b: string) => MODIFIERS_ORDER[a] - MODIFIERS_ORDER[b]
-  )
-
+    .filter(([, value]) => value)
+    .sort(
+      ([mod1], [mod2]) =>
+        MODIFIER_ORDER.findIndex((it) => it === mod1) -
+        MODIFIER_ORDER.findIndex((it) => it === mod2)
+    )
+    .map(([mod]) => MODIFIER_FORMAT_MAP[mod as keyof ModifierFlag])
   return modifiers.concat(button).join(" + ")
 }
 

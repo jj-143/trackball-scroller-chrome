@@ -3,7 +3,7 @@ import { formatActivation } from "./utils"
 describe("Format Activation", () => {
   it("should format mouse activation", () => {
     let expected = "Mouse 2"
-    let activation = {
+    let activation: Activation = {
       type: "mouse" as const,
       button: 1,
       modifiers: {
@@ -21,15 +21,16 @@ describe("Format Activation", () => {
     }
     expect(formatActivation(activation)).toBe(expected)
 
-    expected = "Ctrl + Alt + Shift + Meta + Mouse 3"
+    expected = "Ctrl + Shift + Meta + Mouse 3"
     activation = {
       type: "mouse" as const,
       button: 2,
+
+      // different order + optional modifier
       modifiers: {
-        ctrl: true,
-        alt: true,
-        shift: true,
         meta: true,
+        ctrl: true,
+        shift: true,
       },
       nonActivation: {
         ctrl: false,
@@ -43,7 +44,7 @@ describe("Format Activation", () => {
 
   it("should format key activation", () => {
     let expected = "F3"
-    let activation = {
+    let activation: Activation = {
       type: "keyboard" as const,
       button: "F3",
       modifiers: {
@@ -61,15 +62,15 @@ describe("Format Activation", () => {
     }
     expect(formatActivation(activation)).toBe(expected)
 
-    expected = "Ctrl + Alt + Shift + Meta + Z"
+    expected = "Alt + Meta + Z"
     activation = {
       type: "keyboard" as const,
       button: "z",
+
+      // different order + optional modifier
       modifiers: {
-        ctrl: true,
-        alt: true,
-        shift: true,
         meta: true,
+        alt: true,
       },
       nonActivation: {
         ctrl: false,
