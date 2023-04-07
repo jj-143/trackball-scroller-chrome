@@ -3,19 +3,12 @@ import Scroller from "."
 document.documentElement.requestPointerLock = jest.fn()
 document.exitPointerLock = jest.fn()
 
-const modifiers = {
-  ctrl: false,
-  alt: false,
-  shift: false,
-  meta: false,
-}
-
 const scrollerConfig: ScrollerConfig = {
   activation: {
     type: "mouse",
     button: 1,
-    modifiers: { ...modifiers },
-    nonActivation: { ...modifiers },
+    modifiers: {},
+    nonActivation: {},
   },
   naturalScrolling: true,
   sensitivity: 10,
@@ -80,245 +73,192 @@ describe("activation / deactivation", () => {
   })
 })
 
-describe("match mouse combo", () => {
+describe("matching Combo", () => {
   it("should match combo", () => {
-    const scrollerConfig = {
+    const scrollerConfig: ScrollerConfig = {
       activation: {
-        type: "mouse" as const,
+        type: "mouse",
         button: 0,
-        modifiers: { ...modifiers },
-        nonActivation: { ...modifiers },
+        modifiers: {},
+        nonActivation: {},
       },
       sensitivity: 10,
       naturalScrolling: false,
     }
 
-    let combo: Combo = {
-      type: "mouse" as const,
+    const combo: Combo = {
+      type: "mouse",
       button: 0,
-      modifiers: { ...modifiers },
+      modifiers: {},
     }
     scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(true)
   })
 
   it("should match combo with modifiers", () => {
-    const scrollerConfig = {
+    const scrollerConfig: ScrollerConfig = {
       activation: {
-        type: "mouse" as const,
+        type: "mouse",
         button: 0,
-        modifiers: { ...modifiers, ctrl: true },
-        nonActivation: { ...modifiers },
+        modifiers: { ctrl: true },
+        nonActivation: {},
       },
       sensitivity: 10,
       naturalScrolling: false,
     }
-
-    let combo: Combo = {
-      type: "mouse" as const,
+    const combo: Combo = {
+      type: "mouse",
       button: 0,
-      modifiers: { ...modifiers, ctrl: true },
-    }
-    scroller.setConfig(scrollerConfig)
-    expect(scroller.matchCombo(combo)).toBe(true)
-
-    combo = {
-      type: "mouse" as const,
-      button: 0,
-      modifiers: { ...modifiers, ctrl: true, alt: true, shift: true },
-    }
-    scrollerConfig.activation = {
-      type: "mouse" as const,
-      button: 0,
-      modifiers: { ...modifiers, ctrl: true },
-      nonActivation: { ...modifiers },
-    }
-    scroller.setConfig(scrollerConfig)
-    expect(scroller.matchCombo(combo)).toBe(true)
-
-    combo = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers, ctrl: true },
-    }
-    scrollerConfig.activation = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers, ctrl: true },
-      nonActivation: { ...modifiers, alt: true },
+      modifiers: { ctrl: true },
     }
     scroller.setConfig(scrollerConfig)
     expect(scroller.matchCombo(combo)).toBe(true)
   })
 
-  it("should not match", () => {
-    const scrollerConfig = {
-      activation: null,
-      sensitivity: 10,
-      naturalScrolling: false,
-    }
-
-    let combo: Combo = {
-      type: "keyboard" as const,
-      button: 1,
-      modifiers: { ...modifiers, ctrl: true },
-    }
-    scrollerConfig.activation = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers, ctrl: true },
-      nonActivation: { ...modifiers },
-    }
-    scroller.setConfig(scrollerConfig)
-    expect(scroller.matchCombo(combo)).toBe(false)
-
-    combo = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers },
-    }
-    scrollerConfig.activation = {
-      type: "mouse" as const,
-      button: 0,
-      modifiers: { ...modifiers },
-      nonActivation: { ...modifiers },
-    }
-    scroller.setConfig(scrollerConfig)
-    expect(scroller.matchCombo(combo)).toBe(false)
-
-    combo = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers, ctrl: true },
-    }
-    scrollerConfig.activation = {
-      type: "mouse" as const,
-      button: 0,
-      modifiers: { ...modifiers, ctrl: true },
-      nonActivation: { ...modifiers },
-    }
-    scroller.setConfig(scrollerConfig)
-    expect(scroller.matchCombo(combo)).toBe(false)
-
-    combo = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers, alt: true },
-    }
-    scrollerConfig.activation = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers, ctrl: true },
-      nonActivation: { ...modifiers },
-    }
-    scroller.setConfig(scrollerConfig)
-    expect(scroller.matchCombo(combo)).toBe(false)
-
-    combo = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers, ctrl: true },
-    }
-    scrollerConfig.activation = {
-      type: "mouse" as const,
-      button: 1,
-      modifiers: { ...modifiers, ctrl: true },
-      nonActivation: { ...modifiers, ctrl: true },
-    }
-    scroller.setConfig(scrollerConfig)
-    expect(scroller.matchCombo(combo)).toBe(false)
-  })
-})
-
-import * as findTargetM from "./utils/findTarget"
-jest.spyOn(findTargetM, "findTarget").mockReturnValue(document.documentElement)
-
-// NEEDS MOCK: manually calling [pointerLockChange] always "deactivates"
-// since [document.pointerLockElement] is always undefined in test.
-// needs mock pointerLockElement after "activated"
-// and needs to remove after "deactivate()" call.
-xdescribe("activation by mouse", () => {
-  it("should activate by mouse", () => {
-    const scrollerConfig = {
+  it("should match combo with extra modifiers", () => {
+    const scrollerConfig: ScrollerConfig = {
       activation: {
-        type: "mouse" as const,
+        type: "mouse",
         button: 0,
-        modifiers: { ...modifiers },
-        nonActivation: { ...modifiers },
+        modifiers: { ctrl: true },
+        nonActivation: {},
       },
       sensitivity: 10,
       naturalScrolling: false,
     }
+    const combo: Combo = {
+      type: "mouse",
+      button: 0,
+      modifiers: { ctrl: true, alt: true, shift: true },
+    }
 
     scroller.setConfig(scrollerConfig)
-    scroller.enable()
-
-    const evt = new MouseEvent("mousedown", {
-      button: 0,
-    })
-
-    document.dispatchEvent(evt)
-    expect(scroller.isActivated).toBe(true)
+    expect(scroller.matchCombo(combo)).toBe(true)
   })
 
-  it("should deactivate by mouse", () => {
-    const scrollerConfig = {
+  it("should match combo without nonActivation modifier presents", () => {
+    const scrollerConfig: ScrollerConfig = {
       activation: {
-        type: "mouse" as const,
+        type: "mouse",
         button: 0,
-        modifiers: { ...modifiers },
-        nonActivation: { ...modifiers },
+        modifiers: { ctrl: true },
+        nonActivation: { alt: true },
       },
       sensitivity: 10,
       naturalScrolling: false,
     }
+    const combo: Combo = {
+      type: "mouse",
+      button: 0,
+      modifiers: { ctrl: true },
+    }
 
     scroller.setConfig(scrollerConfig)
-    scroller.enable()
-
-    let evt = new MouseEvent("mousedown", {
-      button: 0,
-    })
-    document.dispatchEvent(evt)
-    expect(scroller.isActivated).toBe(true)
-
-    evt = new MouseEvent("mousedown", {
-      button: 0,
-    })
-    document.dispatchEvent(evt)
-    // manual call
-    scroller.pointerLockChange()
-    expect(scroller.isActivated).toBe(false)
+    expect(scroller.matchCombo(combo)).toBe(true)
   })
 
-  it("should be deactivated after losing PointerLock", () => {
-    const scrollerConfig = {
+  it("should NOT match with wrong type", () => {
+    const scrollerConfig: ScrollerConfig = {
       activation: {
-        type: "mouse" as const,
-        button: 0,
-        modifiers: { ...modifiers },
-        nonActivation: { ...modifiers },
+        type: "mouse",
+        button: 1,
+        modifiers: { ctrl: true },
+        nonActivation: {},
       },
       sensitivity: 10,
       naturalScrolling: false,
     }
+    const combo: Combo = {
+      type: "keyboard",
+      button: "e",
+      modifiers: { ctrl: true },
+    }
+
     scroller.setConfig(scrollerConfig)
-    scroller.enable()
+    expect(scroller.matchCombo(combo)).toBe(false)
+  })
 
-    let evt = new MouseEvent("mousedown", {
+  it("should NOT match with wrong mouse button", () => {
+    const scrollerConfig: ScrollerConfig = {
+      activation: {
+        type: "mouse",
+        button: 1,
+        modifiers: {},
+        nonActivation: {},
+      },
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+    const combo: Combo = {
+      type: "mouse",
       button: 0,
-    })
-    document.dispatchEvent(evt)
+      modifiers: {},
+    }
 
-    // mocking ESC or Tab switch or etc.
-    // In test, requestPointerLock is NOOP, so it's null
-    // document.pointerLockElement === null
-    evt = new MouseEvent("mousemove", {
+    scroller.setConfig(scrollerConfig)
+    expect(scroller.matchCombo(combo)).toBe(false)
+  })
+
+  it("should NOT match with wrong mouse button with same modifiers", () => {
+    const scrollerConfig: ScrollerConfig = {
+      activation: {
+        type: "mouse",
+        button: 1,
+        modifiers: { ctrl: true },
+        nonActivation: {},
+      },
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+    const combo: Combo = {
+      type: "mouse",
       button: 0,
-    })
-    document.dispatchEvent(evt)
-    // manual call
-    scroller.pointerLockChange()
-    expect(scroller.isActivated).toBe(false)
+      modifiers: { ctrl: true },
+    }
+
+    scroller.setConfig(scrollerConfig)
+    expect(scroller.matchCombo(combo)).toBe(false)
+  })
+
+  it("should NOT match with different modifiers", () => {
+    const scrollerConfig: ScrollerConfig = {
+      activation: {
+        type: "mouse",
+        button: 1,
+        modifiers: { alt: true },
+        nonActivation: {},
+      },
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+    const combo: Combo = {
+      type: "mouse",
+      button: 1,
+      modifiers: { ctrl: true },
+    }
+
+    scroller.setConfig(scrollerConfig)
+    expect(scroller.matchCombo(combo)).toBe(false)
+  })
+
+  it("should NOT match when Combo contains nonActivation modifier", () => {
+    const scrollerConfig: ScrollerConfig = {
+      activation: {
+        type: "mouse",
+        button: 1,
+        modifiers: { ctrl: true },
+        nonActivation: { ctrl: true },
+      },
+      sensitivity: 10,
+      naturalScrolling: false,
+    }
+    const combo: Combo = {
+      type: "mouse",
+      button: 1,
+      modifiers: { ctrl: true },
+    }
+
+    scroller.setConfig(scrollerConfig)
+    expect(scroller.matchCombo(combo)).toBe(false)
   })
 })
