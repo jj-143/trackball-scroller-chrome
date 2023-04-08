@@ -1,6 +1,6 @@
 let strippedSmoothScroll: [HTMLElement, string][] = []
 
-export function preventDefault(e) {
+export function preventDefault(e: Event) {
   e.preventDefault()
 }
 
@@ -21,10 +21,11 @@ export function allowContextMenu() {
  * in the "backdropped" area scrolled. check: https://getbootstrap.com/docs/4.5/components/modal/
  */
 export function searchTarget(): HTMLElement[] {
-  var found = []
+  const found: HTMLElement[] = []
 
   const searchExcludes = ["A", "SPAN", "P", "H1", "H2", "I"]
-  document.body.querySelectorAll("*").forEach((elm) => {
+  // FIXME: assuming HTMLElement for now.
+  document.body.querySelectorAll<HTMLElement>("*").forEach((elm) => {
     if (
       !searchExcludes.includes(elm.tagName) &&
       isScrollable(elm).value &&
@@ -39,24 +40,24 @@ export function searchTarget(): HTMLElement[] {
   return found
 }
 
-function computeVisibleArea(elm): number {
-  var rect = elm.getBoundingClientRect()
+function computeVisibleArea(elm: Element): number {
+  const rect = elm.getBoundingClientRect()
 
-  var visibleLeft = Math.max(rect.left, 0)
-  var visibleRight = Math.min(rect.right, window.innerWidth)
+  const visibleLeft = Math.max(rect.left, 0)
+  const visibleRight = Math.min(rect.right, window.innerWidth)
 
-  var visibleTop = Math.max(rect.top, 0)
-  var visibleBottom = Math.min(rect.bottom, window.innerHeight)
+  const visibleTop = Math.max(rect.top, 0)
+  const visibleBottom = Math.min(rect.bottom, window.innerHeight)
 
   return (visibleRight - visibleLeft) * (visibleBottom - visibleTop)
 }
 
 function isOnViewport(elm: Element) {
-  var rect = elm.getBoundingClientRect()
+  const rect = elm.getBoundingClientRect()
 
   // or document.documentElement.clientWidth. (check browser support; chrome supports below)
-  var viewportWidth = window.innerWidth
-  var viewportHeight = window.innerHeight
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
 
   return (
     rect.width &&
@@ -69,8 +70,8 @@ function isOnViewport(elm: Element) {
 }
 
 function isScrollable(elm: Element) {
-  var diff = elm.scrollHeight - elm.clientHeight
-  var style = getComputedStyle(elm).overflowY
+  const diff = elm.scrollHeight - elm.clientHeight
+  const style = getComputedStyle(elm).overflowY
 
   return {
     value:
@@ -86,7 +87,7 @@ function _stripSmoothScroll(elm: HTMLElement) {
   }
 }
 
-export function stripSmoothScroll(scrollTarget: ScrollTarget) {
+export function stripSmoothScroll(scrollTarget: ScrollTarget | null) {
   if (!scrollTarget) return
   const isNaturalTarget =
     scrollTarget == window ||

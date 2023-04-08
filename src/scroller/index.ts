@@ -1,4 +1,3 @@
-/// <reference path="../definitions.d.ts" />
 import { parseInput } from "./utils/parseInput"
 import { findTarget } from "./utils/findTarget"
 import {
@@ -15,8 +14,7 @@ export default class Scroller {
   // state
   isEnabled: boolean
   isActivated: boolean
-  scrollTarget: ScrollTarget
-  isConfigUpdated: boolean
+  scrollTarget: ScrollTarget | null
   preventClickCancelOnce: boolean
 
   constructor() {
@@ -27,7 +25,6 @@ export default class Scroller {
     this.isEnabled = false
     this.isActivated = false
     this.scrollTarget = null
-    this.isConfigUpdated = false
 
     this.checkTrigger = this.checkTrigger.bind(this)
     this.handleMouseMove = this.handleMouseMove.bind(this)
@@ -156,7 +153,7 @@ export default class Scroller {
   // if user trying to aquire lock during that period, it throws
   // [DOMException: The user has "exited the lock" before this request was completed.]
   // just clean up
-  pointerLockError(err) {
+  pointerLockError() {
     // the scroller never activated, but clean up just in case.
     this.isActivated = false
     this.onDeactivated()
@@ -164,20 +161,22 @@ export default class Scroller {
 
   matchCombo(combo: Combo) {
     return (
-      combo &&
       this.config.activation.type === combo.type &&
       this.config.activation.button === combo.button &&
+      // every activation mods need to be pressed
       Object.entries(this.config.activation.modifiers)
-        .filter(([_, mod]) => mod)
-        .every(([key, _]) => combo.modifiers[key]) &&
+        .filter(([, pressed]) => pressed)
+        .every(([mod]) => combo.modifiers[mod as keyof ModifierFlag]) &&
+      // every non-activation mods should NOT be pressed
       Object.entries(this.config.activation.nonActivation)
-        .filter(([_, mod]) => mod)
-        .every(([key, _]) => !combo.modifiers[key])
+        .filter(([, pressed]) => pressed)
+        .every(([mod]) => !combo.modifiers[mod as keyof ModifierFlag])
     )
   }
 
   checkTrigger(e: MouseEvent | KeyboardEvent) {
     const combo = parseInput(e)
+    if (!combo) return
     const matched = this.matchCombo(combo)
     if (!matched) return
 
@@ -200,7 +199,7 @@ export default class Scroller {
     }
   }
 
-  handleClickCancel(e: MouseEvent) {
+  handleClickCancel() {
     // preventing immediate cancelation after activation
     if (
       this.config.activation.type === "mouse" &&
@@ -217,6 +216,7 @@ export default class Scroller {
 
   handleKeyComboCancel(e: KeyboardEvent) {
     const combo = parseInput(e)
+    if (!combo) return
     this.matchCombo(combo) && this.deactivate()
   }
 }

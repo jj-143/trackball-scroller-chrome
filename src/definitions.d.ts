@@ -38,4 +38,4 @@ interface StoreResponse {
   scrollerConfig: ScrollerConfig
 }
 
-type ScrollTarget = HTMLElement | Window | void
+type ScrollTarget = HTMLElement | Window

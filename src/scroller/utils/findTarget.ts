@@ -1,10 +1,10 @@
 import { isFromAnchor } from "./isFromAnchor"
 import { searchTarget } from "./utils"
 
-export function findTarget(e: MouseEvent | KeyboardEvent): ScrollTarget {
+export function findTarget(e: MouseEvent | KeyboardEvent): ScrollTarget | null {
   if (e.type.startsWith("mouse")) {
     const path = e.composedPath()
-    if (isFromAnchor(path)) return
+    if (isFromAnchor(path)) return null
     return findTargetFromPath(path)
   } else {
     return autoTarget()
@@ -12,11 +12,16 @@ export function findTarget(e: MouseEvent | KeyboardEvent): ScrollTarget {
 }
 
 function findTargetFromPath(path: EventTarget[]): HTMLElement {
-  let target = document.scrollingElement as HTMLElement
+  let target =
+    (document.scrollingElement as HTMLElement | null) ??
+    // null only happens in non-standard mode; otherwise, it's document.documentElement.
+    // (see: https://developer.mozilla.org/en-US/docs/Web/API/document/scrollingElement)
+    // just fallback to documentElement in that case.
+    document.documentElement
 
   // until [html]; without document, Window
-  for (var i = 0; i < path.length - 2; i++) {
-    var elm = path[i] as HTMLElement
+  for (let i = 0; i < path.length - 2; i++) {
+    const elm = path[i] as HTMLElement
     // also detecting "auto" and non-scrollable element; pass and go higher.
     if (
       (getComputedStyle(elm).overflowY === "auto" ||
@@ -26,7 +31,7 @@ function findTargetFromPath(path: EventTarget[]): HTMLElement {
       // change to HTML only scrollingElement is also HTML
       if (
         elm.tagName === "BODY" &&
-        document.scrollingElement.tagName === "HTML"
+        document.scrollingElement?.tagName === "HTML"
       ) {
         target = document.documentElement
       } else {
@@ -39,7 +44,7 @@ function findTargetFromPath(path: EventTarget[]): HTMLElement {
   return target
 }
 
-function autoTarget(): ScrollTarget | void {
+function autoTarget(): ScrollTarget | null {
   const diffHTML =
     document.documentElement.scrollHeight -
     document.documentElement.clientHeight

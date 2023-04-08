@@ -9,7 +9,7 @@ import { handleCancelCustomizeActivation, handleOptionUpdate } from "../options"
 const OPTION_KEYS = ["naturalScrolling"]
 
 function attachNonActivationHandler() {
-  document.querySelector("#non-activation").addEventListener("change", (e) => {
+  document.querySelector("#non-activation")?.addEventListener("change", (e) => {
     const chip = e.target as HTMLInputElement
     handleOptionUpdate("NON_ACTIVATION", {
       [chip.name]: chip.checked,
@@ -18,7 +18,7 @@ function attachNonActivationHandler() {
 }
 
 function attachCheckboxHandler() {
-  document.querySelector("#checkboxes").addEventListener("change", (e) => {
+  document.querySelector("#checkboxes")?.addEventListener("change", (e) => {
     const checkbox = e.target as HTMLInputElement
     handleOptionUpdate("SCROLLER_OPTION", {
       [checkbox.name]: checkbox.checked,
@@ -34,7 +34,7 @@ function onPointerLockChange() {
   }
 }
 
-function handleComboInput(e) {
+function handleComboInput(e: MouseEvent | KeyboardEvent) {
   e.preventDefault()
   e.stopPropagation()
   e.stopImmediatePropagation()
@@ -90,7 +90,7 @@ function attachActivationHandler() {
 function attachSensitivityHandler() {
   document
     .querySelector("#option-sensitivity")
-    .addEventListener("click", (e) => {
+    ?.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).tagName !== "BUTTON") return
       const button = e.target as HTMLInputElement
       const step = parseInt(button.value)
@@ -107,7 +107,9 @@ export function attachEvents() {
 }
 
 export function updateDOM(setting: UserSettings) {
-  const activation = document.querySelector("button.activation")
+  const activation = document.querySelector(
+    "button.activation"
+  ) as HTMLButtonElement
 
   // Activation
   activation.textContent = formatActivation(
@@ -117,39 +119,45 @@ export function updateDOM(setting: UserSettings) {
   // Non Activation
   Object.entries(setting.userOption.scroller.activation.nonActivation).forEach(
     ([k, v]) => {
-      ;(document.querySelector(
+      const checkbox = document.querySelector(
         "#non-activation input[name=" + k + "]"
-      ) as HTMLInputElement).checked = v
+      ) as HTMLInputElement
+      checkbox.checked = v
     }
   )
 
   // Sensitivity
-  document.getElementById(
-    "sensitivity-value"
-  ).textContent = setting.userOption.scroller.sensitivity.toString()
+  ;(document.getElementById("sensitivity-value") as HTMLElement).textContent =
+    setting.userOption.scroller.sensitivity.toString()
 
   // Checkboxes
   OPTION_KEYS.forEach((key) => {
-    ;(document.querySelector(
+    const checkbox = document.querySelector(
       "input[type=checkbox][name=" + key + "]"
-    ) as HTMLInputElement).checked = setting.userOption.scroller[key]
+    ) as HTMLInputElement
+    checkbox.checked =
+      setting.userOption.scroller[
+        key as keyof Omit<ScrollerConfig, "activation" | "sensitivity">
+      ]
   })
 
   // Mouse 3 warning
   if (isOnlyMouse3(setting.userOption.scroller.activation)) {
-    document.querySelector(".option#activation").classList.add("warning-mouse3")
+    document
+      .querySelector(".option#activation")
+      ?.classList.add("warning-mouse3")
   } else {
     document
       .querySelector(".option#activation")
-      .classList.remove("warning-mouse3")
+      ?.classList.remove("warning-mouse3")
   }
 }
 
 export function makeTestArticles() {
-  const context = document.getElementById("test-context")
-  for (var i = 0; i < 60; i++) {
-    var h = document.createElement("h2")
-    var p = document.createElement("p")
+  const context = document.getElementById("test-context") as HTMLElement
+  for (let i = 0; i < 60; i++) {
+    const h = document.createElement("h2")
+    const p = document.createElement("p")
     h.textContent = "Article " + (i + 1)
     p.textContent =
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, cumque? Ea facilis velit accusantium error sapiente doloribus iure qui suscipit sunt, itaque non veniam ex harum assumenda praesentium magnam. Perferendis?"
