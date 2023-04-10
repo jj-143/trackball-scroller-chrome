@@ -18,7 +18,7 @@ let scroller: Scroller
 
 beforeEach(() => {
   scroller = new Scroller()
-  scroller.setConfig(scrollerConfig)
+  scroller.init(scrollerConfig)
 })
 
 afterEach(() => {

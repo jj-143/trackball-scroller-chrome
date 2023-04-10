@@ -2,34 +2,24 @@ import Scroller from "./scroller"
 import { Store } from "./store"
 import ChromeStorage from "./store/providers/chrome"
 
-function updateScroller(
-  scroller: Scroller,
-  { enabled, scrollerConfig }: StoreResponse
-) {
-  scroller.updateConfig(scrollerConfig)
-  if (enabled !== scroller.isEnabled) {
-    enabled ? scroller.enable() : scroller.disable()
-  }
-}
-
-function init() {
+async function init() {
   const scroller = new Scroller()
   const store = new Store({
     provider: new ChromeStorage(),
   })
 
-  store.onUpdate((store) => {
-    updateScroller(scroller, {
-      enabled: store.enabled,
-      scrollerConfig: store.userOption.scroller,
-    })
-  })
+  const settings = await store.getStore()
+  scroller.init(settings.userOption.scroller)
+  if (settings.enabled) scroller.enable()
 
-  store.getStore().then((store) => {
-    updateScroller(scroller, {
-      enabled: store.enabled,
-      scrollerConfig: store.userOption.scroller,
-    })
+  // provide onUpdate callback after initialized
+  // to prevent updating before initalized
+  store.onUpdate((store) => {
+    scroller.updateConfig(store.userOption.scroller)
+
+    if (store.enabled !== scroller.isEnabled) {
+      store.enabled ? scroller.enable() : scroller.disable()
+    }
   })
 }
 

@@ -9,19 +9,20 @@ import {
 import { calcMultiplier } from "./utils/sensitivityToValue"
 
 export default class Scroller {
-  config: ScrollerConfig
+  config?: ScrollerConfig
 
   // state
+  #isInitialized: boolean
   isEnabled: boolean
   isActivated: boolean
   scrollTarget: ScrollTarget | null
   preventClickCancelOnce: boolean
 
   constructor() {
-    this.config = null
     this.preventClickCancelOnce = false
 
     // state
+    this.#isInitialized = false
     this.isEnabled = false
     this.isActivated = false
     this.scrollTarget = null
@@ -34,11 +35,23 @@ export default class Scroller {
     this.handleKeyComboCancel = this.handleKeyComboCancel.bind(this)
   }
 
+  init(config: ScrollerConfig) {
+    this.setConfig(config)
+    this.#isInitialized = true
+  }
+
+  checkInitialized(): asserts this is { config: ScrollerConfig } {
+    if (!this.#isInitialized) {
+      throw Error("Scroller's not initialized")
+    }
+  }
+
   setConfig(config: ScrollerConfig) {
     this.config = config
   }
 
   updateConfig(config: ScrollerConfig) {
+    this.checkInitialized()
     if (
       this.isEnabled &&
       config.activation.type !== this.config.activation.type
@@ -107,6 +120,8 @@ export default class Scroller {
   }
 
   attachTrigger(type: "mouse" | "keyboard" | void) {
+    this.checkInitialized()
+
     if (type === undefined) {
       type = this.config.activation.type
     }
@@ -119,6 +134,8 @@ export default class Scroller {
   }
 
   detachTrigger(type: "mouse" | "keyboard" | void) {
+    this.checkInitialized()
+
     if (type === undefined) {
       type = this.config.activation.type
     }
@@ -160,6 +177,8 @@ export default class Scroller {
   }
 
   matchCombo(combo: Combo) {
+    this.checkInitialized()
+
     return (
       this.config.activation.type === combo.type &&
       this.config.activation.button === combo.button &&
@@ -190,6 +209,8 @@ export default class Scroller {
   }
 
   handleMouseMove(e: MouseEvent) {
+    this.checkInitialized()
+
     if (this.scrollTarget) {
       const dy =
         e.movementY *
@@ -200,6 +221,8 @@ export default class Scroller {
   }
 
   handleClickCancel() {
+    this.checkInitialized()
+
     // preventing immediate cancelation after activation
     if (
       this.config.activation.type === "mouse" &&

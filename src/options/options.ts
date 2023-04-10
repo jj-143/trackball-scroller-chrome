@@ -5,7 +5,6 @@ import { Store } from "../store"
 import ChromeStorage from "../store/providers/chrome"
 import { InMemoryStorage } from "../store/providers"
 
-let settings: UserSettings
 const scroller = new Scroller()
 
 // Bypass trigger on the "customize activation" button
@@ -60,27 +59,19 @@ const store = new Store({
     : new ChromeStorage(),
 })
 
-store.onUpdate((store) => {
-  update(store)
-})
-
-store.getStore().then((store) => {
-  update(store)
-})
-
-/**
- * Updates DOM and Scroller settings
- */
-function update(store: UserSettings) {
-  settings = store
-  updateDOM(store)
-  updateScroller(store)
-}
-
-// will be removed once this gets incorporated into Scroller's mehtod; probably into `Scroller.updateConfig()`.
-function updateScroller(store: UserSettings) {
-  scroller.updateConfig(store.userOption.scroller)
-  if (store.enabled !== scroller.isEnabled) {
-    store.enabled ? scroller.enable() : scroller.disable()
-  }
-}
+store
+  .getStore()
+  .then((store) => {
+    scroller.init(store.userOption.scroller)
+    // always enable in Options page
+    scroller.enable()
+    updateDOM(store)
+  })
+  // provide onUpdate callback after initialized
+  // to prevent updating before initalized
+  .then(() => {
+    store.onUpdate((store) => {
+      scroller.updateConfig(store.userOption.scroller)
+      updateDOM(store)
+    })
+  })
