@@ -28,14 +28,15 @@ async function init() {
 // Extensions don't get injected on the *real* options page. ('chrome-extension://')
 // So we have to explicitly prevent it
 // since options page run its own scroller.
-const isDev = process.env.NODE_ENV === "development"
+const isProduction = process.env.NODE_ENV === "production"
 const isOptionsPage =
   (
     document.head.querySelector(
       "meta[name='application-name']"
     ) as HTMLMetaElement
   )?.content === "trackball-scroller-options"
-const shouldNotRun = isDev && isOptionsPage
+
+const shouldNotRun = !isProduction && isOptionsPage
 
 if (!shouldNotRun) {
   init()

@@ -47,9 +47,9 @@ makeTestArticles()
 attachEvents()
 
 // For dev & test enviroment where it can't access the extension storage
-const isDev = process.env.NODE_ENV === "development"
+const notInProduction = process.env.NODE_ENV !== "production"
 const isExtensionPage = location.href.startsWith("chrome-extension://")
-const useTestStorage = isDev && !isExtensionPage
+const useTestStorage = notInProduction && !isExtensionPage
 
 // Stores
 
