@@ -3,7 +3,8 @@
   "version": "1.0.4",
   "description": "Trackball Scroller for Chrome",
   "scripts": {
-    "dev": "node parcel/build.mjs --debug",
+    "dev": "node parcel/build.mjs dev",
+    "dev:test": "node parcel/build.mjs test",
     "build": "node ./parcel/build.mjs",
     "build:prod": "npm run build",
     "postbuild:prod": "npm run zip",
@@ -11,7 +12,7 @@
     "e2e": "cypress run --headed",
     "test": "jest --config=./jest.config.js",
     "test:watch": "jest --watch --config=./jest.config.js",
-    "test:e2e": "concurrently -k npm:dev npm:e2e",
+    "test:e2e": "concurrently -k npm:dev:test npm:e2e",
     "cypress": "cypress open",
     "prettier": "prettier --write -c ./src/**/*.ts"
   },

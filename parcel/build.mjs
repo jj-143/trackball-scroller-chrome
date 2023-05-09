@@ -5,11 +5,6 @@ import process from "process"
 import { fileURLToPath } from "url"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
-let distDir
-
-function getDistDir({ debug = false }) {
-  return debug ? "debug" : "build"
-}
 
 const entries = [
   "src/background/index.ts",
@@ -19,11 +14,18 @@ const entries = [
 
 const statics = ["src/manifest.json", "src/images"]
 
-function clean() {
-  return fs.remove(path.join(__dirname, "..", distDir))
+function getDistDir() {
+  const isProduction = process.env.NODE_ENV === "production"
+  return isProduction ? "build" : "debug"
 }
 
-function build({ debug } = { debug: false }) {
+function clean() {
+  return fs.remove(path.join(__dirname, "..", getDistDir()))
+}
+
+function build({ serve }) {
+  const distDir = getDistDir()
+
   const bundler = new Parcel({
     entries,
     mode: process.env.NODE_ENV || "development",
@@ -46,9 +48,9 @@ function build({ debug } = { debug: false }) {
     },
   })
 
-  console.info(`[*] distDir: ${distDir}`)
+  console.info("[*] distDir:", distDir)
 
-  if (debug) {
+  if (serve) {
     console.info("[*] Server running.")
     console.info("    Options: http://localhost:3000/options/options.html")
 
@@ -70,24 +72,23 @@ function copyStatic() {
   const files = statics.map((f) => path.join(__dirname, "..", f))
 
   for (const file of files) {
-    fs.copy(file, path.join(__dirname, "..", distDir, path.basename(file)))
+    fs.copy(file, path.join(__dirname, "..", getDistDir(), path.basename(file)))
   }
 }
 
 function run() {
-  const args = process.argv.slice(2)
+  const env = process.argv[2]
+  process.env.NODE_ENV ||=
+    env === "dev" ? "development" : env === "test" ? "test" : "production"
 
-  if (args.includes("--debug")) {
-    process.env.NODE_ENV = "development"
-    distDir = getDistDir({ debug: true })
-    clean()
-      .then(() => build({ debug: true }))
-      .then(copyStatic)
-  } else {
-    process.env.NODE_ENV = "production"
-    distDir = getDistDir({ debug: false })
-    clean().then(build).then(copyStatic)
-  }
+  const isProduction = process.env.NODE_ENV === "production"
+  const runDevServer = !isProduction
+
+  console.info("[*] NODE_ENV:", process.env.NODE_ENV)
+
+  clean()
+    .then(() => build({ serve: runDevServer }))
+    .then(copyStatic)
 }
 
 run()
