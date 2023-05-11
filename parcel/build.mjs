@@ -6,6 +6,11 @@ import { fileURLToPath } from "url"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 
+const testEntryDir = "src/regressions"
+const testEntries = fs
+  .readdirSync(testEntryDir)
+  .map((filename) => path.join(testEntryDir, filename, "index.html"))
+
 const entries = [
   "src/background/index.ts",
   "src/inject.ts",
@@ -27,7 +32,10 @@ function build({ serve }) {
   const distDir = getDistDir()
 
   const bundler = new Parcel({
-    entries,
+    entries: [
+      ...entries,
+      ...(process.env.NODE_ENV === "test" ? testEntries : []),
+    ],
     mode: process.env.NODE_ENV || "development",
     defaultTargetOptions: {
       distDir,

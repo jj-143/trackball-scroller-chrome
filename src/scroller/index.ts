@@ -77,7 +77,11 @@ export default class Scroller {
   disable() {
     if (!this.isEnabled) return
     this.isEnabled = false
-    this.deactivate()
+    if (this.isActivated) {
+      this.deactivate()
+      // PointerLockChange listener's getting removed
+      this.onDeactivated()
+    }
     this.detachTrigger()
     document.removeEventListener("pointerlockchange", this.pointerLockChange)
     document.removeEventListener("pointerlockerror", this.pointerLockError)
