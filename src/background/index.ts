@@ -14,17 +14,17 @@ const IS_DEV_BUILD = process.env.NODE_ENV !== "production"
  */
 function updateActionUI(enabled: boolean) {
   if (enabled) {
-    chrome.browserAction.setIcon({
+    chrome.action.setIcon({
       path: ACTION_ICON_PATH_ENABLED,
     })
-    chrome.browserAction.setTitle({
+    chrome.action.setTitle({
       title: ACTION_TITLE_ENABLED,
     })
   } else {
-    chrome.browserAction.setIcon({
+    chrome.action.setIcon({
       path: ACTION_ICON_PATH_DISABLED,
     })
-    chrome.browserAction.setTitle({
+    chrome.action.setTitle({
       title: ACTION_TITLE_DISABLED,
     })
   }
@@ -47,7 +47,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 })
 
 // Enabled changed (via Action)
-chrome.browserAction.onClicked.addListener(async () => {
+chrome.action.onClicked.addListener(async () => {
   const store = await extension.store.getStore()
   extension.store.updateStore({
     ...store,

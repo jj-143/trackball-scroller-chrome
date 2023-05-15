@@ -5,8 +5,8 @@
   "description": "Scroll with your trackball",
   "permissions": ["storage"],
   "background": {
-    "scripts": ["./background/index.ts"],
-    "persistent": false
+    "service_worker": "./background/index.ts",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -15,7 +15,7 @@
       "all_frames": true
     }
   ],
-  "browser_action": {},
+  "action": {},
   "icons": {
     "128": "images/icon.png"
   },
@@ -23,5 +23,5 @@
     "page": "options/options.html",
     "open_in_tab": true
   },
-  "manifest_version": 2
+  "manifest_version": 3
 }
