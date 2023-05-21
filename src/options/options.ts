@@ -1,5 +1,5 @@
-import { Payload, formatActivation, updateSettingsReducer } from "./utils/utils"
-import { updateDOM, makeTestArticles, attachEvents } from "./utils/page"
+import { formatActivation, updateSettingsReducer } from "./utils/utils"
+import * as UI from "./utils/page"
 import Scroller from "../scroller"
 import { Store } from "../store"
 import ChromeStorage from "../store/providers/chrome"
@@ -17,34 +17,30 @@ scroller.checkTrigger = function (e: MouseEvent) {
   return originalFn(e)
 }
 
-export async function handleOptionUpdate<T extends keyof Payload>(
-  type: T,
-  payload: Payload[T]
-) {
-  const oldSettings = await store.getStore()
-  const newSettings = updateSettingsReducer(oldSettings, type, payload)
-
-  if (
-    type === "ACTIVATION" &&
-    formatActivation(oldSettings.userOption.scroller.activation) ===
-      formatActivation(newSettings.userOption.scroller.activation)
-  ) {
-    updateDOM(oldSettings)
-    return
-  }
-  store.updateStore(newSettings)
-}
-
-// NOTE: Will be replaced with direct function call rather than Custom Events
-
-export async function handleCancelCustomizeActivation() {
-  updateDOM(await store.getStore())
-}
-
 // initialize DOM related features
 
-makeTestArticles()
-attachEvents()
+UI.setContext({
+  updateOption: async (type, payload) => {
+    const oldSettings = await store.getStore()
+    const newSettings = updateSettingsReducer(oldSettings, type, payload)
+
+    if (
+      type === "ACTIVATION" &&
+      formatActivation(oldSettings.userOption.scroller.activation) ===
+        formatActivation(newSettings.userOption.scroller.activation)
+    ) {
+      UI.updateDOM(oldSettings)
+      return
+    }
+    store.updateStore(newSettings)
+  },
+  cancelCustomizeActivation: async () => {
+    UI.updateDOM(await store.getStore())
+  },
+})
+
+UI.makeTestArticles()
+UI.attachEvents()
 
 // For dev & test enviroment where it can't access the extension storage
 const notInProduction = process.env.NODE_ENV !== "production"
@@ -65,13 +61,13 @@ store
     scroller.init(store.userOption.scroller)
     // always enable in Options page
     scroller.enable()
-    updateDOM(store)
+    UI.updateDOM(store)
   })
   // provide onUpdate callback after initialized
   // to prevent updating before initalized
   .then(() => {
     store.onUpdate((store) => {
       scroller.updateConfig(store.userOption.scroller)
-      updateDOM(store)
+      UI.updateDOM(store)
     })
   })

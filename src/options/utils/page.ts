@@ -1,17 +1,34 @@
-import { formatActivation, isOnlyMouse3 } from "./utils"
+import { formatActivation, isOnlyMouse3, Payload } from "./utils"
 import { parseInput } from "../../scroller/utils/parseInput"
 import {
   allowContextMenu,
   preventContextMenu,
 } from "../../scroller/utils/utils"
-import { handleCancelCustomizeActivation, handleOptionUpdate } from "../options"
 
 const OPTION_KEYS = ["naturalScrolling"]
+
+// Temporary fix for circular dependencies between
+// options.ts and page.ts until migration with a
+// small UI library
+
+const context: Context = {}
+
+type Context = {
+  updateOption?: <T extends keyof Payload>(type: T, payload: Payload[T]) => void
+  cancelCustomizeActivation?: () => void
+}
+
+export function setContext(ctx: Context) {
+  context.cancelCustomizeActivation = ctx.cancelCustomizeActivation
+  context.updateOption = ctx.updateOption
+}
+
+// END of temporary fix
 
 function attachNonActivationHandler() {
   document.querySelector("#non-activation")?.addEventListener("change", (e) => {
     const chip = e.target as HTMLInputElement
-    handleOptionUpdate("NON_ACTIVATION", {
+    context.updateOption?.("NON_ACTIVATION", {
       [chip.name]: chip.checked,
     })
   })
@@ -20,7 +37,7 @@ function attachNonActivationHandler() {
 function attachCheckboxHandler() {
   document.querySelector("#checkboxes")?.addEventListener("change", (e) => {
     const checkbox = e.target as HTMLInputElement
-    handleOptionUpdate("SCROLLER_OPTION", {
+    context.updateOption?.("SCROLLER_OPTION", {
       [checkbox.name]: checkbox.checked,
     })
   })
@@ -30,7 +47,7 @@ function onPointerLockChange() {
   if (!document.pointerLockElement) {
     document.removeEventListener("pointerlockchange", onPointerLockChange)
     stopCustomizeActivation()
-    handleCancelCustomizeActivation()
+    context.cancelCustomizeActivation?.()
   }
 }
 
@@ -42,7 +59,7 @@ function handleComboInput(e: MouseEvent | KeyboardEvent) {
   const combo = parseInput(e)
   if (!combo) return
   stopCustomizeActivation()
-  handleOptionUpdate("ACTIVATION", combo)
+  context.updateOption?.("ACTIVATION", combo)
 }
 
 function startCustomizeActivation() {
@@ -95,7 +112,7 @@ function attachSensitivityHandler() {
       const button = e.target as HTMLInputElement
       const step = parseInt(button.value)
 
-      handleOptionUpdate("SENSITIVITY", step)
+      context.updateOption?.("SENSITIVITY", step)
     })
 }
 
