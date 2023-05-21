@@ -10,6 +10,7 @@ const testEntryDir = "src/regressions"
 const testEntries = fs
   .readdirSync(testEntryDir)
   .map((filename) => path.join(testEntryDir, filename, "index.html"))
+  .filter((filename) => fs.existsSync(filename))
 
 const entries = [
   "src/background/index.ts",

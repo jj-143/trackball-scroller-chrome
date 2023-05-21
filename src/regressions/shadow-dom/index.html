@@ -1,0 +1,30 @@
+<!-- 
+  Test case where "open" Shadow DOM is used as a content area, and
+  a surrounding scrolling element is outside of the shadow boundary.
+ -->
+<head>
+  <meta name="application-name" content="trackball-scroller-options" />
+</head>
+<div>
+  <h1>Owner</h1>
+  <div
+    data-cy="container"
+    id="container"
+    style="width: 300px; height: 300px; overflow: auto"
+  ></div>
+</div>
+<script>
+  const container = document.getElementById("container")
+  const shadowRoot = container.attachShadow({ mode: "open" })
+  shadowRoot.innerHTML = `<h2>Shadow DOM</h2>
+  <div>
+    <p id="content">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima, quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate perspiciatis repellendus voluptatibus expedita, eligendi excepturi a libero praesentium minima. Commodi.</p>
+    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima, quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate perspiciatis repellendus voluptatibus expedita, eligendi excepturi a libero praesentium minima. Commodi.</p>
+    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima, quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate perspiciatis repellendus voluptatibus expedita, eligendi excepturi a libero praesentium minima. Commodi.</p>
+  </div>
+  `
+</script>
+<script type="module">
+  import { initScroller } from "../helpers"
+  initScroller()
+</script>

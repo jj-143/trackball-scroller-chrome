@@ -22,6 +22,9 @@ function findTargetFromPath(path: EventTarget[]): HTMLElement {
   // until [html]; without document, Window
   for (let i = 0; i < path.length - 2; i++) {
     const elm = path[i] as HTMLElement
+    // skip shadow root
+    if (elm.nodeType === Node.DOCUMENT_FRAGMENT_NODE) continue
+
     // also detecting "auto" and non-scrollable element; pass and go higher.
     if (
       (getComputedStyle(elm).overflowY === "auto" ||
