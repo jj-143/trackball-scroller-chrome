@@ -135,4 +135,22 @@
     enim.
   </div>
 </div>
-<script src="./index.ts" type="module"></script>
+<script type="module">
+  import { initScroller } from "../helpers"
+
+  ;(async () => {
+    const { store } = await initScroller()
+
+    // simulates disable, allowing a situation of disabling while activated.
+    const button = document.getElementById("delayed-disable")
+    button.addEventListener("click", () => {
+      setTimeout(async () => {
+        const settings = await store.getStore()
+        store.updateStore({
+          ...settings,
+          enabled: false,
+        })
+      }, 1000)
+    })
+  })()
+</script>
