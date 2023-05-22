@@ -1,28 +1,31 @@
-import "regenerator-runtime/runtime"
 import Extension from "./extension"
 import { migrateStoreFrom_0_0_3 } from "../store/migration"
 
-const BROWSER_ACTION_ICON_PATH_ENABLED = "./images/icon.png"
-const BROWSER_ACTION_TITLE_ENABLED = ""
-const BROWSER_ACTION_ICON_PATH_DISABLED = "./images/icon-outline.png"
-const BROWSER_ACTION_TITLE_DISABLED = "Trackball Scroller (disabled)"
+import ACTION_ICON_PATH_ENABLED from "../images/icon.png"
+import ACTION_ICON_PATH_DISABLED from "../images/icon-outline.png"
+
+const ACTION_TITLE_ENABLED = ""
+const ACTION_TITLE_DISABLED = "Trackball Scroller (disabled)"
 
 const IS_DEV_BUILD = process.env.NODE_ENV !== "production"
 
-function updateBrowserActionIcon(enabled: boolean) {
+/**
+ * update icon and title based on "enabled" (from [Scroller.enabled])
+ */
+function updateActionUI(enabled: boolean) {
   if (enabled) {
     chrome.browserAction.setIcon({
-      path: BROWSER_ACTION_ICON_PATH_ENABLED,
+      path: ACTION_ICON_PATH_ENABLED,
     })
     chrome.browserAction.setTitle({
-      title: BROWSER_ACTION_TITLE_ENABLED,
+      title: ACTION_TITLE_ENABLED,
     })
   } else {
     chrome.browserAction.setIcon({
-      path: BROWSER_ACTION_ICON_PATH_DISABLED,
+      path: ACTION_ICON_PATH_DISABLED,
     })
     chrome.browserAction.setTitle({
-      title: BROWSER_ACTION_TITLE_DISABLED,
+      title: ACTION_TITLE_DISABLED,
     })
   }
 }
@@ -35,7 +38,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
   if (details.reason === "update") {
     if (IS_DEV_BUILD) {
-      chrome.runtime.openOptionsPage()
+      // chrome.runtime.openOptionsPage()
     }
     if (details.previousVersion === "0.0.3") {
       migrateStoreFrom_0_0_3(extension.store)
@@ -43,7 +46,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 })
 
-// Enabled changed (via Browser Action)
+// Enabled changed (via Action)
 chrome.browserAction.onClicked.addListener(async () => {
   const store = await extension.store.getStore()
   extension.store.updateStore({
@@ -52,13 +55,13 @@ chrome.browserAction.onClicked.addListener(async () => {
   })
 })
 
-// Initialize Browser Action Status
+// Initialize Action's UI
 extension.store.getStore().then((store) => {
-  updateBrowserActionIcon(store.enabled)
+  updateActionUI(store.enabled)
 })
 
 extension.store.onUpdate((store, old) => {
   if (store.enabled !== old?.enabled) {
-    updateBrowserActionIcon(store.enabled)
+    updateActionUI(store.enabled)
   }
 })

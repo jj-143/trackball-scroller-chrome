@@ -1,27 +1,27 @@
 {
   "name": "Trackball Scroller",
-  "version": "1.0.4",
+  "version": "2.0.0",
+  "version_name": "refactor-only",
   "description": "Scroll with your trackball",
   "permissions": ["storage"],
   "background": {
-    "scripts": ["./background/index.js"],
+    "scripts": ["./background/index.ts"],
     "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["inject.js"],
+      "js": ["inject.ts"],
       "all_frames": true
     }
   ],
-  "browser_action": {
-    "default_icon": {
-      "128": "images/icon.png"
-    }
-  },
+  "browser_action": {},
   "icons": {
     "128": "images/icon.png"
   },
-  "options_page": "options/options.html",
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
   "manifest_version": 2
 }
