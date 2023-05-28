@@ -1,6 +1,6 @@
 import "cypress-real-events/support"
 
-const TEST_PAGE = "regressions/disable-while-activated"
+const TEST_PAGE = "regressions/disable-while-activated/"
 
 beforeEach(() => {
   const isFocused = window.top?.document.hasFocus()
