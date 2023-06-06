@@ -26,18 +26,21 @@ async function clean() {
 
 function build({ mode }) {
   const distDir = getDistDir()
+  const isProduction = process.env.NODE_ENV === "production"
+
   const extensionBundler = new Parcel({
     entries: ["src/manifest.json"],
     defaultConfig: "@parcel/config-webextension",
-    mode: process.env.NODE_ENV || "development",
+    mode: isProduction ? "production" : "development",
     defaultTargetOptions: {
       distDir,
+      sourceMaps: !isProduction,
     },
   })
 
   console.info("[*] distDir:", distDir)
 
-  if (mode === "production") {
+  if (isProduction) {
     extensionBundler.run()
     return
   }
