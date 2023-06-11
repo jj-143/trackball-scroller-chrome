@@ -16,20 +16,19 @@ export default class Scroller {
   isEnabled: boolean
   isActivated: boolean
   scrollTarget: ScrollTarget | null
-  preventClickCancelOnce: boolean
+  deactivationQueued: boolean
 
   constructor() {
-    this.preventClickCancelOnce = false
-
     // state
     this.#isInitialized = false
     this.isEnabled = false
     this.isActivated = false
     this.scrollTarget = null
+    this.deactivationQueued = false
 
     this.checkTrigger = this.checkTrigger.bind(this)
     this.handleMouseMove = this.handleMouseMove.bind(this)
-    this.handleClickCancel = this.handleClickCancel.bind(this)
+    this.queueDeactivation = this.queueDeactivation.bind(this)
     this.pointerLockChange = this.pointerLockChange.bind(this)
     this.pointerLockError = this.pointerLockError.bind(this)
     this.handleKeyComboCancel = this.handleKeyComboCancel.bind(this)
@@ -104,11 +103,12 @@ export default class Scroller {
 
   onActivated() {
     this.detachTrigger()
-    this.preventClickCancelOnce = true
     stripSmoothScroll(this.scrollTarget)
 
-    // in "PointerLocked", any button click emits 'click' event
-    document.addEventListener("click", this.handleClickCancel)
+    // ClickToCancel related
+    document.addEventListener("mousedown", this.queueDeactivation)
+    document.addEventListener("mouseup", this.processDeactivationQueue)
+
     document.addEventListener("keydown", this.handleKeyComboCancel)
     document.addEventListener("mousemove", this.handleMouseMove)
   }
@@ -118,7 +118,11 @@ export default class Scroller {
     allowContextMenu()
     revertSmoothScroll()
     this.isEnabled && this.attachTrigger()
-    document.removeEventListener("click", this.handleClickCancel)
+
+    // ClickToCancel related
+    document.removeEventListener("mousedown", this.queueDeactivation)
+    document.removeEventListener("mouseup", this.processDeactivationQueue)
+
     document.removeEventListener("keydown", this.handleKeyComboCancel)
     document.removeEventListener("mousemove", this.handleMouseMove)
   }
@@ -224,26 +228,41 @@ export default class Scroller {
     }
   }
 
-  handleClickCancel() {
-    this.checkInitialized()
-
-    // preventing immediate cancelation after activation
-    if (
-      this.config.activation.type === "mouse" &&
-      this.preventClickCancelOnce
-    ) {
-      this.preventClickCancelOnce = false
-      return
-    }
-
-    if (this.isActivated) {
-      this.deactivate()
-    }
-  }
-
   handleKeyComboCancel(e: KeyboardEvent) {
     const combo = parseInput(e)
     if (!combo) return
     this.matchCombo(combo) && this.deactivate()
+  }
+
+  /**
+   * Enabling any mouse click to deactivate Scroll Mode.
+   * Actual deactivation is deferred to the mouseup Event.
+   * see: {@link Scroller.processDeactivationQueue()}
+   */
+  queueDeactivation() {
+    if (this.isActivated) {
+      this.deactivationQueued = true
+    }
+  }
+
+  /**
+   * If we Deactivate instantly, everything works as intended except it doesn't
+   * show the mouse pointer until a mouse move or a click (only in Chrome).
+   *
+   * It only gives false the impression of not deactivated properly and
+   * makes me want to move the mouse to ensure it's back to normal mode.
+   *
+   * This mild annoyance can be fixed if we defer the deactivation;
+   * not sure the exact timeing but after the mouseup Event seems sufficient.
+   *
+   * NOTE:
+   * This doesn't happen when `exitPointerLock()` is in click event,
+   * but we have to do it in mousedown due to Firefox not firing click event
+   * other than button 0 (main button).
+   */
+  processDeactivationQueue = () => {
+    if (!this.deactivationQueued) return
+    this.deactivationQueued = false
+    this.deactivate()
   }
 }

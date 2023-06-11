@@ -1,6 +1,18 @@
+import waitForExpect from "wait-for-expect"
 import Scroller from "."
 
-document.documentElement.requestPointerLock = jest.fn()
+document.documentElement.requestPointerLock = jest.fn(async () => {
+  // @ts-ignore
+  document.pointerLockElement = document.documentElement
+  document.dispatchEvent(new Event("pointerlockchange"))
+})
+
+document.exitPointerLock = jest.fn(() => {
+  // @ts-ignore
+  document.pointerLockElement = undefined
+  document.dispatchEvent(new Event("pointerlockchange"))
+})
+
 document.exitPointerLock = jest.fn()
 
 const scrollerConfig: ScrollerConfig = {
@@ -69,6 +81,111 @@ describe("activation / deactivation", () => {
     scroller.enable()
     scroller.activate()
     scroller.disable()
+    expect(scroller.isActivated).toBe(false)
+  })
+})
+
+describe("click to cancel - Chrome", () => {
+  it("should deactivate after a click, when it activated BEFORE the click event", async () => {
+    scroller.enable()
+    const onActivated = jest.spyOn(scroller, "onActivated")
+
+    document.dispatchEvent(new MouseEvent("mousedown", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("mouseup", { button: 1 }))
+
+    await waitForExpect(() => {
+      expect(onActivated).toHaveBeenCalledTimes(1)
+    })
+
+    document.dispatchEvent(new MouseEvent("click", { button: 1 }))
+
+    // - should be activated
+
+    expect(document.pointerLockElement).toBeDefined()
+    expect(scroller.isActivated).toBe(true)
+
+    document.dispatchEvent(new MouseEvent("mousedown", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("mouseup", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("click", { button: 1 }))
+
+    // - should be deactivated
+
+    expect(scroller.isActivated).toBe(false)
+  })
+
+  it("should deactivate after a click, when it activated AFTER the click event", async () => {
+    scroller.enable()
+    const onActivated = jest.spyOn(scroller, "onActivated")
+
+    document.dispatchEvent(new MouseEvent("mousedown", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("mouseup", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("click", { button: 1 }))
+
+    await waitForExpect(() => {
+      expect(onActivated).toHaveBeenCalledTimes(1)
+    })
+
+    // - should be activated
+
+    expect(document.pointerLockElement).toBeDefined()
+    expect(scroller.isActivated).toBe(true)
+
+    document.dispatchEvent(new MouseEvent("mousedown", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("mouseup", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("click", { button: 1 }))
+
+    // - should be deactivated
+
+    expect(scroller.isActivated).toBe(false)
+  })
+})
+
+describe("click to cancel - Firefox", () => {
+  it("should deactivate after a click with activation button", async () => {
+    scroller.enable()
+    const onActivated = jest.spyOn(scroller, "onActivated")
+
+    document.dispatchEvent(new MouseEvent("mousedown", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("mouseup", { button: 1 }))
+
+    await waitForExpect(() => {
+      expect(onActivated).toHaveBeenCalledTimes(1)
+    })
+
+    // - should be activated
+
+    expect(document.pointerLockElement).toBeDefined()
+    expect(scroller.isActivated).toBe(true)
+
+    document.dispatchEvent(new MouseEvent("mousedown", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("mouseup", { button: 1 }))
+
+    // - should be deactivated
+
+    expect(scroller.isActivated).toBe(false)
+  })
+
+  it("should deactivate after a click with different button", async () => {
+    scroller.enable()
+    const onActivated = jest.spyOn(scroller, "onActivated")
+
+    document.dispatchEvent(new MouseEvent("mousedown", { button: 1 }))
+    document.dispatchEvent(new MouseEvent("mouseup", { button: 1 }))
+
+    await waitForExpect(() => {
+      expect(onActivated).toHaveBeenCalledTimes(1)
+    })
+
+    // - should be activated
+
+    expect(document.pointerLockElement).toBeDefined()
+    expect(scroller.isActivated).toBe(true)
+
+    document.dispatchEvent(new MouseEvent("mousedown", { button: 2 }))
+    document.dispatchEvent(new MouseEvent("mouseup", { button: 2 }))
+
+    // - should be deactivated
+
     expect(scroller.isActivated).toBe(false)
   })
 })
