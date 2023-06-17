@@ -1,6 +1,6 @@
 import { Parcel } from "@parcel/core"
 import path from "path"
-import fs from "fs-extra"
+import fs from "fs"
 import process from "process"
 import { fileURLToPath } from "url"
 
@@ -17,10 +17,17 @@ function getDistDir() {
   return isProduction ? "build" : "debug"
 }
 
-async function clean() {
-  await fs.remove(path.join(__dirname, "..", getDistDir()))
+function clean() {
+  fs.rmSync(path.join(__dirname, "..", getDistDir()), {
+    recursive: true,
+    force: true,
+  })
+
   if (process.env.NODE_ENV !== "production") {
-    await fs.remove(path.join(__dirname, "..", "debug-serve"))
+    fs.rmSync(path.join(__dirname, "..", "debug-serve"), {
+      recursive: true,
+      force: true,
+    })
   }
 }
 
@@ -105,7 +112,8 @@ function run() {
   process.env.NODE_ENV ||= mode === "production" ? "production" : "development"
 
   console.info("[*] NODE_ENV:", process.env.NODE_ENV)
-  clean().then(() => build({ mode }))
+  clean()
+  build({ mode })
 }
 
 run()
