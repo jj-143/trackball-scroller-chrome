@@ -3,9 +3,9 @@
   "version": "2.0.0",
   "description": "Trackball Scroller for Chrome",
   "scripts": {
-    "dev": "node parcel/build.mjs dev",
-    "dev:all": "node parcel/build.mjs all",
-    "build": "node ./parcel/build.mjs production",
+    "dev": "ts-node parcel/build.mts dev",
+    "dev:all": "ts-node parcel/build.mts all",
+    "build": "ts-node ./parcel/build.mts production",
     "build:prod": "npm run build",
     "postbuild:prod": "npm run zip",
     "zip": "cd ./build && zip -r ../Trackball-Scroller.zip ./ && cd ..",
@@ -35,6 +35,7 @@
     "jest-environment-jsdom": "^29.5.0",
     "prettier": "^2.0.5",
     "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.5",
     "wait-for-expect": "^3.0.2"
   },

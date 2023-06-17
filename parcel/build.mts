@@ -1,8 +1,13 @@
 import { Parcel } from "@parcel/core"
+import type { BuildEvent } from "@parcel/types"
 import path from "path"
 import fs from "fs"
 import process from "process"
 import { fileURLToPath } from "url"
+
+type Mode = "dev" | "production" | "all"
+
+const MODES: Mode[] = ["dev", "production", "all"]
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 
@@ -31,7 +36,7 @@ function clean() {
   }
 }
 
-function build({ mode }) {
+function build({ mode }: { mode: Mode }) {
   const distDir = getDistDir()
   const isProduction = process.env.NODE_ENV === "production"
 
@@ -88,7 +93,7 @@ function build({ mode }) {
   if (mode === "all") {
     console.info("- Test Pages")
     testEntries.forEach((entry) => {
-      const url = entry.match(/^src\/(.+)\/index.html$/)[1]
+      const url = entry.match(/^src\/(.+)\/index.html$/)?.[1] ?? "NO_ENTRY"
       console.info(`  - http://localhost:3000/${url}`)
     })
   }
@@ -98,9 +103,9 @@ function build({ mode }) {
   devEntriesBundler.watch(errorHandler)
 }
 
-function errorHandler(err, buildEvent) {
+function errorHandler(err?: Error | null, buildEvent?: BuildEvent) {
   if (err) throw err
-  switch (buildEvent.type) {
+  switch (buildEvent?.type) {
     case "buildFailure":
       console.error(buildEvent.diagnostics)
       break
@@ -109,11 +114,13 @@ function errorHandler(err, buildEvent) {
 
 function run() {
   const mode = process.argv[2]
+  if (!MODES.includes(mode as Mode)) return
+
   process.env.NODE_ENV ||= mode === "production" ? "production" : "development"
 
   console.info("[*] NODE_ENV:", process.env.NODE_ENV)
   clean()
-  build({ mode })
+  build({ mode: mode as Mode })
 }
 
 run()
