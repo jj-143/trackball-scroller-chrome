@@ -74,6 +74,18 @@ function build({ mode }: { mode: Mode }) {
     defaultTargetOptions: {
       distDir: "debug-serve",
     },
+
+    // This "targets" is only for enabling sourceMaps for inline script
+    // in testEntries
+    targets: {
+      default: {
+        distDir: "debug-serve",
+        sourceMap: {
+          inline: true,
+        },
+      },
+    },
+
     defaultConfig: "@parcel/config-default",
     mode: "development",
     // config
