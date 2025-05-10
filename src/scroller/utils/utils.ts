@@ -28,7 +28,7 @@ export function searchTarget(): HTMLElement[] {
   document.body.querySelectorAll<HTMLElement>("*").forEach((elm) => {
     if (
       !searchExcludes.includes(elm.tagName) &&
-      isScrollable(elm).value &&
+      isScrollable(elm) &&
       isOnViewport(elm)
     ) {
       found.push(elm)
@@ -69,15 +69,61 @@ function isOnViewport(elm: Element) {
   )
 }
 
-function isScrollable(elm: Element) {
-  const diff = elm.scrollHeight - elm.clientHeight
-  const style = getComputedStyle(elm).overflowY
+function isScroll(value: string): boolean {
+  return value === "auto" || value === "scroll"
+}
 
-  return {
-    value:
-      diff > 50 && style != "hidden" && (style == "auto" || style == "scroll"),
-    info: "(" + diff + "," + style + ")",
-  }
+function isScrollViewport(value: string): boolean {
+  return value === "visible" || value === "auto" || value === "scroll"
+}
+
+function isOverflowX(element: HTMLElement): boolean {
+  return element.scrollWidth !== element.clientWidth
+}
+
+function isOverflowY(element: HTMLElement): boolean {
+  return element.scrollHeight !== element.clientHeight
+}
+
+export function isScrollable(element: HTMLElement): boolean {
+  const s = getComputedStyle(element)
+  const overflowX = isScroll(s.overflowX) && isOverflowX(element)
+  const overflowY = isScroll(s.overflowY) && isOverflowY(element)
+  return overflowX || overflowY
+}
+
+function _isViewportScrollable(element: HTMLElement): boolean {
+  const s = getComputedStyle(element)
+  const overflowX = isScrollViewport(s.overflowX) && isOverflowX(element)
+  const overflowY = isScrollViewport(s.overflowY) && isOverflowY(element)
+  return overflowX || overflowY
+}
+
+export function isViewportScrollable() {
+  return (
+    _isViewportScrollable(document.documentElement) ||
+    _isViewportScrollable(document.body)
+  )
+}
+
+/**
+ * Overflow hidden(or clip), only for checking Viewport (<html>, <body>)
+ */
+function isHiddenViewport(element: HTMLElement): boolean {
+  const style = getComputedStyle(element)
+  return (
+    !isScrollViewport(style.overflowX) || !isScrollViewport(style.overflowY)
+  )
+}
+
+/**
+ * Is viewport is set to be "hidden".
+ */
+export function isViewportScrollHidden() {
+  return (
+    isHiddenViewport(document.documentElement) ||
+    isHiddenViewport(document.body)
+  )
 }
 
 function _stripSmoothScroll(elm: HTMLElement) {

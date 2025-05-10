@@ -219,13 +219,27 @@ export default class Scroller {
   handleMouseMove(e: MouseEvent) {
     this.checkInitialized()
 
-    if (this.scrollTarget) {
-      const dy =
-        e.movementY *
-        (this.config.naturalScrolling ? -1 : 1) *
-        calcMultiplier(this.config.sensitivity)
-      this.scrollTarget.scrollBy(0, dy)
-    }
+    if (!this.scrollTarget) return
+
+    // Scroll axis
+    const canScrollH = e.shiftKey
+    const canScrollV = !canScrollH // H prevents V
+
+    // Calculate amount
+    const dx =
+      (canScrollH ? 1 : 0) *
+      e.movementX *
+      (this.config.naturalScrolling ? -1 : 1) *
+      calcMultiplier(this.config.sensitivity)
+
+    const dy =
+      (canScrollV ? 1 : 0) *
+      e.movementY *
+      (this.config.naturalScrolling ? -1 : 1) *
+      calcMultiplier(this.config.sensitivity)
+
+    // Scroll
+    this.scrollTarget.scrollBy(dx, dy)
   }
 
   handleKeyComboCancel(e: KeyboardEvent) {

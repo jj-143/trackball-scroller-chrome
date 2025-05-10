@@ -1,5 +1,10 @@
 import { isFromAnchor } from "./isFromAnchor"
-import { searchTarget } from "./utils"
+import {
+  isScrollable,
+  isViewportScrollHidden,
+  isViewportScrollable,
+  searchTarget,
+} from "./utils"
 
 export function findTarget(e: MouseEvent | KeyboardEvent): ScrollTarget | null {
   if (e.type.startsWith("mouse")) {
@@ -26,11 +31,7 @@ function findTargetFromPath(path: EventTarget[]): HTMLElement {
     if (elm.nodeType === Node.DOCUMENT_FRAGMENT_NODE) continue
 
     // also detecting "auto" and non-scrollable element; pass and go higher.
-    if (
-      (getComputedStyle(elm).overflowY === "auto" ||
-        getComputedStyle(elm).overflowY === "scroll") &&
-      elm.clientHeight < elm.scrollHeight
-    ) {
+    if (isScrollable(elm)) {
       // change to HTML only scrollingElement is also HTML
       if (
         elm.tagName === "BODY" &&
@@ -48,29 +49,19 @@ function findTargetFromPath(path: EventTarget[]): HTMLElement {
 }
 
 function autoTarget(): ScrollTarget | null {
-  const diffHTML =
-    document.documentElement.scrollHeight -
-    document.documentElement.clientHeight
-  const styleHTML = getComputedStyle(document.documentElement).overflowY
-  const diffBODY = document.body.scrollHeight - document.body.clientHeight
-  const styleBODY = getComputedStyle(document.body).overflowY
-
-  const isThereCoveringScrollingElement =
-    ((diffHTML != 0 || diffBODY != 0) && styleHTML === "hidden") ||
-    styleBODY === "hidden"
-
-  if (isThereCoveringScrollingElement) {
-    const found = searchTarget()
-    return found.length ? found[0] : null
+  // A: If the viewport(<html> | <body>) is covered by an overlay element,
+  // (e.g, <body>'s overflow "hidden" to show a modal)
+  // then search and return the target.
+  if (isViewportScrollHidden()) {
+    return searchTarget()[0]
   }
 
-  if (diffHTML == 0 && diffBODY == 0) {
-    // no scroller on body.
-    // but the page is full-heighted with scrollable area, like it's options page.
-    // we could set the biggest as target but we don't, for now.
-    // implementing last active(clicked) element resolve these kind of pages.
-    return null
-  } else {
+  // B: If the viewport has a scroller, return Window.
+  // This is the most common case where the document has a long body content.
+  if (isViewportScrollable()) {
     return window
   }
+
+  // Nothing scrollable
+  return null
 }
