@@ -171,14 +171,22 @@ export function updateDOM(setting: UserSettings) {
 }
 
 export function makeTestArticles() {
-  const context = document.getElementById("test-context") as HTMLElement
+  const container = document.getElementById(
+    "test-article-container"
+  ) as HTMLElement
+
   for (let i = 0; i < 60; i++) {
+    const article = document.createElement("article")
+    article.classList.add("test-article")
     const h = document.createElement("h2")
     const p = document.createElement("p")
-    h.textContent = "Article " + (i + 1)
+    h.textContent = `Article (${Math.floor(i / 3) + 1}, ${(i % 3) + 1})`
     p.textContent =
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, cumque? Ea facilis velit accusantium error sapiente doloribus iure qui suscipit sunt, itaque non veniam ex harum assumenda praesentium magnam. Perferendis?"
-    context.appendChild(h)
-    context.appendChild(p)
+    article.appendChild(h)
+    article.appendChild(p)
+    article.appendChild(p.cloneNode(true))
+    article.appendChild(p.cloneNode(true))
+    container.appendChild(article)
   }
 }

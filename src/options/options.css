@@ -135,18 +135,30 @@ main {
 
 #test-context {
   flex: 1;
-  overflow-y: auto;
+  overflow: auto;
   border: 2px solid #c6f1e9;
+  width: 100%;
+}
+
+#test-article-container {
+  width: 300%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.test-article {
+  width: calc(33.33% - 2rem);
   padding: 1rem;
 }
 
-#test-context > h2 {
+.test-article > h2 {
   margin: 1rem 0;
 }
 
-#test-context > p {
+.test-article > p {
   font-size: 1rem;
-  margin: 0 0 4rem 0;
+  margin: 0 0 2rem 0;
+  width: 100%;
 }
 
 button.activation {
@@ -206,7 +218,6 @@ input#activation + button {
 
   main {
     flex-flow: column;
-    overflow: auto;
     padding: 2em 4vw;
   }
 
@@ -215,7 +226,11 @@ input#activation + button {
   }
 
   #test-area {
-    height: 30em;
+    display: block;
+  }
+
+  #test-context {
+    height: calc(100vh - 6em);
   }
 }
 
