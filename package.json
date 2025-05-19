@@ -14,7 +14,8 @@
     "test:watch": "jest --watch --config=./jest.config.js",
     "test:e2e": "concurrently -k npm:dev:all npm:e2e",
     "cypress": "cypress open",
-    "prettier": "prettier --write -c ./src/**/*.ts"
+    "prettier": "prettier --write -c ./src/**/*.ts",
+    "screenshot": "cypress run --headed --spec cypress/utils/screenshot.cy.ts --config-file cypress/utils/cypress.config.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",
