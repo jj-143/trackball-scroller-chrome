@@ -1,0 +1,122 @@
+<!-- 
+  Simple pages with viewport scroller - vertical, horizontal, both
+
+  URLs:
+    - http://localhost:3000/test-pages/viewport-scroller?route=vertical
+    - http://localhost:3000/test-pages/viewport-scroller?route=horizontal
+    - http://localhost:3000/test-pages/viewport-scroller?route=both
+ -->
+<head>
+  <meta name="application-name" content="trackball-scroller-options" />
+</head>
+
+<style>
+  body {
+    margin: 0;
+  }
+
+  [data-cy="horizontal"] main {
+    display: flex;
+    width: 300vw;
+  }
+
+  [data-cy="vertical"] main {
+    display: flex;
+    flex-direction: column;
+    height: 300vh;
+  }
+
+  [data-cy="both"] main {
+    display: flex;
+    flex-direction: column;
+    width: 300vw;
+    height: 300vh;
+  }
+</style>
+<body>
+  <section data-cy="horizontal">
+    <main>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+    </main>
+  </section>
+
+  <section data-cy="vertical">
+    <main>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+    </main>
+  </section>
+
+  <section data-cy="both">
+    <main>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+        quidem. Dolor hic esse rerum at blanditiis ducimus rem cupiditate
+        perspiciatis repellendus voluptatibus expedita, eligendi excepturi a
+        libero praesentium minima. Commodi.
+      </p>
+    </main>
+  </section>
+</body>
+<script>
+  // Hide all
+  const cys = document.querySelectorAll(`[data-cy]`)
+  cys.forEach((cy) => (cy.style.display = "none"))
+
+  // Show route with [data-cy=<route>]
+  const searchParams = new URLSearchParams(window.location.search)
+  const route = searchParams.get("route")
+
+  const routeElement = document.querySelector(`[data-cy=${route}]`)
+  if (!routeElement) throw Error(`No such route: ${route}`)
+  routeElement.style.display = "block"
+</script>
+<script type="module">
+  import { initScroller } from "../helpers"
+  initScroller()
+</script>
