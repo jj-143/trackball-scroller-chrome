@@ -1,6 +1,6 @@
 import "cypress-real-events/support"
 
-const TEST_PAGE = "regressions/shadow-dom/"
+const TEST_PAGE = "test-pages/shadow-dom/"
 
 beforeEach(() => {
   const isFocused = window.top?.document.hasFocus()

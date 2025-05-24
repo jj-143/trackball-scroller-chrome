@@ -11,11 +11,14 @@ const MODES: Mode[] = ["dev", "production", "all"]
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 
-const testEntryDir = "src/regressions"
+const testEntryDir = "src/test-pages"
 const testEntries = fs
   .readdirSync(testEntryDir)
-  .map((filename) => path.join(testEntryDir, filename, "index.html"))
-  .filter((filename) => fs.existsSync(filename))
+  .map((filename) => ({
+    name: filename,
+    path: path.join(testEntryDir, filename, "index.html"),
+  }))
+  .filter(({ path }) => fs.existsSync(path))
 
 function getDistDir() {
   const isProduction = process.env.NODE_ENV === "production"
@@ -66,7 +69,7 @@ function build({ mode }: { mode: Mode }) {
       // to prevent single entry of options:
       // parcel outputs single entry on root and removes options/ folder
       "src/inject.ts",
-      ...(mode === "all" ? testEntries : []),
+      ...(mode === "all" ? testEntries.map((it) => it.path) : []),
     ],
     defaultTargetOptions: {
       distDir: "debug-serve",
@@ -89,12 +92,15 @@ function build({ mode }: { mode: Mode }) {
   })
 
   console.info("[*] Server running.")
+
+  // Log Options page
   console.info("- Options: http://localhost:3000/options/options.html")
+
+  // Log test pages
   if (mode === "all") {
     console.info("- Test Pages")
-    testEntries.forEach((entry) => {
-      const url = entry.match(/^src\/(.+)\/index.html$/)?.[1] ?? "NO_ENTRY"
-      console.info(`  - http://localhost:3000/${url}`)
+    testEntries.forEach(({ name }) => {
+      console.info(`  - http://localhost:3000/test-pages/${name}`)
     })
   }
 
