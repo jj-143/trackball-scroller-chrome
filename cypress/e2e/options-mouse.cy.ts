@@ -12,25 +12,23 @@ beforeEach(() => {
   cy.visit("/options/options.html")
 })
 
-describe("Browser Test for scroller : Mouse", () => {
+describe("Options page scroll test, mouse", () => {
   context("Activation", () => {
     it("should activate & scroll with mouse moves", () => {
       cy.get("#test-context")
-        // activation & initialize mouse position to y = 0
+        // Activation
         .realClick({ button: "middle", position: "top" })
 
-        // move to y = -100; dy = -100
+        // Scroll down
         .realMouseMove(0, -100)
 
-        // --- test
-
-        // should scroll
+        // Should scroll
         .then(($element) => {
           const top = $element.get(0).scrollTop
           expect(top).to.be.above(0)
         })
 
-      // should acquire PointerLock
+      // Should acquire PointerLock
       cy.document().should(($document) => {
         expect($document.pointerLockElement).to.not.equal(null)
       })
@@ -39,72 +37,72 @@ describe("Browser Test for scroller : Mouse", () => {
 
   context("Deactivation", () => {
     beforeEach(() => {
-      // activation
+      // Activation
       cy.get("#test-context").realClick({ button: "middle", position: "top" })
 
-      // should have PointerLock
+      // Should have PointerLock
       cy.document().should(($document) => {
         expect($document.pointerLockElement).to.not.equal(null)
       })
     })
 
     it("should deactivate with a click", () => {
-      // deactivate
+      // Deactivate
       cy.get("#test-context").realClick({ button: "left", position: "top" })
 
       // --- test
       cy.get("#test-context")
         .realMouseMove(0, -100)
 
-        // should NOT scroll
+        // Should NOT scroll
         .then(($element) => {
           const top = $element.get(0).scrollTop
           expect(top).to.equal(0)
         })
 
-      // should NOT have PointerLock
+      // Should NOT have PointerLock
       cy.document().should(($document) => {
         expect($document.pointerLockElement).to.equal(null)
       })
     })
 
     it("should deactivate with the activation combo", () => {
-      // deactivate
+      // Deactivate
       cy.get("#test-context").realClick({ button: "middle", position: "top" })
 
-      // --- test
       cy.get("#test-context")
         .realMouseMove(0, -100)
 
-        // should NOT scroll
+        // Should NOT scroll
         .then(($element) => {
           const top = $element.get(0).scrollTop
           expect(top).to.equal(0)
         })
 
-      // should NOT have PointerLock
+      // Should NOT have PointerLock
       cy.document().should(($document) => {
         expect($document.pointerLockElement).to.equal(null)
       })
     })
 
     it("should deactivate when exited by user agent", () => {
+      // Simulates exit by user agent, such as ESC press, window lose focus,
+      // etc.
       cy.document().then((document) => {
-        // simulates exit by user agent, such as ESC press, window lose focus, etc.
         document.exitPointerLock()
       })
 
-      // --- test
       cy.get("#test-context")
+        // Scroll down
         .realMouseMove(0, -100)
 
-        // should NOT scroll
+        // Should NOT scroll
         .then(($element) => {
           const top = $element.get(0).scrollTop
           expect(top).to.equal(0)
         })
 
-      // should NOT have PointerLock
+      // Should NOT have PointerLock
       cy.document().should(($document) => {
         expect($document.pointerLockElement).to.equal(null)
       })
