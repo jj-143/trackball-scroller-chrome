@@ -5,7 +5,7 @@ import { InMemoryStorage } from "../store/providers"
 export async function initScroller() {
   const scroller = new Scroller()
   const store = new Store({
-    provider: new InMemoryStorage(),
+    provider: window._testStorage ?? new InMemoryStorage(),
   })
   const settings = await store.getStore()
 
