@@ -5,5 +5,6 @@ export default defineConfig({
     baseUrl: "http://localhost:3000",
     video: false,
     specPattern: "cypress/utils/*.cy.ts",
+    defaultBrowser: "chromium",
   },
 })
