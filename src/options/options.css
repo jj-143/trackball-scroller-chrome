@@ -140,6 +140,11 @@ main {
   width: 100%;
 }
 
+html,
+#test-context {
+  scrollbar-color: #c6f1e9 #002e79;
+}
+
 #test-article-container {
   width: 300%;
   display: flex;
