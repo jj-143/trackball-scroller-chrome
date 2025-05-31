@@ -62,6 +62,12 @@ function autoTarget(): ScrollTarget | null {
     return window
   }
 
-  // Nothing scrollable
+  // C: As a last resort, find largest scrollable
+  const found = searchTarget()
+  if (found.length) {
+    return found[0]
+  }
+
+  // D: Nothing scrollable
   return null
 }
