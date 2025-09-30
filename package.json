@@ -3,7 +3,7 @@
   "version": "2.2.0",
   "description": "Trackball Scroller for Chrome",
   "scripts": {
-    "build": "TS_NODE_PROJECT=./parcel/tsconfig.json node --loader ts-node/esm --no-warnings=ExperimentalWarning ./parcel/build.mts",
+    "build": "tsx ./parcel/build.mts",
     "dev": "npm run build dev",
     "dev:all": "npm run build all",
     "build:prod": "npm run build production",
@@ -36,7 +36,7 @@
     "jest-environment-jsdom": "^29.5.0",
     "prettier": "^2.0.5",
     "ts-jest": "^29.0.5",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.20.6",
     "typescript": "^4.9.5",
     "wait-for-expect": "^3.0.2"
   },
