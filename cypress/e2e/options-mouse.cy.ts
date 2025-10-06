@@ -1,5 +1,7 @@
 import "cypress-real-events/support"
 
+const PAGE = "/options/index.html"
+
 beforeEach(() => {
   const isFocused = window.top?.document.hasFocus()
   assert(
@@ -9,7 +11,7 @@ beforeEach(() => {
 })
 
 beforeEach(() => {
-  cy.visit("/options/options.html")
+  cy.visit(PAGE)
 })
 
 describe("Options page scroll test, mouse", () => {

@@ -1,9 +1,9 @@
 import { formatActivation, updateSettingsReducer } from "./utils/utils"
 import * as UI from "./utils/page"
-import Scroller from "../scroller"
-import { Store } from "../store"
-import ChromeStorage from "../store/providers/chrome"
-import { InMemoryStorage } from "../store/providers"
+import Scroller from "../../scroller"
+import { Store } from "../../store"
+import ChromeStorage from "../../store/providers/chrome"
+import { InMemoryStorage } from "../../store/providers"
 
 const scroller = new Scroller()
 

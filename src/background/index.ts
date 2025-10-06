@@ -1,8 +1,8 @@
 import Extension from "./extension"
 import { migrateStoreFrom_0_0_3 } from "../store/migration"
 
-import ACTION_ICON_PATH_ENABLED from "../images/icon.png"
-import ACTION_ICON_PATH_DISABLED from "../images/icon-outline.png"
+const ACTION_ICON_PATH_ENABLED = "/assets/icon.png"
+const ACTION_ICON_PATH_DISABLED = "/assets/icon-outline.png"
 
 const ACTION_TITLE_ENABLED = ""
 const ACTION_TITLE_DISABLED = "Trackball Scroller (disabled)"

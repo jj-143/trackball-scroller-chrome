@@ -8,9 +8,8 @@
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}",
-      "pathMapping": { "__parcel_source_root": "${webRoot}" }
+      "url": "http://localhost:3000/options/index.html",
+      "webRoot": "${workspaceFolder}/src"
     }
   ]
 }

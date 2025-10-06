@@ -4,7 +4,7 @@ import { createStorageData } from "../fixtures/storage"
 
 let storage: InMemoryStorage
 
-const PAGE = "/test-pages/modal-bs5"
+const PAGE = "/test-pages/modal-bs5/index.html"
 
 beforeEach(() => {
   const isFocused = window.top?.document.hasFocus()

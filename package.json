@@ -3,16 +3,13 @@
   "version": "2.2.0",
   "description": "Trackball Scroller for Chrome",
   "scripts": {
-    "build": "tsx ./parcel/build.mts",
-    "dev": "npm run build dev",
-    "dev:all": "npm run build all",
-    "build:prod": "npm run build production",
-    "postbuild:prod": "npm run zip",
+    "build": "tsx scripts/build.ts",
+    "dev": "tsx scripts/build.ts --watch --dev",
     "zip": "cd ./build && zip -r ../Trackball-Scroller.zip ./ && cd ..",
     "e2e": "cypress run --headed",
     "test": "jest --config=./jest.config.js",
     "test:watch": "jest --watch --config=./jest.config.js",
-    "test:e2e": "concurrently -k npm:dev:all npm:e2e",
+    "test:e2e": "concurrently -k npm:dev npm:e2e",
     "cypress": "cypress open",
     "prettier": "prettier --write -c ./src/**/*.ts",
     "screenshot": "cypress run --headed --spec cypress/utils/screenshot.cy.ts --config-file cypress/utils/cypress.config.ts"
@@ -20,9 +17,6 @@
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
-    "@parcel/config-default": "^2.9.1",
-    "@parcel/config-webextension": "^2.9.1",
-    "@parcel/core": "^2.9.1",
     "@types/chrome": "^0.0.236",
     "@types/jest": "^26.0.0",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
@@ -38,6 +32,8 @@
     "ts-jest": "^29.4.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
+    "vite": "^7.1.9",
+    "vite-tsconfig-paths": "^5.1.4",
     "wait-for-expect": "^3.0.2"
   },
   "repository": "https://github.com/jj-143/trackball-scroller-chrome",

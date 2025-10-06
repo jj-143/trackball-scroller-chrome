@@ -1,9 +1,9 @@
 import { formatActivation, isOnlyMouse3, Payload } from "./utils"
-import { parseInput } from "../../scroller/utils/parseInput"
+import { parseInput } from "../../../scroller/utils/parseInput"
 import {
   allowContextMenu,
   preventContextMenu,
-} from "../../scroller/utils/utils"
+} from "../../../scroller/utils/utils"
 
 const OPTION_KEYS = ["naturalScrolling"]
 

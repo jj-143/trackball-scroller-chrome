@@ -4,6 +4,8 @@ import { createStorageData } from "../fixtures/storage"
 
 let storage: InMemoryStorage
 
+const PAGE = "/options/index.html"
+
 // activation button needs proper PointerLock to register activation combo
 beforeEach(() => {
   const isFocused = window.top?.document.hasFocus()
@@ -16,7 +18,7 @@ beforeEach(() => {
 beforeEach(() => {
   // to intercept and provide user storage fixture
   storage = new InMemoryStorage()
-  cy.visit("/options/options.html", {
+  cy.visit(PAGE, {
     onBeforeLoad(window) {
       window._testStorage = storage
     },

@@ -30,7 +30,7 @@ jobs:
         run: npm run test
 
       - name: Build
-        run: npm run build:prod
+        run: npm run build
 
       - name: Package
         run: cd build && zip -r ../${{ steps.vars.outputs.filename }} .

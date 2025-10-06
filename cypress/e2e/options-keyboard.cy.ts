@@ -4,6 +4,8 @@ import { createStorageData } from "../fixtures/storage"
 
 let storage: InMemoryStorage
 
+const PAGE = "/options/index.html"
+
 beforeEach(() => {
   const isFocused = window.top?.document.hasFocus()
   assert(
@@ -25,7 +27,7 @@ describe("Options page scroll test (viewport), keyboard", () => {
     })
 
     cy.viewport(350, 750)
-    cy.visit("/options/options.html", {
+    cy.visit(PAGE, {
       onBeforeLoad(window) {
         window._testStorage = storage
       },
@@ -147,7 +149,7 @@ describe("Options page scroll test (#test-context), keyboard", () => {
     })
 
     cy.viewport(1200, 1080)
-    cy.visit("/options/options.html", {
+    cy.visit(PAGE, {
       onBeforeLoad(window) {
         window._testStorage = storage
       },

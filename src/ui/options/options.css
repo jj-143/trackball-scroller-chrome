@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "Maven Pro";
+  src: url("/assets/MavenPro-VariableFont_wght.ttf");
+}
+
 body {
   display: flex;
   flex-flow: column;

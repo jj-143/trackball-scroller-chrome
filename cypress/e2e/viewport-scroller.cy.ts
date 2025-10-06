@@ -1,8 +1,9 @@
 import "cypress-real-events/support"
 
-const PAGE_VERTICAL = "/test-pages/viewport-scroller?route=vertical"
-const PAGE_HORIZONTAL = "/test-pages/viewport-scroller?route=horizontal"
-const PAGE_BOTH = "/test-pages/viewport-scroller?route=both"
+const PAGE = "/test-pages/viewport-scroller/index.html"
+const PAGE_VERTICAL = `${PAGE}?route=vertical`
+const PAGE_HORIZONTAL = `${PAGE}?route=horizontal`
+const PAGE_BOTH = `${PAGE}?route=both`
 
 beforeEach(() => {
   const isFocused = window.top?.document.hasFocus()
