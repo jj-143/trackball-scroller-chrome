@@ -26,17 +26,14 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Test (Type)
-        run: npm run test:type
-
       - name: Test (Unit)
-        run: npm run test:unit
+        run: npm run test
 
       - name: Build
         run: npm run build:prod
 
       - name: Package
-        run: zip -j -r ${{ steps.vars.outputs.filename }} build
+        run: cd build && zip -r ../${{ steps.vars.outputs.filename }} .
 
       - name: Draft Release
         uses: softprops/action-gh-release@v2
