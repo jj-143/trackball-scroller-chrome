@@ -1,9 +1,9 @@
-import { formatActivation } from "./utils"
+import { formatCombo } from "./utils"
 
-describe("Format Activation", () => {
-  it("should format mouse activation", () => {
+describe("Format Combo", () => {
+  it("should format mouse combo", () => {
     let expected = "Mouse 2"
-    let activation: Activation = {
+    let combo: Combo = {
       type: "mouse" as const,
       button: 1,
       modifiers: {
@@ -12,17 +12,11 @@ describe("Format Activation", () => {
         shift: false,
         meta: false,
       },
-      nonActivation: {
-        ctrl: false,
-        alt: false,
-        shift: false,
-        meta: false,
-      },
     }
-    expect(formatActivation(activation)).toBe(expected)
+    expect(formatCombo(combo)).toBe(expected)
 
     expected = "Ctrl + Shift + Meta + Mouse 3"
-    activation = {
+    combo = {
       type: "mouse" as const,
       button: 2,
 
@@ -32,19 +26,13 @@ describe("Format Activation", () => {
         ctrl: true,
         shift: true,
       },
-      nonActivation: {
-        ctrl: false,
-        alt: false,
-        shift: false,
-        meta: false,
-      },
     }
-    expect(formatActivation(activation)).toBe(expected)
+    expect(formatCombo(combo)).toBe(expected)
   })
 
-  it("should format key activation", () => {
+  it("should format key combo", () => {
     let expected = "F3"
-    let activation: Activation = {
+    let combo: Combo = {
       type: "keyboard" as const,
       button: "F3",
       modifiers: {
@@ -53,17 +41,11 @@ describe("Format Activation", () => {
         shift: false,
         meta: false,
       },
-      nonActivation: {
-        ctrl: false,
-        alt: false,
-        shift: false,
-        meta: false,
-      },
     }
-    expect(formatActivation(activation)).toBe(expected)
+    expect(formatCombo(combo)).toBe(expected)
 
     expected = "Alt + Meta + Z"
-    activation = {
+    combo = {
       type: "keyboard" as const,
       button: "z",
 
@@ -72,13 +54,7 @@ describe("Format Activation", () => {
         meta: true,
         alt: true,
       },
-      nonActivation: {
-        ctrl: false,
-        alt: false,
-        shift: false,
-        meta: false,
-      },
     }
-    expect(formatActivation(activation)).toBe(expected)
+    expect(formatCombo(combo)).toBe(expected)
   })
 })

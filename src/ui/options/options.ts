@@ -1,4 +1,4 @@
-import { formatActivation, updateSettingsReducer } from "./utils/utils"
+import { updateSettingsReducer } from "./utils/utils"
 import * as UI from "./utils/page"
 import { Store } from "../../store"
 import ChromeStorage from "../../store/providers/chrome"
@@ -10,19 +10,7 @@ UI.setContext({
   updateOption: async (type, payload) => {
     const oldSettings = await store.getStore()
     const newSettings = updateSettingsReducer(oldSettings, type, payload)
-
-    if (
-      type === "ACTIVATION" &&
-      formatActivation(oldSettings.userOption.scroller.activation) ===
-        formatActivation(newSettings.userOption.scroller.activation)
-    ) {
-      // UI.updateDOM(oldSettings)
-      return
-    }
     store.updateStore(newSettings)
-  },
-  cancelCustomizeActivation: async () => {
-    UI.updateDOM(await store.getStore())
   },
 })
 

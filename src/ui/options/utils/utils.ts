@@ -1,27 +1,3 @@
-const MODIFIER_ORDER = ["ctrl", "alt", "shift", "meta"]
-const MODIFIER_FORMAT_MAP: Record<keyof ModifierFlag, string> = {
-  ctrl: "Ctrl",
-  alt: "Alt",
-  shift: "Shift",
-  meta: "Meta",
-}
-
-export function formatActivation(activation: Activation): string {
-  const button =
-    activation.type === "mouse"
-      ? `Mouse ${(activation.button as number) + 1}`
-      : `${activation.button.toString().toUpperCase()}`
-  const modifiers = Object.entries(activation.modifiers)
-    .filter(([, value]) => value)
-    .sort(
-      ([mod1], [mod2]) =>
-        MODIFIER_ORDER.findIndex((it) => it === mod1) -
-        MODIFIER_ORDER.findIndex((it) => it === mod2)
-    )
-    .map(([mod]) => MODIFIER_FORMAT_MAP[mod as keyof ModifierFlag])
-  return modifiers.concat(button).join(" + ")
-}
-
 export function isOnlyMouse3(activation: Activation) {
   // added: no warning after checking non-activation
   return (
@@ -33,7 +9,7 @@ export function isOnlyMouse3(activation: Activation) {
 }
 
 export type Payload = {
-  ACTIVATION: Combo
+  COMBO: Combo
   NON_ACTIVATION: ModifierFlag
   SCROLLER_OPTION: Partial<Omit<ScrollerConfig, "activation" | "sensitivity">>
   SENSITIVITY: number
@@ -48,10 +24,10 @@ export function updateSettingsReducer<T extends keyof Payload>(
   const newSettings: UserSettings = JSON.parse(JSON.stringify(oldSettings))
 
   switch (type) {
-    case "ACTIVATION":
+    case "COMBO":
       newSettings.userOption.scroller.activation = {
         ...newSettings.userOption.scroller.activation,
-        ...(payload as Payload["ACTIVATION"]),
+        ...(payload as Payload["COMBO"]),
       }
       break
     case "NON_ACTIVATION":

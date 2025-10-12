@@ -1,5 +1,6 @@
 import { context } from "../utils/page"
 import { isOnlyMouse3 } from "../utils/utils"
+import ActivationCombo from "./ActivationCombo"
 
 type Props = {
   userOption: UserOption
@@ -23,6 +24,10 @@ function changeSensitivity(value: number) {
   context.updateOption!("SENSITIVITY", value)
 }
 
+function updateCombo(combo: Combo) {
+  context.updateOption!("COMBO", combo)
+}
+
 export default function AreaSettings(props: Props) {
   const showMouse3Warning = isOnlyMouse3(props.userOption.scroller.activation)
 
@@ -35,9 +40,10 @@ export default function AreaSettings(props: Props) {
       >
         <label class="control">activation</label>
         <div style="display: flex; align-items: center">
-          <button class="activation" data-cy="activation">
-            Mouse 1
-          </button>
+          <ActivationCombo
+            combo={props.userOption.scroller.activation}
+            onChange={updateCombo}
+          />
         </div>
         <span
           id="warning-mouse3"
