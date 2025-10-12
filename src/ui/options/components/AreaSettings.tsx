@@ -1,5 +1,4 @@
 import api from "@/ui/api"
-import { isOnlyMouse3 } from "../utils/utils"
 import ActivationCombo from "./ActivationCombo"
 
 type Props = {
@@ -29,31 +28,12 @@ function updateCombo(combo: Combo) {
 }
 
 export default function AreaSettings(props: Props) {
-  const showMouse3Warning = isOnlyMouse3(props.userOption.scroller.activation)
-
   return (
-    <div id="settings">
-      <div
-        class={showMouse3Warning ? "option warning-mouse3" : "option"}
-        id="activation"
-        style="position: relative"
-      >
-        <label class="control">activation</label>
-        <div style="display: flex; align-items: center">
-          <ActivationCombo
-            combo={props.userOption.scroller.activation}
-            onChange={updateCombo}
-          />
-        </div>
-        <span
-          id="warning-mouse3"
-          class="hidden"
-          style="position: absolute"
-          data-cy="warning-mouse3"
-        >
-          To use context menu, make sure to tick any modifier keys below.
-        </span>
-      </div>
+    <div>
+      <ActivationCombo
+        activation={props.userOption.scroller.activation}
+        onChange={updateCombo}
+      />
 
       <div class="option">
         <label class="control">don't activate if pressed.. (any)</label>

@@ -59,9 +59,6 @@ main > div {
 .option {
   margin-bottom: 2.5rem;
 }
-.option#activation.warning-mouse3 {
-  margin-bottom: 3.5rem;
-}
 
 /* non-activation */
 
@@ -141,56 +138,6 @@ html {
   scrollbar-color: #c6f1e9 #002e79;
 }
 
-button.activation {
-  background: transparent;
-  border: 2px solid #c6f1e9;
-  border-radius: 4px;
-  outline: none;
-  appearance: none;
-  padding: 0.5em 0.75em;
-  font-size: 1.125rem;
-  font-weight: 700;
-  /* font-variation-settings: 'wght' 700; */
-  color: #c6f1e9;
-  user-select: none;
-  margin-right: 1rem;
-  width: min(100%, 22em);
-  text-align: start;
-}
-
-button.activation:hover {
-  background: #c6f1e9;
-  color: #002e79;
-  cursor: pointer;
-}
-
-@keyframes blink {
-  0% {
-    background: #002e79;
-    color: #c6f1e9;
-  }
-
-  50% {
-    background: #002e79;
-    color: #002e79;
-  }
-}
-
-button.activation.editing {
-  text-align: center;
-  animation: blink 1s steps(1) infinite;
-}
-
-input#activation + button {
-  display: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 8px;
-  margin: 0;
-  background: #c6f1e9;
-  border: none;
-}
-
 @media screen and (max-width: 900px) {
   #app {
     height: auto;
@@ -204,19 +151,6 @@ input#activation + button {
   main > div {
     padding: 0 1vw;
   }
-}
-
-.option#activation #warning-mouse3 {
-  display: none;
-}
-
-.option#activation.warning-mouse3 #warning-mouse3 {
-  display: block;
-  margin-top: 0.4rem;
-  color: #d30953;
-  font-size: 1.125rem;
-  /* font-weight: bold; */
-  font-variation-settings: "wght" 700;
 }
 
 #option-sensitivity > div > * {
