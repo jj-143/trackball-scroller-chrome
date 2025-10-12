@@ -1,4 +1,4 @@
-import { context } from "../utils/page"
+import api from "@/ui/api"
 import { isOnlyMouse3 } from "../utils/utils"
 import ActivationCombo from "./ActivationCombo"
 
@@ -8,24 +8,24 @@ type Props = {
 
 function onButtonClick(event: Event) {
   const checkbox = event.currentTarget as HTMLInputElement
-  context.updateOption!("SCROLLER_OPTION", {
+  api.updateSettings!("SCROLLER_OPTION", {
     [checkbox.name]: checkbox.checked,
   })
 }
 
 function onNonActivationChange(event: Event) {
   const chip = event.target as HTMLInputElement
-  context.updateOption!("NON_ACTIVATION", {
+  api.updateSettings("NON_ACTIVATION", {
     [chip.name]: chip.checked,
   })
 }
 
 function changeSensitivity(value: number) {
-  context.updateOption!("SENSITIVITY", value)
+  api.updateSettings("SENSITIVITY", value)
 }
 
 function updateCombo(combo: Combo) {
-  context.updateOption!("COMBO", combo)
+  api.updateSettings("COMBO", combo)
 }
 
 export default function AreaSettings(props: Props) {

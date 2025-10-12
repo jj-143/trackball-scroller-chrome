@@ -1,3 +1,6 @@
+import Scroller from "@/scroller"
+import type { Store } from "@/store"
+
 export function isOnlyMouse3(activation: Activation) {
   // added: no warning after checking non-activation
   return (
@@ -15,7 +18,17 @@ export type Payload = {
   SENSITIVITY: number
 }
 
-export function updateSettingsReducer<T extends keyof Payload>(
+export async function updateSettings<T extends keyof Payload>(
+  store: Store,
+  type: T,
+  payload: Payload[T]
+) {
+  const oldSettings = await store.getStore()
+  const newSettings = updateSettingsReducer(oldSettings, type, payload)
+  store.updateStore(newSettings)
+}
+
+function updateSettingsReducer<T extends keyof Payload>(
   oldSettings: UserSettings,
   type: T,
   payload: Payload[T]
@@ -53,4 +66,14 @@ export function updateSettingsReducer<T extends keyof Payload>(
       break
   }
   return newSettings
+}
+
+export function shimPreventActivation(scroller: Scroller, className: string) {
+  scroller.checkTrigger = function (event: MouseEvent) {
+    const elm = event.target as Element
+    const originalFn = Scroller.prototype.checkTrigger.bind(scroller)
+    if (!elm.classList.contains(className)) {
+      return originalFn(event)
+    }
+  }
 }

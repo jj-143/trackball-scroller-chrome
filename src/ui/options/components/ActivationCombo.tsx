@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks"
 import CustomizeCombo, { equalsCombo, formatCombo } from "../utils/combo"
+import { CLS_PREVENT_ACTIVATION } from "@/ui/api"
 
 type Props = {
   combo: Combo
@@ -19,7 +20,9 @@ export default function ActivationCombo(props: Props) {
 
   return (
     <button
-      className={`activation ${isEditing ? "editing" : ""}`}
+      className={`${CLS_PREVENT_ACTIVATION} activation ${
+        isEditing ? "editing" : ""
+      }`}
       disabled={isEditing}
       onClick={startCustomizeCombo}
       data-cy="activation"

@@ -1,4 +1,4 @@
-import { formatCombo } from "./utils"
+import { formatCombo } from "./combo"
 
 describe("Format Combo", () => {
   it("should format mouse combo", () => {
