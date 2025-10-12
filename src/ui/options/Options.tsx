@@ -1,9 +1,11 @@
-import "./options.css"
-
 import { useEffect, useState } from "preact/hooks"
-import AreaScrollTest from "./components/AreaScrollTest"
-import AreaSettings from "./components/AreaSettings"
+import AreaScrollTest from "./areas/AreaScrollTest"
+import AreaSettings from "./areas/AreaSettings"
 import api from "../api"
+
+import L from "./layout.module.scss"
+
+import "./options.css"
 
 await api.init()
 
@@ -22,13 +24,13 @@ export default function Options() {
 
   return (
     <>
-      <header>
+      <header class={L.header}>
         <img src="/assets/icon-options.svg" alt="logo" />
-        <span id="title">Trackball Scroller</span>
-        <span id="menu">- Options -</span>
+        <h1 class={L.title}>Trackball Scroller</h1>
+        <h2 class={L.subtitle}>- Options -</h2>
       </header>
 
-      <main>
+      <main class={L.main}>
         <AreaSettings userOption={userOption} />
         <AreaScrollTest />
       </main>

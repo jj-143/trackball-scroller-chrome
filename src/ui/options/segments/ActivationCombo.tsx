@@ -2,14 +2,15 @@ import { useState } from "preact/hooks"
 import { clsx } from "clsx"
 
 import CustomizeCombo, { equalsCombo, formatCombo } from "../utils/combo"
-import { CLS_PREVENT_ACTIVATION } from "@/ui/api"
+import api, { CLS_PREVENT_ACTIVATION } from "@/ui/api"
 import { isOnlyMouse3 } from "../utils/utils"
 
+import { Option } from "../layouts"
+import L from "../layout.module.scss"
 import S from "./ActivationCombo.module.scss"
 
 type Props = {
   activation: Activation
-  onChange: (combo: Combo) => void
 }
 
 export default function ActivationCombo(props: Props) {
@@ -20,21 +21,19 @@ export default function ActivationCombo(props: Props) {
     setIsEditing(true)
     new CustomizeCombo()
       .start()
-      .then(
-        (combo) => equalsCombo(props.activation, combo) || props.onChange(combo)
-      )
+      .then((combo) => {
+        if (!equalsCombo(props.activation, combo)) {
+          api.updateSettings("COMBO", combo)
+        }
+      })
       .finally(() => setIsEditing(false))
   }
 
   return (
-    <div
-      class={clsx(
-        "option",
-        S.activation,
-        showMouse3Warning && S.showMouse3Warning
-      )}
+    <Option
+      className={clsx(S.activation, showMouse3Warning && S.showMouse3Warning)}
     >
-      <label class="control">activation</label>
+      <label class={L.label}>activation</label>
 
       <button
         class={clsx(
@@ -54,6 +53,6 @@ export default function ActivationCombo(props: Props) {
           To use context menu, make sure to tick any modifier keys below.
         </div>
       )}
-    </div>
+    </Option>
   )
 }

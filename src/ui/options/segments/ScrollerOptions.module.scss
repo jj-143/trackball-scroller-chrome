@@ -1,0 +1,25 @@
+.optionItem {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  font-variation-settings: "wght" 700;
+
+  & * {
+    cursor: pointer;
+  }
+}
+
+.optionItemRoot {
+  display: flex;
+  justify-content: space-between;
+
+  input[type="checkbox"]:checked + .checkbox {
+    background-color: #c6f1e9;
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #c6f1e9;
+    border-radius: 4px;
+  }
+}

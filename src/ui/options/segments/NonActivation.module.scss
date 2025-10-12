@@ -1,0 +1,22 @@
+.modifiers {
+  display: flex;
+  gap: 14px;
+}
+
+.modifier {
+  & > label {
+    display: block;
+    padding: 8px 14px;
+    margin: 0;
+    border: 2px solid #c6f1e9;
+    border-radius: 4px;
+    font-size: 18px;
+    font-variation-settings: "wght" 700;
+    cursor: pointer;
+  }
+
+  & > input:checked + label {
+    color: #002e79;
+    background-color: #c6f1e9;
+  }
+}

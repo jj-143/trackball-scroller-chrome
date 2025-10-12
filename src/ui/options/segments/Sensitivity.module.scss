@@ -1,0 +1,30 @@
+.control {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.pushButton {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #c6f1e9;
+  border-radius: 14px;
+  outline: none;
+  appearance: none;
+  background: transparent;
+  color: #c6f1e9;
+  user-select: none;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:active {
+    background: #c6f1e9;
+    color: #002e79;
+  }
+}
+
+.value {
+  font-weight: 700;
+  font-size: 18px;
+}

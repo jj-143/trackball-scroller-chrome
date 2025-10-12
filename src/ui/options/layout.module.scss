@@ -1,0 +1,60 @@
+.main {
+  display: flex;
+  flex: 1;
+  padding: 2em 6vw;
+  overflow-y: hidden;
+
+  @media screen and (max-width: 900px) {
+    flex-flow: column;
+    padding: 2em 4vw;
+  }
+}
+
+.section {
+  flex: 1;
+  margin: 0 0em;
+  padding: 0 4vw;
+
+  @media screen and (max-width: 900px) {
+    padding: 0 1vw;
+  }
+}
+
+.label {
+  display: block;
+  font-size: 1.5rem;
+  font-variation-settings: "wght" 700;
+  margin-bottom: 12px;
+}
+
+.option {
+  margin-bottom: 2.5rem;
+
+  .checkbox label {
+    font-size: 1.125rem;
+  }
+}
+
+.header {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-flow: column;
+  font-variation-settings: "wght" 900;
+  padding-top: 2.5rem;
+
+  img {
+    width: 208px;
+    height: 209px;
+  }
+
+  .title {
+    font-size: 3rem;
+    margin: 1.5rem 0;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 2.25rem;
+  }
+}

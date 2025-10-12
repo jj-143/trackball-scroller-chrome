@@ -3,6 +3,10 @@
   src: url("/assets/MavenPro-VariableFont_wght.ttf");
 }
 
+html {
+  scrollbar-color: #c6f1e9 #002e79;
+}
+
 body {
   margin: 0;
   height: 100vh;
@@ -19,168 +23,8 @@ body {
   height: 100%;
 }
 
-header {
-  text-align: center;
-  display: flex;
-  align-items: center;
-  flex-flow: column;
-  /* font-weight: 900; */
-  font-variation-settings: "wght" 900;
-  padding-top: 2.5rem;
-}
-
-header > img {
-  width: 208px;
-  height: 209px;
-}
-
-#title {
-  font-size: 3rem;
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-#menu {
-  font-size: 2.25rem;
-}
-
-main {
-  display: flex;
-  flex: 1;
-  padding: 2em 6vw;
-}
-
-main > div {
-  flex: 1;
-  margin: 0 0em;
-  padding: 0 4vw;
-}
-
-.option {
-  margin-bottom: 2.5rem;
-}
-
-/* non-activation */
-
-.chips {
-  display: flex;
-}
-
-.chips > span:not(:last-child) {
-  margin-right: 14px;
-}
-
-.chip {
-  border: 2px solid #c6f1e9;
-  border-radius: 4px;
-  /* font-weight: bold; */
-  font-variation-settings: "wght" 700;
-  font-size: 18px;
-  padding: 8px 14px;
-  cursor: pointer;
-  display: block;
-}
-
-.chip > label {
-  margin: 0;
-  cursor: pointer;
-}
-
-.chip > input {
-  margin: 0;
-}
-
-input[type="checkbox"]:checked + .chip {
-  color: #002e79;
-  background-color: #c6f1e9;
-}
-
-/* options */
-
-label.control,
-.checkbox > label {
-  display: block;
-  margin-bottom: 12px;
-  font-size: 1.5rem;
-  /* font-weight: 700; */
-  font-variation-settings: "wght" 700;
-}
-
-.option .checkbox label {
-  font-size: 1.125rem;
-}
-
-.checkbox label {
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-}
-.checkbox > * {
-  cursor: pointer;
-}
-
-.input-checkbox {
-  width: 22px;
-  height: 22px;
-  border: 2px solid #c6f1e9;
-  border-radius: 4px;
-}
-
-.checkbox input[type="checkbox"]:checked + .input-checkbox {
-  background-color: #c6f1e9;
-}
-
-main {
-  overflow-y: hidden;
-}
-
-html {
-  scrollbar-color: #c6f1e9 #002e79;
-}
-
 @media screen and (max-width: 900px) {
   #app {
     height: auto;
   }
-
-  main {
-    flex-flow: column;
-    padding: 2em 4vw;
-  }
-
-  main > div {
-    padding: 0 1vw;
-  }
-}
-
-#option-sensitivity > div > * {
-  margin-right: 1em;
-}
-
-#sensitivity-value {
-  display: inline-block;
-  text-align: center;
-  font-weight: 700;
-  font-size: 18px;
-  width: 28px;
-}
-
-button.push {
-  width: 28px;
-  height: 28px;
-  border: 2px solid #c6f1e9;
-  border-radius: 14px;
-  outline: none;
-  appearance: none;
-  background: transparent;
-  color: #c6f1e9;
-  user-select: none;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-button.push:active {
-  background: #c6f1e9;
-  color: #002e79;
 }
