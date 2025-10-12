@@ -47,7 +47,7 @@ describe("Options page scroll test (viewport), keyboard", () => {
       body.realMouseMove(0, -100, { position: "top" })
 
       // Should scroll
-      cy.get("html").then(($element) => {
+      cy.get("body").then(($element) => {
         const top = $element.get(0).scrollTop
         expect(top).to.be.above(0)
       })
@@ -83,7 +83,7 @@ describe("Options page scroll test (viewport), keyboard", () => {
         .realMouseMove(0, -100, { position: "top" })
 
       // Should NOT scroll
-      cy.get("html").then(($element) => {
+      cy.get("body").then(($element) => {
         const top = $element.get(0).scrollTop
         expect(top).to.equal(0)
       })
@@ -103,7 +103,7 @@ describe("Options page scroll test (viewport), keyboard", () => {
         .realMouseMove(0, -100, { position: "top" })
 
       // Should NOT scroll
-      cy.get("html").then(($element) => {
+      cy.get("body").then(($element) => {
         const top = $element.get(0).scrollTop
         expect(top).to.equal(0)
       })
@@ -123,7 +123,7 @@ describe("Options page scroll test (viewport), keyboard", () => {
         .realMouseMove(0, -100, { position: "top" })
 
       // Should scroll
-      cy.get("html").then(($element) => {
+      cy.get("body").then(($element) => {
         const top = $element.get(0).scrollTop
         expect(top).to.be.above(0)
       })
