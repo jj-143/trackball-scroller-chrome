@@ -7,8 +7,6 @@ const ACTION_ICON_PATH_DISABLED = "/assets/icon-outline.png"
 const ACTION_TITLE_ENABLED = ""
 const ACTION_TITLE_DISABLED = "Trackball Scroller (disabled)"
 
-const IS_DEV_BUILD = process.env.NODE_ENV !== "production"
-
 /**
  * update icon and title based on "enabled" (from [Scroller.enabled])
  */
@@ -37,9 +35,6 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.runtime.openOptionsPage()
   }
   if (details.reason === "update") {
-    if (IS_DEV_BUILD) {
-      // chrome.runtime.openOptionsPage()
-    }
     if (details.previousVersion === "0.0.3") {
       migrateStoreFrom_0_0_3(extension.store)
     }

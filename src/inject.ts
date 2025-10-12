@@ -28,7 +28,7 @@ async function init() {
 // Extensions don't get injected on the *real* options page. ('chrome-extension://')
 // So we have to explicitly prevent it
 // since options page run its own scroller.
-const isProduction = process.env.NODE_ENV === "production"
+const isProduction = import.meta.env.PROD
 const isOptionsPage =
   (
     document.head.querySelector(

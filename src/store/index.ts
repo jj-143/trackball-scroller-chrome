@@ -1,4 +1,4 @@
-import { StorageProvider } from "./providers"
+import type { StorageProvider } from "./providers"
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   enabled: true,
