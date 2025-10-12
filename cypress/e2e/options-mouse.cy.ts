@@ -17,7 +17,7 @@ beforeEach(() => {
 describe("Options page scroll test, mouse", () => {
   context("Activation", () => {
     it("should activate & scroll with mouse moves", () => {
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         // Activation
         .realClick({ button: "middle", position: "top" })
 
@@ -40,7 +40,10 @@ describe("Options page scroll test, mouse", () => {
   context("Deactivation", () => {
     beforeEach(() => {
       // Activation
-      cy.get("#test-context").realClick({ button: "middle", position: "top" })
+      cy.getByCy("test-context").realClick({
+        button: "middle",
+        position: "top",
+      })
 
       // Should have PointerLock
       cy.document().should(($document) => {
@@ -50,10 +53,10 @@ describe("Options page scroll test, mouse", () => {
 
     it("should deactivate with a click", () => {
       // Deactivate
-      cy.get("#test-context").realClick({ button: "left", position: "top" })
+      cy.getByCy("test-context").realClick({ button: "left", position: "top" })
 
       // --- test
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         .realMouseMove(0, -100)
 
         // Should NOT scroll
@@ -70,9 +73,12 @@ describe("Options page scroll test, mouse", () => {
 
     it("should deactivate with the activation combo", () => {
       // Deactivate
-      cy.get("#test-context").realClick({ button: "middle", position: "top" })
+      cy.getByCy("test-context").realClick({
+        button: "middle",
+        position: "top",
+      })
 
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         .realMouseMove(0, -100)
 
         // Should NOT scroll
@@ -94,7 +100,7 @@ describe("Options page scroll test, mouse", () => {
         document.exitPointerLock()
       })
 
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         // Scroll down
         .realMouseMove(0, -100)
 

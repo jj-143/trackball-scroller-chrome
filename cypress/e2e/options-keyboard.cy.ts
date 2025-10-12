@@ -137,7 +137,7 @@ describe("Options page scroll test (viewport), keyboard", () => {
 })
 
 // No viewport scroller, but has an scroll element
-describe("Options page scroll test (#test-context), keyboard", () => {
+describe("Options page Scroll Test, keyboard", () => {
   // Provide scroller with keyboard activation
   beforeEach(() => {
     storage = new InMemoryStorage()
@@ -165,7 +165,7 @@ describe("Options page scroll test (#test-context), keyboard", () => {
       cy.realPress("e")
 
       // Scroll down
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         .realMouseMove(0, -100, { position: "top" })
 
         // Should scroll
@@ -188,7 +188,7 @@ describe("Options page scroll test (#test-context), keyboard", () => {
       cy.realPress("e")
 
       // Scroll down & right
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         .realMouseMove(-100, -100, { position: "topLeft", shiftKey: true })
 
         // Should scroll to only right
@@ -224,7 +224,7 @@ describe("Options page scroll test (#test-context), keyboard", () => {
       cy.get("body").realClick()
 
       // Scroll down
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         .realMouseMove(0, -100, { position: "top" })
 
         // Should NOT scroll
@@ -243,7 +243,7 @@ describe("Options page scroll test (#test-context), keyboard", () => {
       // Deactivation
       cy.realPress("e")
 
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         // Scroll down
         .realMouseMove(0, -100, { position: "top" })
 
@@ -263,7 +263,7 @@ describe("Options page scroll test (#test-context), keyboard", () => {
       // Try deactivation
       cy.realPress("a")
 
-      cy.get("#test-context")
+      cy.getByCy("test-context")
         // Scroll down
         .realMouseMove(0, -100, { position: "top" })
 

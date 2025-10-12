@@ -4,7 +4,7 @@ export default function AreaScrollTest() {
   return (
     <div class={`${S.area}`}>
       <label class="control">test your scroll</label>
-      <div id="test-context" class={S.body}>
+      <div class={S.body} data-cy="test-context">
         <div class={S.articleContainer}>
           {Array.from({ length: 30 }).map((_, row) =>
             Array.from({ length: 3 }).map((_, col) => (

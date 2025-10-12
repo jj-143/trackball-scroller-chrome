@@ -20,7 +20,7 @@ context("when disabling scroller while being activated", () => {
     cy.getByCy("delayed-disable").first().click()
 
     // activate
-    cy.get("#test-context").realClick({
+    cy.getByCy("test-context").realClick({
       button: "middle",
       position: "top",
       scrollBehavior: false,
@@ -31,7 +31,7 @@ context("when disabling scroller while being activated", () => {
       expect($document.pointerLockElement).to.be.equal(null)
     })
 
-    const body = cy.get("#test-context")
+    const body = cy.getByCy("test-context")
     body
       // NOTE: realMouseMove & Scroller working weird
       // in this activated without PointerLock in Cypress

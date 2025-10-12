@@ -7,7 +7,7 @@
   </button>
 </div>
 
-<div style="overflow: auto; height: 500px" id="test-context">
+<div style="overflow: auto; height: 500px" data-cy="test-context">
   <div>
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci fugit
     ratione consequatur numquam ipsam quidem alias accusamus consectetur. Facere
@@ -137,7 +137,6 @@
 </div>
 <script type="module">
   import { initScroller } from "../helpers"
-
   ;(async () => {
     const { store } = await initScroller()
 
