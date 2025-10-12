@@ -137,42 +137,8 @@ main {
   overflow-y: hidden;
 }
 
-#test-area {
-  display: flex;
-  flex-flow: column;
-}
-
-#test-context {
-  flex: 1;
-  overflow: auto;
-  border: 2px solid #c6f1e9;
-  width: 100%;
-}
-
-html,
-#test-context {
+html {
   scrollbar-color: #c6f1e9 #002e79;
-}
-
-#test-article-container {
-  width: 300%;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.test-article {
-  width: calc(33.33% - 2rem);
-  padding: 1rem;
-}
-
-.test-article > h2 {
-  margin: 1rem 0;
-}
-
-.test-article > p {
-  font-size: 1rem;
-  margin: 0 0 2rem 0;
-  width: 100%;
 }
 
 button.activation {
@@ -237,14 +203,6 @@ input#activation + button {
 
   main > div {
     padding: 0 1vw;
-  }
-
-  #test-area {
-    display: block;
-  }
-
-  #test-context {
-    height: calc(100vh - 6em);
   }
 }
 

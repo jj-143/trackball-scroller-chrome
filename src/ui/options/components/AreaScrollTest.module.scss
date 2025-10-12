@@ -1,0 +1,40 @@
+.area {
+  display: flex;
+  flex-flow: column;
+
+  @media screen and (max-width: 900px) {
+    display: block;
+  }
+}
+
+.body {
+  flex: 1;
+  overflow: auto;
+  border: 2px solid #c6f1e9;
+  width: 100%;
+
+  @media screen and (max-width: 900px) {
+    height: calc(100vh - 6em);
+  }
+}
+
+.articleContainer {
+  width: 300%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.article {
+  width: calc(calc(100% / 3) - 2rem);
+  padding: 1rem;
+
+  h2 {
+    margin: 1rem 0;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0 0 2rem 0;
+    width: 100%;
+  }
+}
