@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "target": "ES2022",
+    "module": "nodenext",
+    "types": ["jest", "chrome"],
+
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "emitDeclarationOnly": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "composite": true
+  },
+  "include": ["src/**/*.test.ts", "src/**/*.ts", "src/definitions.d.ts"],
+  "exclude": ["node_modules"]
+}

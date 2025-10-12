@@ -12,7 +12,11 @@
     "cypress": "cypress open",
     "screenshot": "cypress run --headed --spec cypress/utils/screenshot.cy.ts --config-file cypress/utils/cypress.config.ts"
   },
+  "dependencies": {
+    "preact": "^10.27.2"
+  },
   "devDependencies": {
+    "@preact/preset-vite": "^2.10.2",
     "@types/chrome": "^0.0.236",
     "@types/jest": "^26.0.0",
     "@typescript-eslint/eslint-plugin": "^5.55.0",

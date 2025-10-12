@@ -1,5 +1,6 @@
 import fs from "node:fs"
 import path from "node:path"
+import preact from "@preact/preset-vite"
 import type { RollupWatcher, RollupWatcherEvent } from "rollup"
 import { build as viteBuild, createServer, defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
@@ -82,10 +83,15 @@ function build(group: EntryGroup, config: Config, inline: boolean) {
           entryFileNames: `[name]/[name].bundle.js`,
           chunkFileNames: `chunks/[name].chunk.js`,
           assetFileNames: `[name]/[name][extname]`,
+          manualChunks: inline
+            ? undefined
+            : {
+                preact: ["preact", "preact/hooks"],
+              },
         },
       },
     },
-    plugins: [tsconfigPaths()],
+    plugins: [tsconfigPaths(), preact()],
   })
 
   return viteBuild(viteConfig)

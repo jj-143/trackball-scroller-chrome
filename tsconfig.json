@@ -1,12 +1,8 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "lib": ["dom"],
-    "moduleResolution": "node",
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.build.json" },
+    { "path": "./tsconfig.test.json" }
+  ]
 }

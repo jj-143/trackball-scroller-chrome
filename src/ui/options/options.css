@@ -4,8 +4,6 @@
 }
 
 body {
-  display: flex;
-  flex-flow: column;
   margin: 0;
   height: 100vh;
   min-height: 900px;
@@ -13,6 +11,12 @@ body {
   color: #c6f1e9;
   font-family: "Maven Pro", sans-serif;
   user-select: none;
+}
+
+#app {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
 }
 
 header {
@@ -222,7 +226,7 @@ input#activation + button {
 }
 
 @media screen and (max-width: 900px) {
-  body {
+  #app {
     height: auto;
   }
 
