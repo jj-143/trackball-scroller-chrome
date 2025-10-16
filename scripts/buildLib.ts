@@ -74,6 +74,7 @@ function build(group: EntryGroup, config: Config, inline: boolean) {
       emptyOutDir: false,
       minify: false,
       reportCompressedSize: !config.isDev,
+      sourcemap: config.isDev ? "inline" : false,
       cssCodeSplit: true,
       cssMinify: true,
       rollupOptions: {
