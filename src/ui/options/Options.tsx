@@ -7,19 +7,18 @@ import L from "./layout.module.scss"
 
 import "./options.css"
 
-await api.init()
+const initialSettings = await api.initStore()
 
 export default function Options() {
-  const [userOption, setUserOption] = useState(api.settings.userOption)
+  const [userOption, setUserOption] = useState(initialSettings.userOption)
 
   useEffect(() => {
-    return api.onUpdate((settings) => setUserOption(settings.userOption))
+    return api.store.onUpdate((settings) => setUserOption(settings.userOption))
   }, [])
 
   // Options page always enable scroller
   useEffect(() => {
-    api.initScroller()
-    return api.cleanupScroller
+    return api.initScroller()
   }, [])
 
   return (

@@ -10,7 +10,7 @@ import ChromeStorage from "@/store/providers/chrome"
 
 export const CLS_PREVENT_ACTIVATION = "ts-prevent-activation"
 
-function initStore() {
+function createStore() {
   const notInProduction = import.meta.env.DEV
   const isExtensionPage = window.location.href.startsWith("chrome-extension://")
   const useInMemoryStorage = notInProduction && !isExtensionPage
@@ -25,37 +25,35 @@ function initStore() {
 }
 
 class API {
-  settings!: UserSettings
-  private store!: Store
+  store: Store
   private scroller?: Scroller
 
-  async init() {
-    this.store = initStore()
-    this.settings = await this.store.getStore()
-    this.store.onUpdate((store) => (this.settings = store))
+  constructor() {
+    this.store = createStore()
   }
 
-  async initScroller() {
-    const settings = await this.store.getStore()
+  initStore(): Promise<UserSettings> {
+    return this.store.getStore()
+  }
 
+  initScroller() {
     this.scroller = new Scroller()
     shimPreventActivation(this.scroller, CLS_PREVENT_ACTIVATION)
 
-    this.scroller.init(settings.userOption.scroller)
-    this.scroller.enable()
-    this.store.onUpdate((store) => {
-      this.scroller!.updateConfig(store.userOption.scroller)
+    this.store.getStore().then((settings) => {
+      this.scroller?.init(settings.userOption.scroller)
+      this.scroller?.enable()
     })
-  }
 
-  onUpdate(
-    callback: (userSettings: UserSettings, old?: UserSettings) => void
-  ): () => void {
-    return this.store.onUpdate(callback)
-  }
+    const unsubStoreUpdate = this.store.onUpdate((store) => {
+      this.scroller?.updateConfig(store.userOption.scroller)
+    })
 
-  cleanupScroller() {
-    this.scroller?.disable()
+    return () => {
+      unsubStoreUpdate()
+      this.scroller?.disable()
+      delete this.scroller
+    }
   }
 
   updateSettings<T extends keyof Payload>(type: T, payload: Payload[T]) {
