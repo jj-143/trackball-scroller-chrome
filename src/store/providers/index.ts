@@ -1,29 +1,38 @@
-export interface StorageProvider {
-  load: () => Promise<UserSettings | undefined>
-  save: (store: UserSettings) => Promise<void>
-  onChange: (
-    callback: (store: UserSettings, old?: UserSettings) => void
-  ) => void
+import { DEFAULT_USER_SETTINGS } from ".."
+
+export type OnChange = (settings: UserSettings, old?: UserSettings) => void
+export type Cleanup = () => void
+
+export abstract class StorageProvider {
+  private onChangeCallbacks = new Set<OnChange>()
+
+  abstract load(): Promise<UserSettings>
+
+  abstract save(settings: UserSettings): Promise<void>
+
+  onChange(listener: OnChange): Cleanup {
+    this.onChangeCallbacks.add(listener)
+    return () => this.onChangeCallbacks.delete(listener)
+  }
+
+  protected notifyChange(settings: UserSettings) {
+    this.onChangeCallbacks.forEach((callback) => callback(settings))
+  }
 }
 
-type OnChangeCallback = Parameters<StorageProvider["onChange"]>[0]
+export class InMemoryStorage extends StorageProvider {
+  private settings?: UserSettings
 
-export class InMemoryStorage implements StorageProvider {
-  store?: UserSettings
-  callbacks = new Set<OnChangeCallback>()
+  override async load() {
+    if (!this.settings) {
+      await this.save(DEFAULT_USER_SETTINGS)
+    }
 
-  async load() {
-    return this.store
+    return this.settings!
   }
 
-  async save(store: UserSettings) {
-    this.store = store
-    this.callbacks.forEach((callback) => {
-      callback(store)
-    })
-  }
-
-  onChange(callback: OnChangeCallback) {
-    this.callbacks.add(callback)
+  override async save(settings: UserSettings) {
+    this.settings = settings
+    this.notifyChange(settings)
   }
 }

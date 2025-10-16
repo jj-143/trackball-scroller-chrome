@@ -1,40 +1,35 @@
-import type { StorageProvider } from "."
+import { StorageProvider } from "."
+import { DEFAULT_USER_SETTINGS } from ".."
 
-export default class ChromeStorage implements StorageProvider {
+export default class ChromeStorage extends StorageProvider {
   static readonly key = "USER_SETTINGS"
 
-  load() {
-    return new Promise<UserSettings>((resolve, reject) => {
-      try {
-        chrome.storage.sync.get(ChromeStorage.key, (items) => {
-          items[ChromeStorage.key]
-          resolve(items[ChromeStorage.key])
-        })
-      } catch (e) {
-        reject(e)
-      }
-    })
+  constructor() {
+    super()
+    this.listenStorageUpdate()
   }
 
-  save(store: UserSettings) {
-    return new Promise<void>((resolve, reject) => {
-      try {
-        chrome.storage.sync.set({ [ChromeStorage.key]: store }, () => {
-          resolve()
-        })
-      } catch (e) {
-        reject(e)
-      }
-    })
+  override async load(): Promise<UserSettings> {
+    const item = await chrome.storage.sync.get(ChromeStorage.key)
+    const settings: UserSettings | undefined = item[ChromeStorage.key]
+
+    if (!settings) {
+      await this.save(DEFAULT_USER_SETTINGS)
+      return DEFAULT_USER_SETTINGS
+    }
+
+    return settings
   }
 
-  onChange(callback: (store: UserSettings, old?: UserSettings) => void) {
+  override async save(settings: UserSettings) {
+    return chrome.storage.sync.set({ [ChromeStorage.key]: settings })
+  }
+
+  private listenStorageUpdate() {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName === "sync") {
         const storage = changes[ChromeStorage.key]
-        if (storage?.oldValue) {
-          callback(storage.newValue, storage.oldValue)
-        }
+        this.notifyChange(storage.newValue)
       }
     })
   }

@@ -1,4 +1,4 @@
-import type { StorageProvider } from "./providers"
+import type { Cleanup, OnChange, StorageProvider } from "./providers"
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   enabled: true,
@@ -26,8 +26,6 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   },
 }
 
-type OnUpdateListener = (store: UserSettings, old?: UserSettings) => void
-
 /**
  * Store class handles the loading and saving of the user settings.
  *
@@ -36,41 +34,25 @@ type OnUpdateListener = (store: UserSettings, old?: UserSettings) => void
 export class Store {
   #store?: UserSettings
   #provider: StorageProvider
-  #onUpdateListeners: Set<OnUpdateListener> = new Set()
 
   constructor({ provider }: { provider: StorageProvider }) {
     this.#provider = provider
     this.#listenUpdatesFromProvider()
   }
 
-  static #deepClone(store: UserSettings): UserSettings {
-    // we can do this since the store is JSON-ifiable.
-    return JSON.parse(JSON.stringify(store))
-  }
-
   #listenUpdatesFromProvider() {
     this.#provider.onChange((store, old) => {
-      this.#onUpdateListeners.forEach((listener) => {
-        listener(store, old)
-      })
       this.#store = store
     })
   }
 
   async #loadStore() {
-    const storage = await this.#provider.load()
-    if (storage) {
-      this.#store = storage as UserSettings
-    } else {
-      this.#store = DEFAULT_USER_SETTINGS
-      this.#provider.save(DEFAULT_USER_SETTINGS)
-    }
+    this.#store = await this.#provider.load()
   }
 
   async getStore(): Promise<UserSettings> {
     if (!this.#store) await this.#loadStore()
-    // returning a clone to prevent direct manipulation.
-    return Store.#deepClone(this.#store as UserSettings)
+    return this.#store!
   }
 
   async updateStore(store: UserSettings): Promise<void> {
@@ -79,9 +61,7 @@ export class Store {
     })
   }
 
-  onUpdate(fn: (store: UserSettings, old?: UserSettings) => void): () => void {
-    this.#onUpdateListeners.add(fn)
-    // cleanup function
-    return () => this.#onUpdateListeners.delete(fn)
+  onUpdate(callback: OnChange): Cleanup {
+    return this.#provider.onChange(callback)
   }
 }
