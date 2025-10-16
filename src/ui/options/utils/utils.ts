@@ -23,9 +23,9 @@ export async function updateSettings<T extends keyof Payload>(
   type: T,
   payload: Payload[T]
 ) {
-  const oldSettings = await store.getStore()
+  const oldSettings = await store.get()
   const newSettings = updateSettingsReducer(oldSettings, type, payload)
-  store.updateStore(newSettings)
+  store.update(newSettings)
 }
 
 function updateSettingsReducer<T extends keyof Payload>(

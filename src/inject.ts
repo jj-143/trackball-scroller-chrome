@@ -8,17 +8,17 @@ async function init() {
     provider: new ChromeStorage(),
   })
 
-  const settings = await store.getStore()
+  const settings = await store.get()
   scroller.init(settings.userOption.scroller)
   if (settings.enabled) scroller.enable()
 
   // provide onUpdate callback after initialized
   // to prevent updating before initalized
-  store.onUpdate((store) => {
-    scroller.updateConfig(store.userOption.scroller)
+  store.onUpdate((settings) => {
+    scroller.updateConfig(settings.userOption.scroller)
 
-    if (store.enabled !== scroller.isEnabled) {
-      store.enabled ? scroller.enable() : scroller.disable()
+    if (settings.enabled !== scroller.isEnabled) {
+      settings.enabled ? scroller.enable() : scroller.disable()
     }
   })
 }

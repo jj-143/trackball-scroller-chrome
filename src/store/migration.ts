@@ -99,6 +99,6 @@ function removeStore_0_0_3() {
 export async function migrateStoreFrom_0_0_3(store: Store) {
   const oldStore = await loadStore_0_0_3()
   const newStore = convertFrom_0_0_3_To_1_0_0(oldStore)
-  await store.updateStore(newStore)
+  await store.update(newStore)
   removeStore_0_0_3()
 }

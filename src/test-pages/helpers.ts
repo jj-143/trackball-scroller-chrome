@@ -7,15 +7,15 @@ export async function initScroller() {
   const store = new Store({
     provider: window._testStorage ?? new InMemoryStorage(),
   })
-  const settings = await store.getStore()
+  const settings = await store.get()
 
   scroller.init(settings.userOption.scroller)
   scroller.enable()
 
-  store.onUpdate((store) => {
-    scroller.updateConfig(store.userOption.scroller)
-    if (store.enabled !== scroller.isEnabled) {
-      store.enabled ? scroller.enable() : scroller.disable()
+  store.onUpdate((settings) => {
+    scroller.updateConfig(settings.userOption.scroller)
+    if (settings.enabled !== scroller.isEnabled) {
+      settings.enabled ? scroller.enable() : scroller.disable()
     }
   })
 

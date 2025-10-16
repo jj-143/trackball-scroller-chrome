@@ -33,20 +33,20 @@ class API {
   }
 
   initStore(): Promise<UserSettings> {
-    return this.store.getStore()
+    return this.store.get()
   }
 
   initScroller() {
     this.scroller = new Scroller()
     shimPreventActivation(this.scroller, CLS_PREVENT_ACTIVATION)
 
-    this.store.getStore().then((settings) => {
+    this.store.get().then((settings) => {
       this.scroller?.init(settings.userOption.scroller)
       this.scroller?.enable()
     })
 
-    const unsubStoreUpdate = this.store.onUpdate((store) => {
-      this.scroller?.updateConfig(store.userOption.scroller)
+    const unsubStoreUpdate = this.store.onUpdate((settings) => {
+      this.scroller?.updateConfig(settings.userOption.scroller)
     })
 
     return () => {

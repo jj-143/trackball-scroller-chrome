@@ -43,20 +43,20 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 // Enabled changed (via Action)
 chrome.action.onClicked.addListener(async () => {
-  const store = await extension.store.getStore()
-  extension.store.updateStore({
-    ...store,
-    enabled: !store.enabled,
+  const settings = await extension.store.get()
+  extension.store.update({
+    ...settings,
+    enabled: !settings.enabled,
   })
 })
 
 // Initialize Action's UI
-extension.store.getStore().then((store) => {
-  updateActionUI(store.enabled)
+extension.store.get().then((settings) => {
+  updateActionUI(settings.enabled)
 })
 
-extension.store.onUpdate((store, old) => {
-  if (store.enabled !== old?.enabled) {
-    updateActionUI(store.enabled)
+extension.store.onUpdate((settings, old) => {
+  if (settings.enabled !== old?.enabled) {
+    updateActionUI(settings.enabled)
   }
 })

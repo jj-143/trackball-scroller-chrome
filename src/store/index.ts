@@ -32,36 +32,35 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
  * Actual data persists are handled by a `StorageProvider` implementation.
  */
 export class Store {
-  #store?: UserSettings
-  #provider: StorageProvider
+  private settings?: UserSettings
+  private provider: StorageProvider
 
   constructor({ provider }: { provider: StorageProvider }) {
-    this.#provider = provider
-    this.#listenUpdatesFromProvider()
+    this.provider = provider
+    this.listenUpdatesFromProvider()
   }
 
-  #listenUpdatesFromProvider() {
-    this.#provider.onChange((store, old) => {
-      this.#store = store
-    })
+  async get(): Promise<UserSettings> {
+    if (!this.settings) await this.loadFromProvider()
+    return this.settings!
   }
 
-  async #loadStore() {
-    this.#store = await this.#provider.load()
-  }
-
-  async getStore(): Promise<UserSettings> {
-    if (!this.#store) await this.#loadStore()
-    return this.#store!
-  }
-
-  async updateStore(store: UserSettings): Promise<void> {
-    return this.#provider.save(store).then(() => {
-      this.#store = store
-    })
+  async update(settings: UserSettings) {
+    await this.provider.save(settings)
+    this.settings = settings
   }
 
   onUpdate(callback: OnChange): Cleanup {
-    return this.#provider.onChange(callback)
+    return this.provider.onChange(callback)
+  }
+
+  private listenUpdatesFromProvider() {
+    this.provider.onChange((settings) => {
+      this.settings = settings
+    })
+  }
+
+  private async loadFromProvider() {
+    this.settings = await this.provider.load()
   }
 }
